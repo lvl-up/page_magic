@@ -8,36 +8,6 @@ module PageObject
     include PageElements
 
     attr_reader :caller, :page_element
-    enabled = proc { |browser_element| browser_element.enabled? }
-    visible = proc { |browser_element| browser_element.visible? }
-    set = proc { |browser_element| browser_element.set? }
-    has_value = proc { |browser_element| !browser_element.value.nil? }
-
-    ElementTypes = {
-        button: {
-            presence_check: enabled
-        },
-        link: {
-            presence_check: visible
-        },
-        checkbox: {
-            presence_check: set
-        },
-        select_list: {
-            presence_check: has_value
-        },
-        text_field: {
-            presence_check: has_value
-        },
-        textarea: {
-            presence_check: has_value
-        },
-        radios: {
-            presence_check: proc { |browser_element|
-              !browser_element.find { |radio| radio.parent.text == value }.nil?
-            }
-        },
-    }
 
     def initialize page_element, browser, caller, *args
       @page_element = page_element
@@ -59,11 +29,8 @@ module PageObject
       elements(@browser).each do |page_element|
 
         field_minus_action, action = resolve_action(field, page_element)
-        field_minus_check, check = resolve_check(field)
 
         case page_element.name
-          when field_minus_check
-            field_definition = page_element
           when field_minus_action
             field_definition = page_element
           when field
@@ -103,21 +70,6 @@ module PageObject
         if field_as_string =~ prefix && field_as_string.gsub(/^click_/, '').to_sym == field_definition.name
           return field_as_string.gsub(/^click_/, '').to_sym, action
         end
-      end
-    end
-
-    def resolve_check(field)
-      field_as_string = field.to_s
-
-      checks = {
-          '_has_class?' => :has_class,
-          '?' => :presence,
-          '@' => :reference,
-          '_as_text' => :as_text
-      }
-
-      checks.each do |suffix, check_type|
-        return field_as_string.gsub(suffix, "").to_sym, check_type if field_as_string.end_with?(suffix)
       end
     end
 

@@ -6,7 +6,7 @@ gem 'capybara'
 group :test do
   gem 'sinatra'
   gem "rspec", require: 'rspec/core/rake_task'
-  gem "simplecov", require:false
+  gem "simplecov", require: false
 end
 
 group :development do
