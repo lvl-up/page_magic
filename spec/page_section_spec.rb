@@ -1,0 +1,71 @@
+require 'spec_helper'
+
+describe PageObject::PageSection do
+
+  let(:page_section_class) do
+    page_section_class = Class.new do
+      extend PageObject::PageSection
+    end
+    page_section_class.stub(:name).and_return('PageSection')
+    page_section_class
+  end
+
+  let(:selector) { {css: '.class_name'} }
+
+  describe 'location' do
+    include_context :webapp
+
+    let!(:elements_page) do
+
+      Class.new do
+        include PageObject
+        url '/elements'
+        section :form_by_css do
+          selector css: '.form'
+          link(:link_in_form, text: 'a in a form')
+        end
+
+        section :form_by_id do
+          selector id: 'form'
+          link(:link_in_form, text: 'a in a form')
+        end
+      end
+    end
+
+    before :each do
+      @elements_page = elements_page.new
+      @elements_page.visit
+    end
+
+    it 'should find by id' do
+      @elements_page.form_by_css.link_in_form.should_not be_nil
+    end
+
+    it 'should find by css' do
+      @elements_page.form_by_id.link_in_form.should_not be_nil
+    end
+  end
+
+
+  describe 'construction' do
+    let!(:browser){double('browser')}
+    context 'selector' do
+      it 'should use the class defined selector if one is not given to the constructor' do
+
+        page_section_class.selector selector
+        page_section_class.new(browser).selector.should == selector
+      end
+
+      it 'should raise an error if a class selector is not defined and one is not given to the constructor' do
+        expect{page_section_class.new(browser)}.to raise_error(PageObject::PageSection::UndefinedSelectorException)
+      end
+    end
+
+    context 'name' do
+      it 'should default to the name of the class if one is not supplied' do
+        page_section_class.selector selector
+        page_section_class.new(browser).name.should == :page_section
+      end
+    end
+  end
+end
