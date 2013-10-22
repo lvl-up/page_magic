@@ -5,9 +5,7 @@ gem 'capybara'
 
 group :test do
   gem 'sinatra'
-  gem 'ruby-debug-ide'
-  gem 'ruby-debug-base19x'
-  gem "rspec"
+  gem "rspec", require: 'rspec/core/rake_task'
   gem "simplecov", require:false
 end
 
