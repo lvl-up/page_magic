@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe PageObject::PageSection do
+describe PageMagic::PageSection do
 
   let(:page_section_class) do
     page_section_class = Class.new do
-      extend PageObject::PageSection
+      extend PageMagic::PageSection
     end
     page_section_class.stub(:name).and_return('PageSection')
     page_section_class
@@ -18,7 +18,7 @@ describe PageObject::PageSection do
     let!(:elements_page) do
 
       Class.new do
-        include PageObject
+        include PageMagic
         url '/elements'
         section :form_by_css do
           selector css: '.form'
@@ -57,7 +57,7 @@ describe PageObject::PageSection do
       end
 
       it 'should raise an error if a class selector is not defined and one is not given to the constructor' do
-        expect{page_section_class.new(browser)}.to raise_error(PageObject::PageSection::UndefinedSelectorException)
+        expect{page_section_class.new(browser)}.to raise_error(PageMagic::PageSection::UndefinedSelectorException)
       end
     end
 

@@ -1,4 +1,4 @@
-module PageObject
+module PageMagic
   module PageElements
     class InvalidElementNameException < Exception
 
@@ -22,7 +22,7 @@ module PageObject
 
         def inline_section browser_element, &block
           section_class = Class.new do
-            extend PageObject::InlinePageSection
+            extend PageMagic::InlinePageSection
           end
           section_class.class_eval &block
           section_class.new browser_element
@@ -64,7 +64,7 @@ module PageObject
         when Symbol
           name,selector = args
           page_section = Class.new do
-            extend PageObject::PageSection
+            extend PageMagic::PageSection
           end
 
 

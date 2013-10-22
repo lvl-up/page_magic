@@ -1,4 +1,4 @@
-module PageObject
+module PageMagic
   module InlinePageSection
     class UndefinedSelectorException < Exception
 

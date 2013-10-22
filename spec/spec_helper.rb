@@ -1,6 +1,6 @@
 Bundler.require
 $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/lib")
-require 'page_object'
+require 'page_magic'
 require 'helpers'
 
 RSpec.configure do

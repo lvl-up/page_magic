@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe 'page object' do
+describe 'page magic' do
 
   include_context :webapp
 
   let(:my_page_class) do
     Class.new do
-      include PageObject
+      include PageMagic
       url '/page1'
       link(:next, :text => "next page")
     end
@@ -32,7 +32,7 @@ describe 'page object' do
   end
 
   it 'can have fields' do
-    @page.elements(@browser).should == [PageObject::PageElement.new(:click_create,:button, :text => "create user")]
+    @page.elements(@browser).should == [PageMagic::PageElement.new(:click_create,:button, :text => "create user")]
   end
 
   it 'should copy fields on to element' do

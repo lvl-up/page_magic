@@ -1,4 +1,4 @@
-module PageObject
+module PageMagic
   class Session
     attr_reader :browser, :current_page
 

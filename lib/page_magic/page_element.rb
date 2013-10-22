@@ -1,5 +1,5 @@
 require 'watir-webdriver'
-module PageObject
+module PageMagic
 
   class UnsupportedSelectorException < Exception
 

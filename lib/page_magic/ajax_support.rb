@@ -1,4 +1,4 @@
-module PageObject
+module PageMagic
   module AjaxSupport
     def on_element_with_trigger css_selector, event, browser, &block
       set_variable_on_event(browser, css_selector, event)

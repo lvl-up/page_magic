@@ -1,11 +1,11 @@
 require 'spec_helper'
-require 'page_object'
+require 'page_magic'
 
 describe 'member methods' do
   
   let(:page_object_class) do
     Class.new do
-      extend PageObject::PageElements
+      extend PageMagic::PageElements
     end
   end
 
@@ -17,12 +17,12 @@ describe 'member methods' do
 
 
   describe 'the element types that you can define' do
-    PageObject::PageElements::ELEMENT_TYPES.each do |element_type|
+    PageMagic::PageElements::ELEMENT_TYPES.each do |element_type|
 
       it "can have a #{element_type}" do
         friendly_name = "#{element_type}_name".to_sym
         page_object_class.send(element_type, friendly_name,{})
-        page_object_class.elements(nil) == [PageObject::PageElement.new(friendly_name,element_type,{})]
+        page_object_class.elements(nil) == [PageMagic::PageElement.new(friendly_name,element_type,{})]
       end
     end
   end

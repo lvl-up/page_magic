@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe PageObject::Session do
+describe PageMagic::Session do
 
   let(:page) do
     Class.new do
-      include PageObject
+      include PageMagic
       url :url
 
       def my_method
@@ -17,14 +17,14 @@ describe PageObject::Session do
 
   it 'should visit the given url' do
     browser.should_receive(:visit).with(page.url)
-    session = PageObject::Session.new(browser).visit(page)
+    session = PageMagic::Session.new(browser).visit(page)
     session.current_page.should be_a(page)
   end
 
   context 'method_missing' do
     it 'should delegate to current page' do
       browser.stub(:visit)
-      session = PageObject::Session.new(browser).visit(page)
+      session = PageMagic::Session.new(browser).visit(page)
       session.my_method.should be(:called)
     end
   end

@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'page_object'
+require 'page_magic'
 
 describe 'Element Context' do
 
@@ -7,7 +7,7 @@ describe 'Element Context' do
 
   let!(:page1) do
     Class.new do
-      include PageObject
+      include PageMagic
       url '/page1'
       link(:next, :text => "next page")
     end
@@ -15,7 +15,7 @@ describe 'Element Context' do
 
   let!(:elements_page) do
     Class.new do
-      include PageObject
+      include PageMagic
       url '/elements'
       link(:a_link, :text => "a link")
     end
@@ -26,7 +26,7 @@ describe 'Element Context' do
   end
 
   it 'should raise an error if an element is not found' do
-    expect { PageObject::ElementContext.new(page1.new(browser), browser, self).missing_thing }.to raise_error PageObject::ElementMissingException
+    expect { PageMagic::ElementContext.new(page1.new(browser), browser, self).missing_thing }.to raise_error PageMagic::ElementMissingException
   end
 
   it 'should attempt to execute method on page object it is defined' do
@@ -36,7 +36,7 @@ describe 'Element Context' do
       end
     end
 
-    PageObject::ElementContext.new(page1.new(browser), browser, self).page_method.should == :called
+    PageMagic::ElementContext.new(page1.new(browser), browser, self).page_method.should == :called
   end
 
 
@@ -53,7 +53,7 @@ describe 'Element Context' do
       page = elements_page.new
       page.visit
 
-      element = PageObject::ElementContext.new(page, page.browser, self).a_link
+      element = PageMagic::ElementContext.new(page, page.browser, self).a_link
       element.text.should == 'a link'
     end
   end
@@ -63,7 +63,7 @@ describe 'Element Context' do
       page = page1.new
       page.visit
 
-      PageObject::ElementContext.new(page, page.browser, self).click_next
+      PageMagic::ElementContext.new(page, page.browser, self).click_next
       page.current_path.should == '/page2'
       page.text.should == 'page 2 content'
     end
@@ -82,7 +82,7 @@ describe 'Element Context' do
       page = elements_page.new
       page.visit
 
-      PageObject::ElementContext.new(page, page.browser, self).form.should_not be_nil
+      PageMagic::ElementContext.new(page, page.browser, self).form.should_not be_nil
     end
   end
 
@@ -104,7 +104,7 @@ describe 'Element Context' do
       page = elements_page.new
       page.visit
 
-      PageObject::ElementContext.new(page, page.browser, self).form.submit.should_not be_nil
+      PageMagic::ElementContext.new(page, page.browser, self).form.submit.should_not be_nil
     end
   end
 
@@ -131,15 +131,15 @@ describe 'Element Context' do
         end
       end
 
-      PageObject::ElementContext.new(page, page.browser, self).create.click
+      PageMagic::ElementContext.new(page, page.browser, self).create.click
     end
 
   end
 
   it 'should not copy its own fields on to the element contexts it returns as these could lead to conflicts' do
 
-    element_context = PageObject::ElementContext.new(page1.new(browser), browser, self)
-    PageObject::ElementContext.new(element_context, browser, self).element_definitions.empty?.should == true
+    element_context = PageMagic::ElementContext.new(page1.new(browser), browser, self)
+    PageMagic::ElementContext.new(element_context, browser, self).element_definitions.empty?.should == true
   end
 
 end

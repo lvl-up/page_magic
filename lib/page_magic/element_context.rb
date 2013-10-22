@@ -1,4 +1,4 @@
-module PageObject
+module PageMagic
 
   class ElementMissingException < Exception
 

@@ -1,4 +1,4 @@
-module PageObject
+module PageMagic
   attr_reader :browser
   include AjaxSupport
 

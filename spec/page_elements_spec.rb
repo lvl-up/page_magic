@@ -1,12 +1,12 @@
 require 'spec_helper'
-require 'page_object'
+require 'page_magic'
 
-describe PageObject::PageElements do
+describe PageMagic::PageElements do
 
 
   let(:page_elements) do
     page_elements = Class.new do
-      extend(PageObject::PageElements)
+      extend(PageMagic::PageElements)
     end
   end
 
@@ -19,7 +19,7 @@ describe PageObject::PageElements do
     context 'using a selector' do
       it 'should add an element' do
         page_elements.text_field :name, selector
-        page_elements.elements(browser_element).first.should == PageObject::PageElement.new(:name, :text_field, selector)
+        page_elements.elements(browser_element).first.should == PageMagic::PageElement.new(:name, :text_field, selector)
       end
 
       it 'should return your a copy of the core definition' do
@@ -42,10 +42,10 @@ describe PageObject::PageElements do
 
     let!(:section_class) do
       Class.new do
-        extend PageObject::PageSection
+        extend PageMagic::PageSection
 
         def == object
-          object.class.is_a?(PageObject::PageSection) &&
+          object.class.is_a?(PageMagic::PageSection) &&
               object.name == self.name
         end
       end
@@ -65,7 +65,7 @@ describe PageObject::PageElements do
           link(:hello, text: 'world')
         end
 
-        page_elements.elements(@browser_element).first.elements(@browser_element).first.should == PageObject::PageElement.new(:page_section,@browser_element)
+        page_elements.elements(@browser_element).first.elements(@browser_element).first.should == PageMagic::PageElement.new(:page_section,@browser_element)
       end
 
     end
@@ -76,8 +76,8 @@ describe PageObject::PageElements do
         section = page_element.inline_section(browser_element) do
           link(:hello, text: 'world')
         end
-        section.class.is_a?(PageObject::InlinePageSection).should == true
-        section.elements(browser_element).should == [PageObject::PageElement.new(:hello, browser_element, :link, text: 'world')]
+        section.class.is_a?(PageMagic::InlinePageSection).should == true
+        section.elements(browser_element).should == [PageMagic::PageElement.new(:hello, browser_element, :link, text: 'world')]
       end
     end
 
@@ -102,7 +102,7 @@ describe PageObject::PageElements do
 
           def hello; end
         end
-      end.to raise_error(PageObject::PageElements::InvalidMethodNameException)
+      end.to raise_error(PageMagic::PageElements::InvalidMethodNameException)
     end
 
     it 'should not allow element names that match method names' do
@@ -112,7 +112,7 @@ describe PageObject::PageElements do
 
           link(:hello, text: 'world')
         end
-      end.to raise_error(PageObject::PageElements::InvalidElementNameException)
+      end.to raise_error(PageMagic::PageElements::InvalidElementNameException)
     end
 
     it 'should not allow duplicate element names' do
@@ -121,7 +121,7 @@ describe PageObject::PageElements do
           link(:hello, text: 'world')
           link(:hello, text: 'world')
         end
-      end.to raise_error(PageObject::PageElements::InvalidElementNameException)
+      end.to raise_error(PageMagic::PageElements::InvalidElementNameException)
     end
   end
 end
