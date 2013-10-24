@@ -21,12 +21,12 @@ describe 'Element Context' do
     end
   end
 
-  let!(:browser) do
-    double('browser')
+  let!(:session) do
+    double('session', browser: double('browser'))
   end
 
   it 'should raise an error if an element is not found' do
-    expect { PageMagic::ElementContext.new(page1.new(browser), browser, self).missing_thing }.to raise_error PageMagic::ElementMissingException
+    expect { PageMagic::ElementContext.new(page1.new(session), session, self).missing_thing }.to raise_error PageMagic::ElementMissingException
   end
 
   it 'should attempt to execute method on page object it is defined' do
@@ -36,7 +36,7 @@ describe 'Element Context' do
       end
     end
 
-    PageMagic::ElementContext.new(page1.new(browser), browser, self).page_method.should == :called
+    PageMagic::ElementContext.new(page1.new(session), session, self).page_method.should == :called
   end
 
 
@@ -137,9 +137,8 @@ describe 'Element Context' do
   end
 
   it 'should not copy its own fields on to the element contexts it returns as these could lead to conflicts' do
-
-    element_context = PageMagic::ElementContext.new(page1.new(browser), browser, self)
-    PageMagic::ElementContext.new(element_context, browser, self).element_definitions.empty?.should == true
+    element_context = PageMagic::ElementContext.new(page1.new(session), session, self)
+    PageMagic::ElementContext.new(element_context, session, self).element_definitions.empty?.should == true
   end
 
 end

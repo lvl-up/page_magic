@@ -2,10 +2,19 @@ module PageMagic
   attr_reader :browser
   include AjaxSupport
 
-  def initialize browser=Capybara.current_session, options={}, &block
-    @browser = browser
+  def initialize session=Capybara.current_session, options={}, &block
+    if session.is_a? Capybara::Session
+      @browser = session
+    else
+      @browser = session.browser
+      @session = session
+    end
     navigate if options[:navigate_to_page]
     block.call @browser if block
+  end
+
+  def move_to page_class
+    @session.current_page = page_class.new @session
   end
 
   def title

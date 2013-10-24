@@ -65,7 +65,8 @@ describe 'Page elements' do
     end
 
     it 'should return a prefetched value' do
-      PageMagic::PageElement.new(:help, double("browser"), :link, "prefetched text").locate.should == "prefetched text"
+      session = double("session")
+      PageMagic::PageElement.new(:help, session, :link, "prefetched text").locate.should == session
     end
   end
 

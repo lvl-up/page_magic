@@ -47,7 +47,7 @@ module PageMagic
     end
 
     def locate *args
-      if @selector
+      if @selector && @selector.is_a?(Hash)
         method, selector = @selector.to_a.flatten
         case method
           when :id

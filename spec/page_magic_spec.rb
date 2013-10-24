@@ -12,6 +12,13 @@ describe 'page magic' do
     end
   end
 
+  let(:another_page_class) do
+    Class.new do
+      include PageMagic
+      url '/another_page1'
+    end
+  end
+
   before :each do
     @page = my_page_class.new
   end
@@ -31,12 +38,21 @@ describe 'page magic' do
     end
   end
 
+  it 'should move to another page' do
+    page_magic_session = PageMagic::Session.new(double(:browser))
+
+    existing_page = my_page_class.new page_magic_session
+    existing_page.move_to(another_page_class)
+
+    page_magic_session.current_page.should be_a(another_page_class)
+  end
+
   it 'can have fields' do
     @page.elements(@browser).should == [PageMagic::PageElement.new(:click_create,:button, :text => "create user")]
   end
 
   it 'should copy fields on to element' do
-    @page.elements(@browser).first.should_not equal(my_page_class.new(@browser).elements(@browser).first)
+    @page.elements(@browser).first.should_not equal(my_page_class.new(double('session', browser: @browser)).elements(@browser).first)
   end
 
   it 'gives access to the page text' do
