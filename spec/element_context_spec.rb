@@ -39,15 +39,6 @@ describe 'Element Context' do
     PageMagic::ElementContext.new(page1.new(session), session, self).page_method.should == :called
   end
 
-
-  describe 'location' do
-
-  end
-
-  describe 'interaction with page elements' do
-
-  end
-
   describe 'retrieving elements' do
     it 'should give the capybara object' do
       page = elements_page.new

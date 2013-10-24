@@ -38,6 +38,7 @@ module PageMagic
           else
             next
         end
+        break if field_definition
       end
 
       raise ElementMissingException, "Could not find: #{field}" unless field_definition
