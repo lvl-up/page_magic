@@ -14,6 +14,7 @@ module PageMagic
   end
 
   def move_to page_class
+    page_class = eval(page_class) if page_class.is_a?(String)
     @session.current_page = page_class.new @session
   end
 
