@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leon Davis"]
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     "VERSION",
     "lib/page_magic.rb",
     "lib/page_magic/ajax_support.rb",
+    "lib/page_magic/browser.rb",
     "lib/page_magic/element_context.rb",
     "lib/page_magic/inline_page_section.rb",
     "lib/page_magic/page_element.rb",
@@ -34,6 +35,7 @@ Gem::Specification.new do |s|
     "lib/page_magic/session.rb",
     "lib/page_magic/site.rb",
     "page_magic.gemspec",
+    "spec/browser_spec.rb",
     "spec/element_context_spec.rb",
     "spec/helpers.rb",
     "spec/helpers/capybara.rb",
