@@ -1,6 +1,5 @@
 $LOAD_PATH.unshift("#{File.dirname(__FILE__)}")
 require 'capybara'
-require 'page_magic/site'
 require 'page_magic/browser'
 require 'page_magic/session'
 require 'page_magic/ajax_support'
@@ -13,6 +12,19 @@ require 'page_magic/page_section'
 
 module PageMagic
   class << self
+    def session browser=nil, options = {}
+      if browser
+        Capybara.register_driver browser do |app|
+          options[:browser] = browser
+          Capybara::Selenium::Driver.new(app, options)
+        end
+        Session.new(Capybara::Session.new(browser,nil))
+      else
+        Capybara.reset!
+        Session.new(Capybara.current_session)
+      end
+    end
+
     def included clazz
       clazz.extend PageElements
 
