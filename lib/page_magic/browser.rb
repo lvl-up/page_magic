@@ -9,7 +9,7 @@ module PageMagic
       end
     end
 
-    def page
+    def browser
       Browser.session ||= PageMagic.session(Browser.browser || :chrome)
     end
   end

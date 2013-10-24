@@ -13,21 +13,21 @@ describe PageMagic::Browser do
       session = double(:session)
       PageMagic::Browser.session = session
 
-      app.page.should == session
+      app.browser.should == session
     end
 
     it 'should create a session if not already set' do
       new_session = double(:new_session)
 
       PageMagic.should_receive(:session).with(:chrome).and_return new_session
-      app.page.should == new_session
+      app.browser.should == new_session
     end
 
     it 'should use custom browser' do
       PageMagic::Browser.use :firefox
 
       PageMagic.should_receive(:session).with(:firefox)
-      app.page
+      app.browser
     end
   end
 end
