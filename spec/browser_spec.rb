@@ -4,13 +4,14 @@ describe PageMagic::Browser do
   let(:app) { Object.new }
 
   before do
+    PageMagic::Browser.session = nil
     app.extend PageMagic::Browser
   end
 
   describe 'page' do
     it 'should return the existing session' do
       session = double(:session)
-      app.instance_variable_set(:@session, session)
+      PageMagic::Browser.session = session
 
       app.page.should == session
     end

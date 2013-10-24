@@ -2,6 +2,7 @@ module PageMagic
   module Browser
     class << self
       attr_reader :browser
+      attr_accessor :session
 
       def use browser
         @browser = browser
@@ -9,7 +10,7 @@ module PageMagic
     end
 
     def page
-      @session ||= PageMagic::Site.visit(browser: Browser.browser ? Browser.browser : :chrome)
+      Browser.session ||= PageMagic::Site.visit(browser: Browser.browser ? Browser.browser : :chrome)
     end
   end
 end
