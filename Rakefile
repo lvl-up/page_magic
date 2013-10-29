@@ -15,4 +15,6 @@ Jeweler::Tasks.new do |gem|
   gem.add_dependency "watir-webdriver"
 end
 
+Jeweler::RubygemsDotOrgTasks.new
+
 task :default => :spec
