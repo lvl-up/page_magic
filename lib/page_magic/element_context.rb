@@ -23,10 +23,10 @@ module PageMagic
       return @page_element.send(method, *args) if @page_element.methods.include?(method)
 
 
-      field, input = method, args.first
+      field = method
 
       field_definition, check, action = nil, nil, nil
-      elements(@browser).each do |page_element|
+      elements(@browser, *args).each do |page_element|
 
         field_minus_action, action = resolve_action(field, page_element)
 
@@ -43,8 +43,8 @@ module PageMagic
 
       raise ElementMissingException, "Could not find: #{field}" unless field_definition
 
-      result = field_definition.locate(input)
-      return ElementContext.new(result, @browser, @caller, *args) if result.class.is_a? InlinePageSection
+      result = field_definition.locate
+
       return ElementContext.new(field_definition, result, @caller, *args) if field_definition.class.is_a? PageSection
 
       _self = self

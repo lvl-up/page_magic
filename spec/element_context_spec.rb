@@ -77,25 +77,9 @@ describe 'Element Context' do
     end
   end
 
-  describe 'accessing inline page sections' do
-    it 'should go through inline page sections' do
+  describe 'location' do
+    it 'should pass thing' do
 
-      elements_page.class_eval do
-        section :form do
-          selector css: 'form'
-
-          def locate arg
-            inline_section(@browser_element) do
-              link(:submit, text: 'a in a form')
-            end
-          end
-        end
-      end
-
-      page = elements_page.new
-      page.visit
-
-      PageMagic::ElementContext.new(page, page.browser, self).form.submit.should_not be_nil
     end
   end
 

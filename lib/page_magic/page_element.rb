@@ -73,8 +73,6 @@ module PageMagic
       else
         @browser_element
       end
-
-      #@browser_element.find_field(element_type, @selector)
     end
 
     alias_method :inherited_locate_method, :locate

@@ -7,7 +7,6 @@ require 'page_magic/page_elements'
 require 'page_magic/element_context'
 require 'page_magic/page_element'
 require 'page_magic/page_magic'
-require 'page_magic/inline_page_section'
 require 'page_magic/page_section'
 
 module PageMagic

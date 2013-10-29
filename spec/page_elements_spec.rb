@@ -59,7 +59,7 @@ describe PageMagic::PageElements do
     end
 
     context 'using a block to define a section inline' do
-      it 'should work' do
+      it 'should add a section' do
         page_elements.section :page_section do
           selector id: 'id'
           link(:hello, text: 'world')
@@ -68,17 +68,16 @@ describe PageMagic::PageElements do
         page_elements.elements(@browser_element).first.elements(@browser_element).first.should == PageMagic::PageElement.new(:page_section,@browser_element)
       end
 
-    end
-
-    context 'instances' do
-      it 'should create inline sections' do
-        page_element = page_elements.new
-        section = page_element.inline_section(browser_element) do
-          link(:hello, text: 'world')
+      it 'should pass args through to the block' do
+        page_elements.section :page_section, :selector do |arg|
+          arg[:passed_through] = true
         end
-        section.class.is_a?(PageMagic::InlinePageSection).should == true
-        section.elements(browser_element).should == [PageMagic::PageElement.new(:hello, browser_element, :link, text: 'world')]
+
+        arg = {}
+        page_elements.elements(@browser_element,arg)
+        arg[:passed_through].should == true
       end
+
     end
 
     it 'should give the browser element to it' do
