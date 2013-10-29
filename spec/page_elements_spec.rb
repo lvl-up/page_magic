@@ -69,13 +69,15 @@ describe PageMagic::PageElements do
       end
 
       it 'should pass args through to the block' do
-        page_elements.section :page_section, :selector do |arg|
+        page_elements.section :page_section, :selector do |browser, arg|
+          arg[:browser] = browser
           arg[:passed_through] = true
         end
 
-        arg = {}
-        page_elements.elements(@browser_element,arg)
+        arg, browser = {}, double('browser')
+        page_elements.elements(browser,arg)
         arg[:passed_through].should == true
+        arg[:browser].should == browser
       end
 
     end

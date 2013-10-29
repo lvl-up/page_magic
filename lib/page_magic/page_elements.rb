@@ -61,7 +61,7 @@ module PageMagic
             page_section = Class.new do
               extend PageMagic::PageSection
             end
-            page_section.class_exec *args, &block
+            page_section.class_exec browser_element, *args, &block
             page_section.new(browser_element, name, selector)
           end
         else
