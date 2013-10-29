@@ -1,1 +1,1 @@
-[![Build Status](https://travis-ci.org/ladtech/page_magic.png)](https://travis-ci.org/ladtech/page_magic)
+[![Build Status](https://travis-ci.org/Ladtech/page_magic.png)](https://travis-ci.org/Ladtech/page_magic)
