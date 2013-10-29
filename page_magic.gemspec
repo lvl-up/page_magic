@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = "0.1.4"
+  s.version = "0.2.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leon Davis"]
-  s.date = "2013-10-24"
+  s.date = "2013-10-29"
   s.description = "Framework for modeling and interacting with webpages which wraps capybara"
   s.email = "info@lad-tech.com"
   s.extra_rdoc_files = [
@@ -33,7 +33,6 @@ Gem::Specification.new do |s|
     "lib/page_magic/page_magic.rb",
     "lib/page_magic/page_section.rb",
     "lib/page_magic/session.rb",
-    "lib/page_magic/site.rb",
     "page_magic.gemspec",
     "spec/browser_spec.rb",
     "spec/element_context_spec.rb",
@@ -46,7 +45,6 @@ Gem::Specification.new do |s|
     "spec/page_magic_spec.rb",
     "spec/page_section_spec.rb",
     "spec/session_spec.rb",
-    "spec/site_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = "https://github.com/ladtech/page_magic"
