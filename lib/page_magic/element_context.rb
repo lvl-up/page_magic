@@ -18,24 +18,10 @@ module PageMagic
       return @caller.send(method, *args) if @executing_hooks
       return @page_element.send(method, *args) if @page_element.methods.include?(method)
 
-      field_definition, action = nil, nil
-      @page_element.elements(@browser, *args).each do |page_element|
-
-        field_minus_action, action = resolve_action(method, page_element)
-
-        case page_element.name
-          when field_minus_action
-            field_definition = page_element
-          when method
-            field_definition = page_element
-          else
-            next
-        end
-        break if field_definition
-      end
-
+      field_definition = @page_element.element_definitions[method.to_s.gsub('click_', '').to_sym]
       raise ElementMissingException, "Could not find: #{method}" unless field_definition
 
+      field_definition = field_definition.call(@browser, *args)
       result = field_definition.locate
 
       return ElementContext.new(field_definition, result, @caller, *args) if field_definition.class.is_a? PageSection
@@ -48,7 +34,7 @@ module PageMagic
         )
       end
 
-      action ? result.send(action) : result
+      click_action?(method, field_definition) ? result.click : result
     end
 
     def apply_hooks(options)
@@ -65,15 +51,9 @@ module PageMagic
     end
 
 
-    def resolve_action(field, field_definition)
+    def click_action?(field, field_definition)
       field_as_string = field.to_s
-      actions = {/^click_/ => :click}
-
-      actions.each do |prefix, action|
-        if field_as_string =~ prefix && field_as_string.gsub(/^click_/, '').to_sym == field_definition.name
-          return field_as_string.gsub(/^click_/, '').to_sym, action
-        end
-      end
+      (field_as_string =~ /^click_/ && field_as_string.gsub(/^click_/, '').to_sym == field_definition.name)
     end
 
     def call_hook &block

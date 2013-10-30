@@ -25,6 +25,21 @@ describe 'Element Context' do
     double('session', browser: double('browser'))
   end
 
+  describe 'resolving field definitions' do
+
+    it 'should only evaluate the targeted field definition' do
+      page1.class_eval do
+        link(:link, :selector) do
+          fail("should not have been evaluated")
+        end
+      end
+      page = page1.new
+      page.visit
+
+      PageMagic::ElementContext.new(page, page.browser, self).next
+    end
+  end
+
   it 'should raise an error if an element is not found' do
     expect { PageMagic::ElementContext.new(page1.new(session), session, self).missing_thing }.to raise_error PageMagic::ElementMissingException
   end
@@ -74,12 +89,6 @@ describe 'Element Context' do
       page.visit
 
       PageMagic::ElementContext.new(page, page.browser, self).form.should_not be_nil
-    end
-  end
-
-  describe 'location' do
-    it 'should pass thing' do
-
     end
   end
 
