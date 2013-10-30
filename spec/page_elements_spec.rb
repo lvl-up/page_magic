@@ -5,7 +5,7 @@ describe PageMagic::PageElements do
 
 
   let(:page_elements) do
-    page_elements = Class.new do
+    Class.new do
       extend(PageMagic::PageElements)
     end
   end
@@ -65,7 +65,7 @@ describe PageMagic::PageElements do
           link(:hello, text: 'world')
         end
 
-        page_elements.elements(@browser_element).first.elements(@browser_element).first.should == PageMagic::PageElement.new(:page_section,@browser_element)
+        page_elements.elements(@browser_element).first.elements(@browser_element).first.should == PageMagic::PageElement.new(:page_section, @browser_element)
       end
 
       it 'should pass args through to the block' do
@@ -75,7 +75,7 @@ describe PageMagic::PageElements do
         end
 
         arg, browser = {}, double('browser')
-        page_elements.elements(browser,arg)
+        page_elements.elements(browser, arg)
         arg[:passed_through].should == true
         arg[:browser].should == browser
       end
@@ -101,7 +101,8 @@ describe PageMagic::PageElements do
         page_elements.class_eval do
           link(:hello, text: 'world')
 
-          def hello; end
+          def hello;
+          end
         end
       end.to raise_error(PageMagic::PageElements::InvalidMethodNameException)
     end
@@ -109,7 +110,8 @@ describe PageMagic::PageElements do
     it 'should not allow element names that match method names' do
       expect do
         page_elements.class_eval do
-          def hello;end
+          def hello;
+          end
 
           link(:hello, text: 'world')
         end
@@ -123,6 +125,15 @@ describe PageMagic::PageElements do
           link(:hello, text: 'world')
         end
       end.to raise_error(PageMagic::PageElements::InvalidElementNameException)
+    end
+
+    it 'should not evaluate the elements when applying naming checks' do
+      page_elements.class_eval do
+        link(:link1, :selector) do
+          fail("should not have been evaluated")
+        end
+        link(:link2, :selector)
+      end
     end
   end
 end

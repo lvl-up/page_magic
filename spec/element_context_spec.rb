@@ -111,9 +111,4 @@ describe 'Element Context' do
 
   end
 
-  it 'should not copy its own fields on to the element contexts it returns as these could lead to conflicts' do
-    element_context = PageMagic::ElementContext.new(page1.new(session), session, self)
-    PageMagic::ElementContext.new(element_context, session, self).element_definitions.empty?.should == true
-  end
-
 end
