@@ -18,23 +18,37 @@ module PageMagic
       return @caller.send(method, *args) if @executing_hooks
       return @page_element.send(method, *args) if @page_element.methods.include?(method)
 
-      field_definition = @page_element.element_definitions[method.to_s.gsub('click_', '').to_sym]
-      raise ElementMissingException, "Could not find: #{method}" unless field_definition
 
-      field_definition = field_definition.call(@browser, *args)
-      result = field_definition.locate
+      element_locator_factory =  @page_element.element_definitions[method]
 
-      return ElementContext.new(field_definition, result, @caller, *args) if field_definition.class.is_a? PageSection
+      action = nil
+      unless element_locator_factory
+        action = resolve_action(method)
+        element_locator_factory = @page_element.element_definitions[method.to_s.gsub("#{action}_", '').to_sym]
+      end
+
+      raise ElementMissingException, "Could not find: #{method}" unless element_locator_factory
+
+      element_locator = element_locator_factory.call(@browser, *args)
+      result = element_locator.locate
+
+      return ElementContext.new(element_locator, result, @caller, *args) if element_locator.class.is_a? PageSection
 
       [:set, :select_option, :unselect_option, :click].each do |action_method|
         apply_hooks(page_element: result,
                     capybara_method: action_method,
-                    before_hook: field_definition.before_hook,
-                    after_hook: field_definition.after_hook,
+                    before_hook: element_locator.before_hook,
+                    after_hook: element_locator.after_hook,
         )
       end
 
-      click_action?(method, field_definition) ? result.click : result
+      action ? result.send(action) : result
+    end
+
+    def resolve_action(field)
+      {/^click_/ => :click}.each do |prefix, action|
+        return action if field.to_s =~ prefix
+      end
     end
 
     def apply_hooks(options)
@@ -50,11 +64,6 @@ module PageMagic
       end
     end
 
-
-    def click_action?(field, field_definition)
-      field_as_string = field.to_s
-      (field_as_string =~ /^click_/ && field_as_string.gsub(/^click_/, '').to_sym == field_definition.name)
-    end
 
     def call_hook &block
       @executing_hooks = true
