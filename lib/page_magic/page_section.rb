@@ -12,12 +12,27 @@ module PageMagic
           class << self
             def selector selector=nil
               return @selector unless selector
+
+              if @parent_browser_element
+                method, selector = selector.to_a.flatten
+                @browser_element = case method
+                                     when :id
+                                       @parent_browser_element.find("##{selector}")
+                                     when :css
+                                       @parent_browser_element.find(:css, selector)
+                                     else
+                                       raise UnsupportedSelectorException
+                                   end
+              end
+
               @selector = selector
             end
+
+            attr_accessor :parent_browser_element, :browser_element
           end
 
           def initialize browser_element, name=nil, selector=self.class.selector
-            @selector, @parent_browser_element = selector, browser_element
+            @selector, @browser_element = selector, browser_element
 
             @selector = selector ? selector : self.class.selector
 
@@ -31,17 +46,8 @@ module PageMagic
           end
 
           # TODO test this
-          def locate *args
-            method, selector = @selector.to_a.flatten
-            @browser_element = case method
-              when :id
-                @parent_browser_element.find("##{selector}")
-              when :css
-                @parent_browser_element.find(:css, selector)
-              else
-                raise UnsupportedSelectorException
-            end
-
+          def locate
+            @browser_element
           end
 
           #TODO - consolidate this

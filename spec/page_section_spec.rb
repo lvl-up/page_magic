@@ -26,16 +26,27 @@ describe PageMagic::PageSection do
     end
   end
 
-
-
-  describe 'location' do
-
-    it 'should find by id' do
-      @elements_page.form_by_css.link_in_form.should_not be_nil
+  context 'class level' do
+    let(:section) do
+      Class.new do
+        extend PageMagic::PageSection
+      end
     end
 
-    it 'should find by css' do
-      @elements_page.form_by_id.link_in_form.should_not be_nil
+    describe 'selector' do
+      before do
+        section.parent_browser_element = @elements_page.browser
+      end
+
+      it 'should find by id' do
+        section.selector id: 'form'
+        section.browser_element[:id].should == 'form'
+      end
+
+      it 'should find by css' do
+        section.selector css: '.form'
+        section.browser_element[:id].should == 'form'
+      end
     end
   end
 
@@ -64,9 +75,9 @@ describe PageMagic::PageSection do
     let(:selector) { {css: '.class_name'} }
 
     let!(:browser){double('browser')}
+
     context 'selector' do
       it 'should use the class defined selector if one is not given to the constructor' do
-
         page_section_class.selector selector
         page_section_class.new(browser).selector.should == selector
       end

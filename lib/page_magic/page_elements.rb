@@ -1,13 +1,10 @@
 module PageMagic
   module PageElements
     class InvalidElementNameException < Exception
-
     end
 
     class InvalidMethodNameException < Exception
-
     end
-
 
     def self.extended clazz
       clazz.class_eval do
@@ -58,12 +55,17 @@ module PageMagic
       case args.first
         when Symbol
           name, selector = args
-          add_element_definition(name) do |browser_element, *args|
+
+          add_element_definition(name) do |parent_browser_element, *args|
             page_section = Class.new do
               extend PageMagic::PageSection
             end
-            page_section.class_exec browser_element, *args, &block
-            page_section.new(browser_element, name, selector)
+
+            page_section.parent_browser_element = parent_browser_element
+            page_section.selector selector if selector
+
+            page_section.class_exec *args, &block
+            page_section.new(page_section.browser_element, name, selector)
           end
         else
           section_class, name, selector = args

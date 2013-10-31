@@ -5,7 +5,7 @@ describe PageMagic::PageElements do
 
 
   let(:page_elements) do
-    Class.new do
+    page_element = Class.new do
       extend(PageMagic::PageElements)
     end
   end
@@ -51,6 +51,17 @@ describe PageMagic::PageElements do
       end
     end
 
+    context 'selector' do
+
+      it 'can be an id' do
+
+      end
+
+      it 'can be css' do
+
+      end
+    end
+
     context 'using a class as a definition' do
       it 'should add a section' do
         page_elements.section section_class, :page_section, selector
@@ -59,6 +70,45 @@ describe PageMagic::PageElements do
     end
 
     context 'using a block to define a section inline' do
+
+      context 'browser_element' do
+        before :each do
+          @browser, @element = double('browser'), double('element')
+          @browser.should_receive(:find).with(:css, :selector).and_return(@element)
+        end
+
+        it 'should be assigned when selector is passed to section method' do
+          element = @element
+
+          page_elements.section :page_section, css: :selector do
+            browser_element.should == element
+          end
+
+          page_elements.elements(@browser, nil)
+        end
+
+        it 'should be assigned when selector is defined in the block passed to the section method' do
+          element = @element
+
+          page_elements.section :page_section do
+            browser_element.should == nil
+            selector css: :selector
+            browser_element.should == element
+          end
+
+          page_elements.elements(@browser, nil)
+        end
+      end
+
+      it 'should raise an exception if the selector is not passed' do
+        arg, browser, element = {}, double('browser'), double('element')
+
+        page_elements.section :page_section, nil do
+        end
+
+        expect { page_elements.elements(browser, arg) }.to raise_error(PageMagic::PageSection::UndefinedSelectorException)
+      end
+
       it 'should add a section' do
         page_elements.section :page_section do
           selector id: 'id'
@@ -69,15 +119,13 @@ describe PageMagic::PageElements do
       end
 
       it 'should pass args through to the block' do
-        page_elements.section :page_section, :selector do |browser, arg|
-          arg[:browser] = browser
+        page_elements.section :page_section, css: '.blah' do |arg|
           arg[:passed_through] = true
         end
 
-        arg, browser = {}, double('browser')
+        arg, browser = {}, double('browser', find: :browser_element)
         page_elements.elements(browser, arg)
-        arg[:passed_through].should == true
-        arg[:browser].should == browser
+        arg[:passed_through].should be_true
       end
 
     end
@@ -86,7 +134,7 @@ describe PageMagic::PageElements do
       page_elements.section section_class, :page_section, selector
       browser_element = double('browser_element')
       page_section = page_elements.elements(browser_element).first
-      page_section.instance_variable_get(:@parent_browser_element).should == browser_element
+      page_section.instance_variable_get(:@browser_element).should == browser_element
     end
 
     it 'should return your a copy of the core definition' do
