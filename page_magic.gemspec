@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = "0.3.8"
+  s.version = "0.3.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leon Davis"]
-  s.date = "2013-10-30"
+  s.date = "2013-10-31"
   s.description = "Framework for modeling and interacting with webpages which wraps capybara"
   s.email = "info@lad-tech.com"
   s.extra_rdoc_files = [
