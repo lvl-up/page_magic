@@ -15,8 +15,9 @@ module PageMagic
               @selector = selector
             end
           end
+
           def initialize browser_element, name=nil, selector=self.class.selector
-            @selector, @browser_element = selector, browser_element
+            @selector, @parent_browser_element = selector, browser_element
 
             @selector = selector ? selector : self.class.selector
 
@@ -32,11 +33,11 @@ module PageMagic
           # TODO test this
           def locate *args
             method, selector = @selector.to_a.flatten
-            case method
+            @browser_element = case method
               when :id
-                @browser_element.find("##{selector}")
+                @parent_browser_element.find("##{selector}")
               when :css
-                @browser_element.find(:css, selector)
+                @parent_browser_element.find(:css, selector)
               else
                 raise UnsupportedSelectorException
             end
@@ -45,15 +46,24 @@ module PageMagic
 
           #TODO - consolidate this
           def method_missing method, *args
-            ElementContext.new(self, @browser_element, self, *args).send(method, args.first)
+            begin
+              ElementContext.new(self, @browser_element, self, *args).send(method, args.first)
+            rescue ElementMissingException
+              begin
+                @browser_element.send(method, *args)
+              rescue
+                super
+              end
+
+            end
           end
 
           private
 
           def underscore string
             string.gsub(/::/, '/').
-                gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-                gsub(/([a-z\d])([A-Z])/,'\1_\2').
+                gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+                gsub(/([a-z\d])([A-Z])/, '\1_\2').
                 tr("-", "_").
                 downcase
           end
@@ -62,7 +72,6 @@ module PageMagic
         end
       end
     end
-
 
 
   end

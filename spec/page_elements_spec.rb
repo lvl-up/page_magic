@@ -86,7 +86,7 @@ describe PageMagic::PageElements do
       page_elements.section section_class, :page_section, selector
       browser_element = double('browser_element')
       page_section = page_elements.elements(browser_element).first
-      page_section.instance_variable_get(:@browser_element).should == browser_element
+      page_section.instance_variable_get(:@parent_browser_element).should == browser_element
     end
 
     it 'should return your a copy of the core definition' do

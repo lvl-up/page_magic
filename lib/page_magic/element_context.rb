@@ -32,7 +32,7 @@ module PageMagic
       element_locator = element_locator_factory.call(@browser, *args)
       result = element_locator.locate
 
-      return ElementContext.new(element_locator, result, @caller, *args) if element_locator.class.is_a? PageSection
+      return element_locator if element_locator.class.is_a? PageSection
 
       [:set, :select_option, :unselect_option, :click].each do |action_method|
         apply_hooks(page_element: result,
