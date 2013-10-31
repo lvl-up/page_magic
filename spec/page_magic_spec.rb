@@ -97,5 +97,12 @@ describe 'page magic' do
       @page.click_next
       @page.text.should == 'page 2 content'
     end
+
+    it 'are registered at class level' do
+      PageMagic.instance_variable_set(:@pages, nil)
+
+      page = Class.new { include PageMagic }
+      PageMagic.pages.should == [page]
+    end
   end
 end

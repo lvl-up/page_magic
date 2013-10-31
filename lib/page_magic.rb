@@ -11,6 +11,8 @@ require 'page_magic/page_section'
 
 module PageMagic
   class << self
+    attr_reader :pages
+
     def session browser=nil, options = {}
       if browser
         Capybara.register_driver browser do |app|
@@ -26,6 +28,7 @@ module PageMagic
 
     def included clazz
       clazz.extend PageElements
+      (@pages||=[]) << clazz
 
       def clazz.url url=nil
         @url = url if url
