@@ -31,8 +31,11 @@ module PageMagic
             attr_accessor :parent_browser_element, :browser_element
           end
 
-          def initialize browser_element, name=nil, selector=self.class.selector
-            @selector, @browser_element = selector, browser_element
+          def initialize parent_page_element, name=nil, selector=self.class.selector
+
+            @selector = selector
+            @parent_page_element = parent_page_element
+            @browser_element = parent_page_element.browser_element
 
             @selector = selector ? selector : self.class.selector
 
@@ -43,6 +46,10 @@ module PageMagic
               @name = underscore(self.class.name).to_sym
             end
 
+          end
+
+          def session
+            @parent_page_element.session
           end
 
           # TODO test this

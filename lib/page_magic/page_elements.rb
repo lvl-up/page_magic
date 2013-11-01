@@ -61,16 +61,16 @@ module PageMagic
               extend PageMagic::PageSection
             end
 
-            page_section.parent_browser_element = parent_browser_element
+            page_section.parent_browser_element = parent_browser_element.browser_element
             page_section.selector selector if selector
 
             page_section.class_exec *args, &block
-            page_section.new(page_section.browser_element, name, selector)
+            page_section.new(parent_browser_element, name, selector)
           end
         else
           section_class, name, selector = args
-          add_element_definition(name) do |browser_element|
-            section_class.new(browser_element, name, selector)
+          add_element_definition(name) do |parent_browser_element|
+            section_class.new(parent_browser_element, name, selector)
           end
       end
 
