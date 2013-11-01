@@ -81,11 +81,12 @@ describe 'page magic' do
 
 
     it 'can have fields' do
-      @page.elements(@browser).should == [PageMagic::PageElement.new(:click_create, :button, :text => "create user")]
+      @page.element_definitions[:next].call(@page).should == PageMagic::PageElement.new(:next, @page,:button, :text => "next")
     end
 
     it 'should copy fields on to element' do
-      @page.elements(@browser).first.should_not equal(my_page_class.new(double('session', browser: @browser)).elements(@browser).first)
+      new_page = my_page_class.new
+      @page.element_definitions[:next].call(@page).should_not equal(new_page.element_definitions[:next].call(new_page))
     end
 
     it 'gives access to the page text' do

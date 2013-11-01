@@ -1,5 +1,19 @@
 module PageMagic
   module PageSection
+
+    module Location
+      def locate_in browser_element, selector
+        method, selector = selector.to_a.flatten
+        case method
+                             when :id
+                               browser_element.find("##{selector}")
+                             when :css
+                               browser_element.find(:css, selector)
+                             else
+                               raise UnsupportedSelectorException
+                           end
+      end
+    end
     class UndefinedSelectorException < Exception
 
     end
@@ -14,15 +28,7 @@ module PageMagic
               return @selector unless selector
 
               if @parent_browser_element
-                method, selector = selector.to_a.flatten
-                @browser_element = case method
-                                     when :id
-                                       @parent_browser_element.find("##{selector}")
-                                     when :css
-                                       @parent_browser_element.find(:css, selector)
-                                     else
-                                       raise UnsupportedSelectorException
-                                   end
+                @browser_element = locate_in @parent_browser_element, selector
               end
 
               @selector = selector
@@ -31,15 +37,18 @@ module PageMagic
             attr_accessor :parent_browser_element, :browser_element
           end
 
+          include Location
+          extend Location
+
           def initialize parent_page_element, name=nil, selector=self.class.selector
 
             @selector = selector
             @parent_page_element = parent_page_element
-            @browser_element = parent_page_element.browser_element
 
             @selector = selector ? selector : self.class.selector
 
             raise UndefinedSelectorException, "Pass a selector to the constructor/define one the class" unless @selector
+            @browser_element = locate_in(@parent_page_element.browser_element, @selector)
             if name
               @name = name
             else
@@ -48,12 +57,13 @@ module PageMagic
 
           end
 
+
           def session
             @parent_page_element.session
           end
 
           # TODO test this
-          def locate
+          def locate *args
             @browser_element
           end
 

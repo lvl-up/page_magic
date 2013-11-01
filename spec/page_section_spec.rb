@@ -56,9 +56,12 @@ describe PageMagic::PageSection do
     end
 
     it 'should throw default exception if the method does not exist on the capybara object' do
-      expect{@elements_page.form_by_css.bobbins}.to raise_exception NoMethodError
+      expect { @elements_page.form_by_css.bobbins }.to raise_exception NoMethodError
     end
+  end
 
+  it 'can have elements' do
+    @elements_page.form_by_css.link_in_form.visible?.should be_true
   end
 
 
@@ -74,23 +77,24 @@ describe PageMagic::PageSection do
 
     let(:selector) { {css: '.class_name'} }
 
-    let!(:browser){double('browser')}
+    let!(:browser) { double('browser', find: :browser_element) }
+    let!(:parent_page_element){ double('parent_page_element', browser_element: browser)}
 
     context 'selector' do
       it 'should use the class defined selector if one is not given to the constructor' do
         page_section_class.selector selector
-        page_section_class.new(browser).selector.should == selector
+        page_section_class.new(parent_page_element).selector.should == selector
       end
 
       it 'should raise an error if a class selector is not defined and one is not given to the constructor' do
-        expect{page_section_class.new(browser)}.to raise_error(PageMagic::PageSection::UndefinedSelectorException)
+        expect { page_section_class.new(parent_page_element) }.to raise_error(PageMagic::PageSection::UndefinedSelectorException)
       end
     end
 
     context 'name' do
       it 'should default to the name of the class if one is not supplied' do
         page_section_class.selector selector
-        page_section_class.new(browser).name.should == :page_section
+        page_section_class.new(parent_page_element).name.should == :page_section
       end
     end
   end

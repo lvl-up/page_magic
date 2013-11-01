@@ -20,9 +20,14 @@ describe 'member methods' do
     PageMagic::PageElements::ELEMENT_TYPES.each do |element_type|
 
       it "can have a #{element_type}" do
+        parent_page_element = mock('parent_page_object', browser_element: mock('browser_element'))
         friendly_name = "#{element_type}_name".to_sym
+
         page_object_class.send(element_type, friendly_name,{})
-        page_object_class.elements(nil) == [PageMagic::PageElement.new(friendly_name,element_type,{})]
+
+
+        expected_element = PageMagic::PageElement.new(friendly_name,parent_page_element, element_type, {})
+        page_object_class.element_definitions[friendly_name].call(parent_page_element) == expected_element
       end
     end
   end
