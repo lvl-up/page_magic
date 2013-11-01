@@ -22,7 +22,7 @@ module PageMagic
     end
 
     def method_added method
-      raise InvalidMethodNameException, "method name matches element name" if elements(nil).find { |element| element.name == method }
+      raise InvalidMethodNameException, "method name matches element name" if element_definitions[method]
     end
 
 
@@ -56,21 +56,21 @@ module PageMagic
         when Symbol
           name, selector = args
 
-          add_element_definition(name) do |parent_browser_element, *args|
+          add_element_definition(name) do |parent_browser_element, *args_for_section|
             page_section = Class.new do
               extend PageMagic::PageSection
             end
 
-            page_section.parent_browser_element = parent_browser_element
+            page_section.parent_browser_element = parent_browser_element.browser_element
             page_section.selector selector if selector
 
-            page_section.class_exec *args, &block
-            page_section.new(page_section.browser_element, name, selector)
+            page_section.class_exec *args_for_section, &block
+            page_section.new(parent_browser_element, name, selector)
           end
         else
           section_class, name, selector = args
-          add_element_definition(name) do |browser_element|
-            section_class.new(browser_element, name, selector)
+          add_element_definition(name) do |parent_browser_element|
+            section_class.new(parent_browser_element, name, selector)
           end
       end
 

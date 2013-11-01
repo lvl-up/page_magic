@@ -1,5 +1,6 @@
 module PageMagic
-  attr_reader :browser
+  attr_reader :browser, :session
+
   include AjaxSupport
 
   def initialize session=Capybara.current_session, options={}, &block
@@ -9,14 +10,15 @@ module PageMagic
       @browser = session.browser
       @session = session
     end
+    @browser_element = @browser
     navigate if options[:navigate_to_page]
     block.call @browser if block
   end
 
-  def move_to page_class
-    page_class = eval(page_class) if page_class.is_a?(String)
-    @session.current_page = page_class.new @session
-  end
+
+
+
+
 
   def title
     @browser.title
@@ -86,7 +88,7 @@ module PageMagic
 
   #TODO - consolidate this
   def method_missing method, *args
-    ElementContext.new(self, @browser, self, *args).send(method, args.first)
+    ElementContext.new(self, @browser, self).send(method, *args)
   end
 
   private

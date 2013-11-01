@@ -29,13 +29,24 @@ module PageMagic
       end
     end
 
-    def initialize name, browser_element, type=nil, selector=nil, &block
-      @browser_element = browser_element
+    def initialize name, parent_page_element, type=nil, selector=nil, &block
+      @parent_page_element = parent_page_element
+      if selector
+        @browser_element = parent_page_element.browser_element
+      else
+        @browser_element = parent_page_element
+      end
+
       @type = type
       @name = name.downcase.to_sym
       @selector = selector
+
       @before_hook, @after_hook = self.class.default_before_hook, self.class.default_after_hook
       instance_eval &block if block_given?
+    end
+
+    def session
+      @parent_page_element.session
     end
 
     def before &block
@@ -75,7 +86,6 @@ module PageMagic
       end
     end
 
-    alias_method :inherited_locate_method, :locate
 
     def == page_element
       page_element.is_a?(PageElement) &&
