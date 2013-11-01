@@ -59,25 +59,7 @@ describe 'page magic' do
       end
     end
 
-    context 'move_to moves the session object to another page' do
-      it 'can take a class' do
-        page_magic_session = PageMagic::Session.new(double(:browser))
 
-        existing_page = my_page_class.new page_magic_session
-        existing_page.move_to(another_page_class)
-
-        page_magic_session.current_page.should be_a(another_page_class)
-      end
-
-      it 'can take the name of the class as a string' do
-        page_magic_session = PageMagic::Session.new(double(:browser))
-        existing_page = my_page_class.new page_magic_session
-
-        String.should_receive(:new).and_return "String"
-        existing_page.move_to("String")
-        page_magic_session.current_page.should be_a(String)
-      end
-    end
 
 
     it 'can have fields' do
