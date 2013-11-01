@@ -13,6 +13,10 @@ module PageMagic
     block.call @browser if block
   end
 
+  def browser_element
+    @browser
+  end
+
   def move_to page_class
     page_class = eval(page_class) if page_class.is_a?(String)
     @session.current_page = page_class.new @session
