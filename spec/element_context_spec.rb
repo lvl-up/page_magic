@@ -88,7 +88,7 @@ describe 'Element Context' do
       page = elements_page.new
       page.visit
 
-      PageMagic::ElementContext.new(page, page.browser, self).form.should_not be_nil
+      PageMagic::ElementContext.new(page, page.browser, self).form('a', 'b')
     end
   end
 

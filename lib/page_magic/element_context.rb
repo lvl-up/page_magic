@@ -29,7 +29,12 @@ module PageMagic
 
       raise ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
-      element_locator = element_locator_factory.call(@browser, *args)
+      if args.empty?
+        element_locator = element_locator_factory.call(@page_element, nil)
+      else
+        element_locator = element_locator_factory.call(@page_element, *args)
+      end
+
       result = element_locator.locate
 
       return element_locator if element_locator.class.is_a? PageSection
