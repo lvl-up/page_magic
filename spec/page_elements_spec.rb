@@ -13,7 +13,7 @@ describe PageMagic::PageElements do
   let(:selector) { {id: 'id'} }
   let(:browser_element) { double('browser_element', find: :browser_element) }
   let(:parent_page_element) do
-    mock('parent_page_element', browser_element: browser_element)
+    double('parent_page_element', browser_element: browser_element)
   end
 
 
