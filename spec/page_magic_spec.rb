@@ -59,6 +59,19 @@ describe 'page magic' do
       end
     end
 
+    describe 'text_on_page' do
+      it 'should return true' do
+        @page.visit
+        @page.text_on_page?('next page').should be_true
+      end
+
+      it 'should return false' do
+        @page.visit
+        @page.text_on_page?('billy bob').should be_false
+      end
+
+    end
+
 
 
 

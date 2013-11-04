@@ -15,11 +15,6 @@ module PageMagic
     block.call @browser if block
   end
 
-
-
-
-
-
   def title
     @browser.title
   end
@@ -32,72 +27,41 @@ module PageMagic
     @browser.current_path
   end
 
+  def text_on_page? text
+    text().downcase.include?(text.downcase)
+  end
+
+  def window_exists? title
+    raise "implement me"
+  end
+
+  def accept_popup
+    raise "implement me"
+  end
+
+  def alert_present?
+    raise "implement me"
+  end
+
+  def text_in_popup? text
+    raise "implement me"
+  end
+
   def visit
     @browser.visit self.class.url
     self
   end
 
-  def click text
-    self.send(text.downcase.gsub(" ", "_").to_sym)
+  def click element
+    self.send(element.downcase.gsub(" ", "_").to_sym)
   end
 
   def text
     @browser.text
   end
 
-  def text_on_page? text
-    begin
-      @browser.text.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil).downcase.include?(text.downcase)
-    rescue Selenium::WebDriver::Error::NoSuchElementError
-      return false
-    end
-  end
-
-  def text_on_window? title, text
-    exists = false
-    @browser.window(:title => title).use do
-      exists = @browser.text.downcase.include?(text.downcase)
-    end
-    exists
-  end
-
-  def window_exists? title
-    @browser.window(:title => title).exists?
-  end
-
-  def accept_popup
-    swith_to_alert.accept
-  end
-
-  def alert_present?
-    begin
-      swith_to_alert
-      return true
-    rescue Selenium::WebDriver::Error::NoAlertPresentError
-      return false
-    end
-  end
-
-  def text_in_popup? text
-    popup_text.include?(text.downcase)
-  end
-
-  def enter page_element, value
-    self.send(page_element, value)
-  end
-
-  #TODO - consolidate this
   def method_missing method, *args
     ElementContext.new(self, @browser, self).send(method, *args)
-  end
-
-  private
-  def popup_text
-    @browser.driver.switch_to.alert.text.downcase
-  end
-
-  def swith_to_alert
-    @browser.driver.switch_to.alert
   end
 end
 
