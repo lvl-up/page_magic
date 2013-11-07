@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 gem "watir-webdriver"
 gem 'capybara'
+gem 'wait'
 
 group :test do
   gem 'sinatra'

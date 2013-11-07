@@ -3,6 +3,8 @@ module PageMagic
     attr_reader :browser
     attr_accessor :current_page
 
+    include WaitUntil
+
     def initialize browser
       @browser = browser
     end
@@ -16,6 +18,7 @@ module PageMagic
     def move_to page_class
       page_class = eval(page_class) if page_class.is_a?(String)
       @current_page = page_class.new self
+      wait.until { browser.current_url == page_class.url }
     end
 
     def method_missing name, *args, &block
