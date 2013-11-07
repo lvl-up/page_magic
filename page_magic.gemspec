@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = "0.8.1"
+  s.version = "0.8.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leon Davis"]
-  s.date = "2013-11-01"
+  s.date = "2013-11-07"
   s.description = "Framework for modeling and interacting with webpages which wraps capybara"
   s.email = "info@lad-tech.com"
   s.extra_rdoc_files = [
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "lib/page_magic/page_magic.rb",
     "lib/page_magic/page_section.rb",
     "lib/page_magic/session.rb",
+    "lib/page_magic/wait.rb",
     "page_magic.gemspec",
     "spec/browser_spec.rb",
     "spec/element_context_spec.rb",
@@ -58,17 +59,20 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<watir-webdriver>, [">= 0"])
       s.add_runtime_dependency(%q<capybara>, [">= 0"])
+      s.add_runtime_dependency(%q<wait>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.8.4"])
       s.add_runtime_dependency(%q<watir-webdriver>, [">= 0"])
     else
       s.add_dependency(%q<watir-webdriver>, [">= 0"])
       s.add_dependency(%q<capybara>, [">= 0"])
+      s.add_dependency(%q<wait>, [">= 0"])
       s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
       s.add_dependency(%q<watir-webdriver>, [">= 0"])
     end
   else
     s.add_dependency(%q<watir-webdriver>, [">= 0"])
     s.add_dependency(%q<capybara>, [">= 0"])
+    s.add_dependency(%q<wait>, [">= 0"])
     s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
     s.add_dependency(%q<watir-webdriver>, [">= 0"])
   end
