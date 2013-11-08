@@ -28,7 +28,7 @@ module PageMagic
 
     def included clazz
       clazz.extend ClassMethods, PageElements
-      pages << clazz
+      pages << clazz if clazz.is_a? Class
 
       def clazz.url url=nil
         @url = url if url
@@ -43,7 +43,6 @@ module PageMagic
 
   module ClassMethods
     def included clazz
-      PageMagic.pages << clazz
       clazz.instance_eval { include PageMagic }
       clazz.element_definitions.merge!(element_definitions)
     end

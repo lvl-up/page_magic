@@ -78,11 +78,15 @@ describe 'page magic' do
         end
 
         it 'are added to PageMagic.pages list' do
-          PageMagic.pages.should include(ChildPage)
+          PageMagic.pages.find_all { |page| page == ChildPage }.size.should == 1
         end
       end
 
       context 'parent' do
+        it 'is not registered as Page' do
+          PageMagic.pages.should_not include(ParentPage)
+        end
+
         it 'cannot be instantiated' do
           expect { ParentPage.new }.to raise_error("You can only instantiate child pages")
         end
