@@ -13,8 +13,6 @@ require 'page_magic/page_section'
 
 module PageMagic
   class << self
-    attr_reader :pages
-
     def session browser=nil, options = {}
       if browser
         Capybara.register_driver browser do |app|
@@ -29,12 +27,23 @@ module PageMagic
     end
 
     def included clazz
-      clazz.extend PageElements
-      (@pages||=[]) << clazz
+      clazz.extend ClassMethods, PageElements
+      pages << clazz
 
       def clazz.url url=nil
         @url = url if url
         @url
+      end
+    end
+
+    def pages
+      @pages||=[]
+    end
+
+    module ClassMethods
+      def inherited clazz
+        PageMagic.pages << clazz
+        clazz.element_definitions.merge!(element_definitions)
       end
     end
   end

@@ -5,7 +5,7 @@ describe 'page magic' do
   describe 'class level' do
     context 'session' do
       it 'should setup a session using the specified browser' do
-        Capybara::Session.should_receive(:new).with(:chrome,nil).and_return(:chrome_session)
+        Capybara::Session.should_receive(:new).with(:chrome, nil).and_return(:chrome_session)
 
         session = PageMagic.session(:chrome)
         Capybara.drivers[:chrome].call(nil).should == Capybara::Selenium::Driver.new(nil, browser: :chrome)
@@ -52,6 +52,34 @@ describe 'page magic' do
       end
     end
 
+
+    context 'children' do
+      before :all do
+        class ParentPage
+          include PageMagic
+          link(:next, :text => "next page")
+        end
+
+        class ChildPage < ParentPage
+          url '/page1'
+        end
+      end
+
+      it 'override parents url' do
+        ChildPage.url.should == '/page1'
+      end
+
+      it 'inherit elements' do
+        child_page = ChildPage.new
+        child_page.visit
+        child_page.element_definitions.should include(:next)
+      end
+
+      it 'are added to PageMagic.pages list' do
+        PageMagic.pages.should include(ChildPage)
+      end
+    end
+
     describe 'visit' do
       it 'should go to the page' do
         @page.visit
@@ -73,10 +101,8 @@ describe 'page magic' do
     end
 
 
-
-
     it 'can have fields' do
-      @page.element_definitions[:next].call(@page).should == PageMagic::PageElement.new(:next, @page,:button, :text => "next")
+      @page.element_definitions[:next].call(@page).should == PageMagic::PageElement.new(:next, @page, :button, :text => "next")
     end
 
     it 'should copy fields on to element' do
