@@ -19,7 +19,7 @@ module PageMagic
           options[:browser] = browser
           Capybara::Selenium::Driver.new(app, options)
         end
-        Session.new(Capybara::Session.new(browser,nil))
+        Session.new(Capybara::Session.new(browser, nil))
       else
         Capybara.reset!
         Session.new(Capybara.current_session)
@@ -39,12 +39,18 @@ module PageMagic
     def pages
       @pages||=[]
     end
+  end
 
-    module ClassMethods
-      def inherited clazz
-        PageMagic.pages << clazz
-        clazz.element_definitions.merge!(element_definitions)
-      end
+  module ClassMethods
+    def included clazz
+      PageMagic.pages << clazz
+      clazz.instance_eval { include PageMagic }
+      clazz.element_definitions.merge!(element_definitions)
+    end
+
+    def method_missing method_name, *args
+      raise "You can only instantiate child pages" if method_name == :new
+      super
     end
   end
 end

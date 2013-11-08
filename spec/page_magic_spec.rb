@@ -53,30 +53,39 @@ describe 'page magic' do
     end
 
 
-    context 'children' do
+    describe 'parent pages' do
       before :all do
-        class ParentPage
+        module ParentPage
           include PageMagic
           link(:next, :text => "next page")
         end
 
-        class ChildPage < ParentPage
+        class ChildPage
+          include ParentPage
           url '/page1'
         end
       end
 
-      it 'override parents url' do
-        ChildPage.url.should == '/page1'
+      context 'children' do
+        it 'override parents url' do
+          ChildPage.url.should == '/page1'
+        end
+
+        it 'inherit elements' do
+          child_page = ChildPage.new
+          child_page.visit
+          child_page.element_definitions.should include(:next)
+        end
+
+        it 'are added to PageMagic.pages list' do
+          PageMagic.pages.should include(ChildPage)
+        end
       end
 
-      it 'inherit elements' do
-        child_page = ChildPage.new
-        child_page.visit
-        child_page.element_definitions.should include(:next)
-      end
-
-      it 'are added to PageMagic.pages list' do
-        PageMagic.pages.should include(ChildPage)
+      context 'parent' do
+        it 'cannot be instantiated' do
+          expect { ParentPage.new }.to raise_error("You can only instantiate child pages")
+        end
       end
     end
 
