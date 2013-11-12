@@ -2,14 +2,6 @@ require 'spec_helper'
 require 'capybara/rspec'
 require 'sinatra/base'
 
-class MyApp < Sinatra::Base
-
-  get '/' do
-    'hello world'
-  end
-
-end
-
 describe 'page magic' do
   include Capybara::DSL
 
