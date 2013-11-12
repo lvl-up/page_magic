@@ -1,9 +1,28 @@
 require 'spec_helper'
+require 'capybara/rspec'
+require 'sinatra/base'
+
+class MyApp < Sinatra::Base
+
+  get '/' do
+    'hello world'
+  end
+
+end
 
 describe 'page magic' do
+  include Capybara::DSL
 
   describe 'class level' do
+    let(:app_class) do
+      Class.new do
+        def call env
+          [200, {}, ["hello world!!"]]
+        end
+      end
+    end
     context 'session' do
+
       it 'should setup a session using the specified browser' do
         Capybara::Session.should_receive(:new).with(:chrome, nil).and_return(:chrome_session)
 
@@ -17,6 +36,31 @@ describe 'page magic' do
         Capybara.default_driver = :rack_test
         session = PageMagic.session
         session.browser.mode.should == :rack_test
+      end
+
+      it 'should use the supplied Rack application' do
+        session = PageMagic.session(application: app_class.new)
+        session.browser.visit('/')
+        session.browser.text.should == 'hello world!!'
+      end
+
+      it 'should use the rack app with a given browser' do
+        session = PageMagic.session(:rack_test, application: app_class.new)
+        session.browser.mode.should == :rack_test
+        session.browser.visit('/')
+        session.browser.text.should == 'hello world!!'
+      end
+
+      context 'supported browsers' do
+        it 'should support the poltergeist browser' do
+          session = PageMagic.session(:poltergeist, application: app_class.new)
+          session.browser.driver.is_a?(Capybara::Poltergeist::Driver).should be_true
+        end
+
+        it 'should support the selenium browser' do
+          session = PageMagic.session(:selenium, application: app_class.new)
+          session.browser.driver.is_a?(Capybara::Selenium::Driver).should be_true
+        end
       end
     end
   end
