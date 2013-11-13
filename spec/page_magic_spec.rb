@@ -13,6 +13,7 @@ describe 'page magic' do
         end
       end
     end
+
     context 'session' do
 
       it 'should setup a session using the specified browser' do
@@ -50,7 +51,7 @@ describe 'page magic' do
         end
 
         it 'should support the selenium browser' do
-          session = PageMagic.session(:selenium, application: app_class.new)
+          session = PageMagic.session(:firefox, application: app_class.new)
           session.browser.driver.is_a?(Capybara::Selenium::Driver).should be_true
         end
       end

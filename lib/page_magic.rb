@@ -22,12 +22,15 @@ module PageMagic
 
           Capybara.register_driver browser do |app|
             options[:browser] = browser
-            if browser == :poltergeist
-              require 'capybara/poltergeist'
-              Capybara::Poltergeist::Driver.new(app)
-            else
-              require 'watir-webdriver'
-              Capybara::Selenium::Driver.new(app, options)
+            case browser
+              when :poltergeist
+                require 'capybara/poltergeist'
+                Capybara::Poltergeist::Driver.new(app)
+              when :rack_test
+                Capybara::RackTest::Driver.new(app, options)
+              else
+                require 'watir-webdriver'
+                Capybara::Selenium::Driver.new(app, options)
             end
 
           end
