@@ -1,16 +1,21 @@
 module PageMagic
   module Browser
     class << self
-      attr_reader :browser
-      attr_accessor :session
-
       def use browser
         @browser = browser
+      end
+
+      def browser
+        @browser || :chrome
+      end
+
+      def session
+        @session ||= PageMagic.session(browser)
       end
     end
 
     def browser
-      Browser.session ||= PageMagic.session(Browser.browser || :chrome)
+      Browser.session
     end
   end
 end

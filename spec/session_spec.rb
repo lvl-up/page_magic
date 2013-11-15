@@ -20,12 +20,17 @@ describe PageMagic::Session do
     end
   end
 
-  let(:browser) { double('browser') }
+  let(:browser) { double('browser', current_url: 'url') }
 
   it 'should visit the given url' do
     browser.should_receive(:visit).with(page.url)
     session = PageMagic::Session.new(browser).visit(page)
     session.current_page.should be_a(page)
+  end
+
+  it 'should return the current url' do
+    session = PageMagic::Session.new(browser)
+    session.current_url.should == 'url'
   end
 
   context 'method_missing' do

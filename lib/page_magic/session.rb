@@ -15,6 +15,10 @@ module PageMagic
       self
     end
 
+    def current_url
+      @browser.current_url
+    end
+
     def move_to page_class
       page_class = eval(page_class) if page_class.is_a?(String)
       @current_page = page_class.new self

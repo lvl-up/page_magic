@@ -4,16 +4,14 @@ describe PageMagic::Browser do
   let(:app) { Object.new }
 
   before do
-    PageMagic::Browser.session = nil
+    PageMagic::Browser.instance_variable_set(:@session, nil)
     app.extend PageMagic::Browser
   end
 
   describe 'page' do
     it 'should return the existing session' do
-      session = double(:session)
-      PageMagic::Browser.session = session
-
-      app.browser.should == session
+      session_instance = app.browser
+      app.browser.should == session_instance
     end
 
     it 'should create a session if not already set' do
