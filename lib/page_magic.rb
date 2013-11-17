@@ -45,24 +45,25 @@ module PageMagic
     end
 
     def included clazz
-      clazz.extend ClassMethods, PageElements
+      clazz.extend PageElements
       pages << clazz if clazz.is_a? Class
 
-      def clazz.url url=nil
-        @url = url if url
-        @url
+      class << clazz
+        def url url=nil
+          @url = url if url
+          @url
+        end
+
+        def inherited clazz
+          clazz.element_definitions.merge!(element_definitions)
+          PageMagic.pages << clazz
+        end
       end
+
     end
 
     def pages
       @pages||=[]
-    end
-  end
-
-  module ClassMethods
-    def inherited clazz
-      clazz.element_definitions.merge!(element_definitions)
-      PageMagic.pages << clazz
     end
   end
 end

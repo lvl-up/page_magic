@@ -8,7 +8,13 @@ describe PageMagic::Browser do
     app.extend PageMagic::Browser
   end
 
-  describe 'page' do
+  describe 'default' do
+    it 'should be firefox' do
+      PageMagic::Browser.default.should == :firefox
+    end
+  end
+
+  describe 'browser' do
     it 'should return the existing session' do
       session_instance = app.browser
       app.browser.should == session_instance
@@ -17,14 +23,14 @@ describe PageMagic::Browser do
     it 'should create a session if not already set' do
       new_session = double(:new_session)
 
-      PageMagic.should_receive(:session).with(:chrome).and_return new_session
+      PageMagic.should_receive(:session).with(:firefox).and_return new_session
       app.browser.should == new_session
     end
 
     it 'should use custom browser' do
-      PageMagic::Browser.use :firefox
+      PageMagic.should_receive(:session).with(:custom_browser)
 
-      PageMagic.should_receive(:session).with(:firefox)
+      PageMagic::Browser.default :custom_browser
       app.browser
     end
   end

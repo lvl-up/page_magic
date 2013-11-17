@@ -1,16 +1,13 @@
 module PageMagic
   module Browser
     class << self
-      def use browser
-        @browser = browser
-      end
-
-      def browser
-        @browser || :chrome
-      end
-
       def session
-        @session ||= PageMagic.session(browser)
+        @session ||= PageMagic.session(default)
+      end
+
+      def default default=nil
+        return (@default || :firefox) unless default
+        @default = default
       end
     end
 
