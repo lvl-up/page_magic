@@ -1,9 +1,8 @@
+require 'wait'
 module PageMagic
   class Session
     attr_reader :browser
     attr_accessor :current_page
-
-    include WaitUntil
 
     def initialize browser
       @browser = browser
@@ -22,7 +21,12 @@ module PageMagic
     def move_to page_class
       page_class = eval(page_class) if page_class.is_a?(String)
       @current_page = page_class.new self
-      wait.until { browser.current_url == page_class.url }
+      wait_until { browser.current_url == page_class.url }
+    end
+
+    def wait_until &block
+      @wait ||= Wait.new
+      @wait.until &block
     end
 
     def method_missing name, *args, &block
