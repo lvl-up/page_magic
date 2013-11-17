@@ -12,10 +12,7 @@ require 'page_magic/section'
 module PageMagic
   class << self
     def session browser=nil, options = {}
-      if browser.is_a?(Hash)
-        Session.new(Capybara::Session.new(:rack_test, browser[:application]))
-      else
-        if browser
+        if browser.is_a?(Symbol)
           application = options.delete(:application)
 
           Capybara.register_driver browser do |app|
@@ -36,9 +33,9 @@ module PageMagic
           Session.new(Capybara::Session.new(browser, application))
         else
           Capybara.reset!
+          Capybara.app = browser[:application] if browser.is_a?(Hash) && browser[:application]
           Session.new(Capybara.current_session)
         end
-      end
 
     end
 
