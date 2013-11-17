@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = "0.9.0"
+  s.version = "0.9.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leon Davis"]
-  s.date = "2013-11-15"
+  s.date = "2013-11-17"
   s.description = "Framework for modeling and interacting with webpages which wraps capybara"
   s.email = "info@lad-tech.com"
   s.extra_rdoc_files = [
@@ -27,23 +27,21 @@ Gem::Specification.new do |s|
     "lib/page_magic.rb",
     "lib/page_magic/ajax_support.rb",
     "lib/page_magic/browser.rb",
+    "lib/page_magic/element.rb",
     "lib/page_magic/element_context.rb",
-    "lib/page_magic/page_element.rb",
-    "lib/page_magic/page_elements.rb",
+    "lib/page_magic/elements.rb",
     "lib/page_magic/page_magic.rb",
-    "lib/page_magic/page_section.rb",
+    "lib/page_magic/section.rb",
     "lib/page_magic/session.rb",
-    "lib/page_magic/wait.rb",
     "page_magic.gemspec",
     "spec/browser_spec.rb",
     "spec/element_context_spec.rb",
-    "spec/helpers.rb",
+    "spec/element_spec.rb",
+    "spec/elements_spec.rb",
     "spec/helpers/capybara.rb",
     "spec/member_methods_spec.rb",
-    "spec/page_element_spec.rb",
-    "spec/page_elements_spec.rb",
     "spec/page_magic_spec.rb",
-    "spec/page_section_spec.rb",
+    "spec/section_spec.rb",
     "spec/session_spec.rb",
     "spec/spec_helper.rb"
   ]
