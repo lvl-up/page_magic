@@ -30,7 +30,7 @@ describe PageMagic::Browser do
     it 'should use custom browser' do
       PageMagic.should_receive(:session).with(:custom_browser)
 
-      PageMagic::Browser.default :custom_browser
+      PageMagic::Browser.default = :custom_browser
       app.browser
     end
   end

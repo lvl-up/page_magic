@@ -1,13 +1,14 @@
 module PageMagic
   module Browser
+
     class << self
+      attr_writer :default
       def session
         @session ||= PageMagic.session(default)
       end
 
-      def default default=nil
-        return (@default || :firefox) unless default
-        @default = default
+      def default
+        @default || :firefox
       end
     end
 
