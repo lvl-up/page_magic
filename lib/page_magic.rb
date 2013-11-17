@@ -60,14 +60,9 @@ module PageMagic
   end
 
   module ClassMethods
-    def included clazz
-      clazz.instance_eval { include PageMagic }
+    def inherited clazz
       clazz.element_definitions.merge!(element_definitions)
-    end
-
-    def method_missing method_name, *args
-      raise "You can only instantiate child pages" if method_name == :new
-      super
+      PageMagic.pages << clazz
     end
   end
 end
