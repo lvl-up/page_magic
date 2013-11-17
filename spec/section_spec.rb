@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PageMagic::PageSection do
+describe PageMagic::Section do
 
   include_context :webapp
 
@@ -29,7 +29,7 @@ describe PageMagic::PageSection do
   context 'class level' do
     let(:section) do
       Class.new do
-        extend PageMagic::PageSection
+        extend PageMagic::Section
       end
     end
 
@@ -69,7 +69,7 @@ describe PageMagic::PageSection do
 
     let(:page_section_class) do
       page_section_class = Class.new do
-        extend PageMagic::PageSection
+        extend PageMagic::Section
       end
       page_section_class.stub(:name).and_return('PageSection')
       page_section_class
@@ -87,7 +87,7 @@ describe PageMagic::PageSection do
       end
 
       it 'should raise an error if a class selector is not defined and one is not given to the constructor' do
-        expect { page_section_class.new(parent_page_element) }.to raise_error(PageMagic::PageSection::UndefinedSelectorException)
+        expect { page_section_class.new(parent_page_element) }.to raise_error(PageMagic::Section::UndefinedSelectorException)
       end
     end
 

@@ -5,17 +5,12 @@ module PageMagic
 
   end
 
-  class PageElement
+  class Element
 
     class MissingLocatorOrSelector < Exception
     end
 
-    include PageElements
     include AjaxSupport
-
-    module ::Watir
-      SelectList = Select
-    end
 
     attr_reader :type, :name, :selector, :before_hook, :after_hook, :browser_element, :locator
 
@@ -88,7 +83,7 @@ module PageMagic
 
 
     def == page_element
-      page_element.is_a?(PageElement) &&
+      page_element.is_a?(Element) &&
           @type == page_element.type &&
           @name == page_element.name &&
           @selector == page_element.selector

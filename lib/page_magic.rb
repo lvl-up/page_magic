@@ -3,11 +3,11 @@ require 'capybara'
 require 'page_magic/browser'
 require 'page_magic/session'
 require 'page_magic/ajax_support'
-require 'page_magic/page_elements'
+require 'page_magic/elements'
 require 'page_magic/element_context'
-require 'page_magic/page_element'
+require 'page_magic/element'
 require 'page_magic/page_magic'
-require 'page_magic/page_section'
+require 'page_magic/section'
 
 module PageMagic
   class << self
@@ -43,7 +43,7 @@ module PageMagic
     end
 
     def included clazz
-      clazz.extend PageElements
+      clazz.extend Elements
       pages << clazz if clazz.is_a? Class
 
       class << clazz

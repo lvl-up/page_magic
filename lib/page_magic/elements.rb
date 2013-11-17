@@ -1,5 +1,5 @@
 module PageMagic
-  module PageElements
+  module Elements
     class InvalidElementNameException < Exception
     end
 
@@ -17,14 +17,12 @@ module PageMagic
         def element_definitions
           self.class.element_definitions
         end
-
       end
     end
 
     def method_added method
       raise InvalidMethodNameException, "method name matches element name" if element_definitions[method]
     end
-
 
 
     def elements(browser_element, *args)
@@ -35,16 +33,16 @@ module PageMagic
       !element_definitions.empty?
     end
 
-    ELEMENT_TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
-    ELEMENT_TYPES.each do |field|
+    TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
+    TYPES.each do |field|
       define_method field do |*args, &block|
         name, selector = args
         add_element_definition(name) do |browser_element|
           case selector
             when Hash, NilClass
-              PageElement.new(name, browser_element, field, selector, &block)
+              Element.new(name, browser_element, field, selector, &block)
             else
-              PageElement.new(name, selector, field, nil, &block)
+              Element.new(name, selector, field, nil, &block)
           end
 
         end
@@ -58,7 +56,7 @@ module PageMagic
 
           add_element_definition(name) do |parent_browser_element, *args_for_section|
             page_section = Class.new do
-              extend PageMagic::PageSection
+              extend PageMagic::Section
             end
 
             page_section.parent_browser_element = parent_browser_element.browser_element

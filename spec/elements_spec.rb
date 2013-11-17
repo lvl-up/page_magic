@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'page_magic'
 
-describe PageMagic::PageElements do
+describe PageMagic::Elements do
 
 
   let(:page_elements) do
     page_element = Class.new do
-      extend(PageMagic::PageElements)
+      extend(PageMagic::Elements)
     end
   end
 
@@ -22,7 +22,7 @@ describe PageMagic::PageElements do
     context 'using a selector' do
       it 'should add an element' do
         page_elements.text_field :name, selector
-        page_elements.element_definitions[:name].call(parent_page_element).should == PageMagic::PageElement.new(:name, parent_page_element, :text_field, selector)
+        page_elements.element_definitions[:name].call(parent_page_element).should == PageMagic::Element.new(:name, parent_page_element, :text_field, selector)
       end
 
       it 'should return your a copy of the core definition' do
@@ -47,10 +47,10 @@ describe PageMagic::PageElements do
 
     let!(:section_class) do
       Class.new do
-        extend PageMagic::PageSection
+        extend PageMagic::Section
 
         def == object
-          object.class.is_a?(PageMagic::PageSection) &&
+          object.class.is_a?(PageMagic::Section) &&
               object.name == self.name
         end
       end
@@ -132,7 +132,7 @@ describe PageMagic::PageElements do
         page_elements.section :page_section, nil do
         end
 
-        expect { page_elements.elements(parent_page_element, arg) }.to raise_error(PageMagic::PageSection::UndefinedSelectorException)
+        expect { page_elements.elements(parent_page_element, arg) }.to raise_error(PageMagic::Section::UndefinedSelectorException)
       end
 
 
@@ -167,7 +167,7 @@ describe PageMagic::PageElements do
           def hello;
           end
         end
-      end.to raise_error(PageMagic::PageElements::InvalidMethodNameException)
+      end.to raise_error(PageMagic::Elements::InvalidMethodNameException)
     end
 
     it 'should not allow element names that match method names' do
@@ -178,7 +178,7 @@ describe PageMagic::PageElements do
 
           link(:hello, text: 'world')
         end
-      end.to raise_error(PageMagic::PageElements::InvalidElementNameException)
+      end.to raise_error(PageMagic::Elements::InvalidElementNameException)
     end
 
     it 'should not allow duplicate element names' do
@@ -187,7 +187,7 @@ describe PageMagic::PageElements do
           link(:hello, text: 'world')
           link(:hello, text: 'world')
         end
-      end.to raise_error(PageMagic::PageElements::InvalidElementNameException)
+      end.to raise_error(PageMagic::Elements::InvalidElementNameException)
     end
 
     it 'should not evaluate the elements when applying naming checks' do

@@ -37,7 +37,7 @@ module PageMagic
 
       result = element_locator.locate
 
-      return element_locator if element_locator.class.is_a? PageSection
+      return element_locator if element_locator.class.is_a? Section
 
       [:set, :select_option, :unselect_option, :click].each do |action_method|
         apply_hooks(page_element: result,

@@ -140,7 +140,7 @@ describe 'page magic' do
 
 
     it 'can have fields' do
-      @page.element_definitions[:next].call(@page).should == PageMagic::PageElement.new(:next, @page, :button, :text => "next")
+      @page.element_definitions[:next].call(@page).should == PageMagic::Element.new(:next, @page, :button, :text => "next")
     end
 
     it 'should copy fields on to element' do

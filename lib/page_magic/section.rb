@@ -1,5 +1,5 @@
 module PageMagic
-  module PageSection
+  module Section
 
     module Location
       def locate_in browser_element, selector
@@ -20,7 +20,7 @@ module PageMagic
 
     class << self
       def extended clazz
-        clazz.extend(PageElements)
+        clazz.extend(Elements)
         clazz.class_eval do
           attr_reader :name, :selector
           class << self
