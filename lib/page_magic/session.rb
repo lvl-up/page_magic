@@ -29,6 +29,14 @@ module PageMagic
       @wait.until &block
     end
 
+    def set_cookie name, value, options = {}
+      @browser.driver.set_cookie(name,value)
+    end
+
+    def remove_cookie name
+      @browser.driver.remove_cookie name
+    end
+
     def method_missing name, *args, &block
       @current_page.send(name, *args, &block)
     end
