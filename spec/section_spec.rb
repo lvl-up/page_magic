@@ -47,6 +47,11 @@ describe PageMagic::Section do
         section.selector css: '.form'
         section.browser_element[:id].should == 'form'
       end
+
+      it 'should find by xpath' do
+        section.selector xpath: '//div'
+        section.browser_element[:id].should == 'form'
+      end
     end
   end
 

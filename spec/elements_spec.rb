@@ -51,7 +51,8 @@ describe PageMagic::Elements do
 
         def == object
           object.class.is_a?(PageMagic::Section) &&
-              object.name == self.name
+              object.name == self.name &&
+              object.browser_element == self.browser_element
         end
       end
     end
@@ -84,79 +85,97 @@ describe PageMagic::Elements do
       end
     end
 
-    context 'using a class as a definition' do
-      it 'should add a section' do
+    describe 'definition' do
+
+
+      context 'using a class as a definition' do
+        it 'should add a section' do
+          page_elements.section section_class, :page_section, selector
+          page_elements.elements(parent_page_element).first.should == section_class.new(parent_page_element, :page_section, selector)
+        end
+      end
+
+      it 'should not require a block' do
+        expect { page_elements.section :page_section, :object }.not_to raise_exception
+      end
+
+      context 'an object that has already been found' do
+        it 'should add a section' do
+          page_elements.section :page_section, :object
+
+          section_class.browser_element = :object
+          expected_section = section_class.new(parent_page_element, :page_section, nil)
+          expected_section.should == page_elements.elements(parent_page_element).first
+        end
+      end
+
+
+      context 'using a block to define a section inline' do
+
+        context 'browser_element' do
+          before :each do
+
+            @browser, @element, @parent_page_element = double('browser'), double('element'), double('parent_page_element')
+            @parent_page_element.stub(:browser_element).and_return(@browser)
+            @browser.should_receive(:find).with(:css, :selector).and_return(@element)
+          end
+
+          it 'should be assigned when selector is passed to section method' do
+            element = @element
+
+            page_elements.section :page_section, css: :selector do
+              browser_element.should == element
+            end
+
+            page_elements.element_definitions[:page_section].call(@parent_page_element)
+          end
+
+          it 'should be assigned when selector is defined in the block passed to the section method' do
+            element = @element
+
+            page_elements.section :page_section do
+              browser_element.should == nil
+              selector css: :selector
+              browser_element.should == element
+            end
+
+            page_elements.elements(@parent_page_element, nil)
+          end
+        end
+
+        it 'should raise an exception if the selector is not passed' do
+
+          arg, browser, element = {}, double('browser'), double('element')
+          parent_page_element = double('parent_browser_element', browser_element: browser)
+
+          page_elements.section :page_section, nil
+
+          expect { page_elements.elements(parent_page_element, arg) }.to raise_error(PageMagic::Section::UndefinedSelectorException)
+        end
+
+
+        it 'should pass args through to the block' do
+          page_elements.section :page_section, css: '.blah' do |arg|
+            arg[:passed_through] = true
+          end
+
+          arg, browser = {}, double('browser', find: :browser_element)
+          parent_page_element = double('parent_browser_element', browser_element: browser)
+          page_elements.elements(parent_page_element, arg)
+          arg[:passed_through].should be_true
+        end
+
+      end
+
+      it 'should return your a copy of the core definition' do
         page_elements.section section_class, :page_section, selector
-        page_elements.elements(parent_page_element).first.should == section_class.new(parent_page_element, :page_section, selector)
+        first = page_elements.element_definitions[:page_section].call(parent_page_element)
+        second = page_elements.element_definitions[:page_section].call(parent_page_element)
+        first.should_not equal(second)
       end
-    end
-
-    context 'using a block to define a section inline' do
-
-      context 'browser_element' do
-        before :each do
-
-          @browser, @element, @parent_page_element = double('browser'), double('element'), double('parent_page_element')
-          @parent_page_element.stub(:browser_element).and_return(@browser)
-          @browser.should_receive(:find).with(:css, :selector).twice.and_return(@element)
-        end
-
-        it 'should be assigned when selector is passed to section method' do
-          element = @element
-
-          page_elements.section :page_section, css: :selector do
-            browser_element.should == element
-          end
-
-          page_elements.element_definitions[:page_section].call(@parent_page_element)
-        end
-
-        it 'should be assigned when selector is defined in the block passed to the section method' do
-          element = @element
-
-          page_elements.section :page_section do
-            browser_element.should == nil
-            selector css: :selector
-            browser_element.should == element
-          end
-
-          page_elements.elements(@parent_page_element, nil)
-        end
-      end
-
-      it 'should raise an exception if the selector is not passed' do
-
-        arg, browser, element = {}, double('browser'), double('element')
-        parent_page_element = double('parent_browser_element', browser_element: browser)
-
-        page_elements.section :page_section, nil do
-        end
-
-        expect { page_elements.elements(parent_page_element, arg) }.to raise_error(PageMagic::Section::UndefinedSelectorException)
-      end
-
-
-
-      it 'should pass args through to the block' do
-        page_elements.section :page_section, css: '.blah' do |arg|
-          arg[:passed_through] = true
-        end
-
-        arg, browser = {}, double('browser', find: :browser_element)
-        parent_page_element = double('parent_browser_element', browser_element: browser)
-        page_elements.elements(parent_page_element, arg)
-        arg[:passed_through].should be_true
-      end
-
-    end
-
-    it 'should return your a copy of the core definition' do
-      page_elements.section section_class, :page_section, selector
-      first = page_elements.element_definitions[:page_section].call(parent_page_element)
-      second = page_elements.element_definitions[:page_section].call(parent_page_element)
-      first.should_not equal(second)
     end
   end
+
 
   describe 'restrictions' do
     it 'should not allow method names that match element names' do

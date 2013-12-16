@@ -5,13 +5,15 @@ module PageMagic
       def locate_in browser_element, selector
         method, selector = selector.to_a.flatten
         case method
-                             when :id
-                               browser_element.find("##{selector}")
-                             when :css
-                               browser_element.find(:css, selector)
-                             else
-                               raise UnsupportedSelectorException
-                           end
+          when :id
+            browser_element.find("##{selector}")
+          when :css
+            browser_element.find(:css, selector)
+          when :xpath
+            browser_element.find(:xpath, selector)
+          else
+            raise UnsupportedSelectorException
+        end
       end
     end
     class UndefinedSelectorException < Exception
@@ -45,10 +47,12 @@ module PageMagic
             @selector = selector
             @parent_page_element = parent_page_element
 
-            @selector = selector ? selector : self.class.selector
+            @selector = selector.is_a?(Hash) ? selector : self.class.selector
 
-            raise UndefinedSelectorException, "Pass a selector to the constructor/define one the class" unless @selector
-            @browser_element = locate_in(@parent_page_element.browser_element, @selector)
+            @browser_element = self.class.browser_element
+            raise UndefinedSelectorException, "Pass a selector to the constructor/define one the class" unless @selector || @browser_element
+
+            @browser_element = locate_in(@parent_page_element.browser_element, @selector) unless @browser_element
             if name
               @name = name
             else

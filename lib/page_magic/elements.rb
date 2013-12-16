@@ -60,8 +60,15 @@ module PageMagic
             end
 
             page_section.parent_browser_element = parent_browser_element.browser_element
-            page_section.selector selector if selector
 
+            case selector
+              when Hash
+                page_section.selector selector
+              else
+                page_section.browser_element = selector
+            end
+
+            block = block || Proc.new{}
             page_section.class_exec *args_for_section, &block
             page_section.new(parent_browser_element, name, selector)
           end
