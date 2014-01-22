@@ -10,7 +10,8 @@ RSpec.configure do
 
     rack_app = Class.new(Sinatra::Base) do
       get '/page1' do
-        "<a href='/page2'>next page</a>"
+
+        "<html><head><title>page1</title></head><body><a href='/page2'>next page</a></body></html>"
       end
 
       get '/page2' do

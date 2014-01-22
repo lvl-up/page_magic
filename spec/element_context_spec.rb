@@ -22,7 +22,7 @@ describe 'Element Context' do
   end
 
   let!(:session) do
-    double('session', browser: double('browser'))
+    double('session', raw_session: double('browser'))
   end
 
   describe 'resolving field definitions' do
@@ -70,7 +70,7 @@ describe 'Element Context' do
       page.visit
 
       PageMagic::ElementContext.new(page, page.browser, self).click_next
-      page.current_path.should == '/page2'
+      page.session.current_path.should == '/page2'
       page.text.should == 'page 2 content'
     end
   end
