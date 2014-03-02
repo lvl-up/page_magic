@@ -77,7 +77,7 @@ module PageMagic
 
         end
       else
-        @browser_element
+        @selector
       end
     end
 

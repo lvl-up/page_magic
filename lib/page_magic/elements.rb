@@ -34,50 +34,46 @@ module PageMagic
     end
 
     TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
-    TYPES.each do |field|
-      define_method field do |*args, &block|
+    TYPES.each do |type|
+      define_method type do |*args, &block|
         name, selector = args
-        add_element_definition(name) do |browser_element|
-          case selector
-            when Hash, NilClass
-              Element.new(name, browser_element, field, selector, &block)
-            else
-              Element.new(name, selector, field, nil, &block)
-          end
-
+        add_element_definition(name) do |parent_element|
+          Element.new(name, parent_element, type, selector, &block)
         end
       end
     end
 
     def section *args, &block
-      case args.first
-        when Symbol
-          name, selector = args
+      first_arg = args.first
+      if first_arg.kind_of?(PageMagic::Section)
+        section_class, name, selector = args
+        add_element_definition(name) do |parent_browser_element|
+          section_class.new(parent_browser_element, name, selector)
+        end
 
-          add_element_definition(name) do |parent_browser_element, *args_for_section|
-            page_section = Class.new do
-              extend PageMagic::Section
-            end
+      elsif first_arg.is_a?(Symbol)
+        name, selector = args
 
-            page_section.parent_browser_element = parent_browser_element.browser_element
-
-            case selector
-              when Hash
-                page_section.selector selector
-              else
-                page_section.browser_element = selector
-            end
-
-            block = block || Proc.new{}
-            page_section.class_exec *args_for_section, &block
-            page_section.new(parent_browser_element, name, selector)
+        add_element_definition(name) do |parent_browser_element, *args_for_section|
+          page_section = Class.new do
+            extend PageMagic::Section
           end
-        else
-          section_class, name, selector = args
-          add_element_definition(name) do |parent_browser_element|
-            section_class.new(parent_browser_element, name, selector)
+
+          page_section.parent_browser_element = parent_browser_element.browser_element
+
+          case selector
+            when Hash
+              page_section.selector selector
+            else
+              #page_section.browser_element = selector
           end
+
+          block = block || Proc.new{}
+          page_section.class_exec *args_for_section, &block
+          page_section.new(parent_browser_element, name, selector)
+        end
       end
+
 
 
     end

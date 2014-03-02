@@ -44,20 +44,20 @@ module PageMagic
 
           def initialize parent_page_element, name=nil, selector=self.class.selector
 
-            @selector = selector
             @parent_page_element = parent_page_element
 
-            @selector = selector.is_a?(Hash) ? selector : self.class.selector
+            if selector.nil? || selector.is_a?(Hash)
+              @selector = selector || self.class.selector
+              @browser_element = self.class.browser_element
+            else
+              @browser_element = selector
+            end
 
-            @browser_element = self.class.browser_element
             raise UndefinedSelectorException, "Pass a selector to the constructor/define one the class" unless @selector || @browser_element
 
             @browser_element = locate_in(@parent_page_element.browser_element, @selector) unless @browser_element
-            if name
-              @name = name
-            else
-              @name = underscore(self.class.name).to_sym
-            end
+
+            @name = name || underscore(self.class.name).to_sym
 
           end
 

@@ -28,22 +28,115 @@ describe PageMagic::Elements do
     context 'using a selector' do
       it 'should add an element' do
         expected_element = PageMagic::Element.new(:name, parent_page_element, :text_field, selector)
-
         page_elements.text_field :name, selector
         page_elements.element_definitions[:name].call(parent_page_element).should == expected_element
       end
     end
 
+    context 'complex elements' do
 
 
-    context 'passing in a prefetched watir object' do
-      it 'should create a page element with the prefetched watir object as the core browser object' do
-        watir_element = double('watir_element')
-        page_elements.text_field :name, watir_element
-        page_elements.elements(browser_element).first.locate.should == watir_element
+      let!(:section_class) do
+        Class.new do
+          extend PageMagic::Section
+
+          def == object
+            object.class.is_a?(PageMagic::Section) &&
+                object.name == self.name &&
+                object.browser_element == self.browser_element
+          end
+        end
+      end
+
+      context 'using a predefined class' do
+        it 'should add a section' do
+          expected_section = section_class.new(parent_page_element, :page_section, selector)
+
+          page_elements.section section_class, :page_section, selector
+          page_elements.elements(parent_page_element).first.should == expected_section
+        end
+
+        it 'does not require a block' do
+          expect { page_elements.section :page_section, :object }.not_to raise_exception
+        end
+      end
+
+
+      context 'using a block' do
+
+        context 'browser_element' do
+          before :each do
+
+            @browser, @element, @parent_page_element = double('browser'), double('element'), double('parent_page_element')
+            @parent_page_element.stub(:browser_element).and_return(@browser)
+            @browser.should_receive(:find).with(:css, :selector).and_return(@element)
+          end
+
+          it 'should be assigned when selector is passed to section method' do
+            element = @element
+
+            page_elements.section :page_section, css: :selector do
+              browser_element.should == element
+            end
+
+            page_elements.element_definitions[:page_section].call(@parent_page_element)
+          end
+
+          it 'should be assigned when selector is defined in the block passed to the section method' do
+            element = @element
+
+            page_elements.section :page_section do
+              browser_element.should == nil
+              selector css: :selector
+              browser_element.should == element
+            end
+
+            page_elements.elements(@parent_page_element, nil)
+          end
+        end
+
+        it 'should raise an exception if the selector is not passed' do
+
+          arg, browser, element = {}, double('browser'), double('element')
+          parent_page_element = double('parent_browser_element', browser_element: browser)
+
+          page_elements.section :page_section, nil
+
+          expect { page_elements.elements(parent_page_element, arg) }.to raise_error(PageMagic::Section::UndefinedSelectorException)
+        end
+
+
+        it 'should pass args through to the block' do
+          page_elements.section :page_section, css: '.blah' do |arg|
+            arg[:passed_through] = true
+          end
+
+          arg, browser = {}, double('browser', find: :browser_element)
+          parent_page_element = double('parent_browser_element', browser_element: browser)
+          page_elements.elements(parent_page_element, arg)
+          arg[:passed_through].should be_true
+        end
+
+
+        it 'should return your a copy of the core definition' do
+          page_elements.section section_class, :page_section, selector
+          first = page_elements.element_definitions[:page_section].call(parent_page_element)
+          second = page_elements.element_definitions[:page_section].call(parent_page_element)
+          first.should_not equal(second)
+        end
+
+      end
+
+      describe 'location' do
+        context 'a prefetched object' do
+          it 'should add a section' do
+            expected_section = section_class.new(parent_page_element, :page_section, :object)
+            page_elements.section :page_section, :object
+            expected_section.should == page_elements.elements(parent_page_element).first
+          end
+        end
       end
     end
-
   end
 
   describe 'retrieving element definitions' do
@@ -68,6 +161,7 @@ describe PageMagic::Elements do
         end
       end
     end
+
 
     describe 'session handle' do
       it 'should be on instances created from a class' do
@@ -97,28 +191,6 @@ describe PageMagic::Elements do
     end
 
     describe 'definition' do
-
-
-      context 'using a class as a definition' do
-        it 'should add a section' do
-          page_elements.section section_class, :page_section, selector
-          page_elements.elements(parent_page_element).first.should == section_class.new(parent_page_element, :page_section, selector)
-        end
-      end
-
-      it 'should not require a block' do
-        expect { page_elements.section :page_section, :object }.not_to raise_exception
-      end
-
-      context 'an object that has already been found' do
-        it 'should add a section' do
-          page_elements.section :page_section, :object
-
-          section_class.browser_element = :object
-          expected_section = section_class.new(parent_page_element, :page_section, nil)
-          expected_section.should == page_elements.elements(parent_page_element).first
-        end
-      end
 
 
       context 'using a block to define a section inline' do
