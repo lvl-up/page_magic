@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
     "spec/elements_spec.rb",
     "spec/helpers/capybara.rb",
     "spec/member_methods_spec.rb",
-    "spec/page_magic_spec.rb",
+    "spec/defining_pages_spec.rb",
     "spec/section_spec.rb",
     "spec/session_spec.rb",
     "spec/spec_helper.rb"

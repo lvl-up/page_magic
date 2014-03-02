@@ -1,4 +1,3 @@
-require 'spec_helper'
 describe 'interacting with pages' do
   include_context :webapp
 

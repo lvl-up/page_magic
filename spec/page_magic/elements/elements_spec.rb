@@ -16,22 +16,25 @@ describe PageMagic::Elements do
     double('parent_page_element', browser_element: browser_element)
   end
 
+  it 'should say you have fields when you do' do
+    page_elements.elements?.should == false
+    page_elements.link(:link, :text => "text")
+    page_elements.elements?.should == true
+  end
+
 
   describe 'adding elements' do
 
     context 'using a selector' do
       it 'should add an element' do
-        page_elements.text_field :name, selector
-        page_elements.element_definitions[:name].call(parent_page_element).should == PageMagic::Element.new(:name, parent_page_element, :text_field, selector)
-      end
+        expected_element = PageMagic::Element.new(:name, parent_page_element, :text_field, selector)
 
-      it 'should return your a copy of the core definition' do
         page_elements.text_field :name, selector
-        first = page_elements.element_definitions[:name].call(parent_page_element)
-        second = page_elements.element_definitions[:name].call(parent_page_element)
-        first.should_not equal(second)
+        page_elements.element_definitions[:name].call(parent_page_element).should == expected_element
       end
     end
+
+
 
     context 'passing in a prefetched watir object' do
       it 'should create a page element with the prefetched watir object as the core browser object' do
@@ -41,6 +44,15 @@ describe PageMagic::Elements do
       end
     end
 
+  end
+
+  describe 'retrieving element definitions' do
+    it 'should return your a copy of the core definition' do
+      page_elements.text_field :name, selector
+      first = page_elements.element_definitions[:name].call(parent_page_element)
+      second = page_elements.element_definitions[:name].call(parent_page_element)
+      first.should_not equal(second)
+    end
   end
 
   context 'section' do
@@ -57,9 +69,8 @@ describe PageMagic::Elements do
       end
     end
 
-    context 'session handle' do
+    describe 'session handle' do
       it 'should be on instances created from a class' do
-
         browser_element = double(:browser_element, find: :browser_element)
         parent = double('parent', session: :current_session, browser_element: browser_element)
         page_elements.section section_class, :page_section, selector

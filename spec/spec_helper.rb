@@ -1,9 +1,12 @@
 Bundler.require
 $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/lib")
 require 'page_magic'
+require 'capybara/rspec'
 require 'helpers/capybara'
 
 RSpec.configure do
+
+  include Capybara::DSL
 
   shared_context :webapp do
     require 'sinatra/base'
