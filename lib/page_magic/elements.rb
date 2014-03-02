@@ -43,6 +43,14 @@ module PageMagic
       end
     end
 
+    def underscore string
+      string.gsub(/::/, '/').
+          gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+          gsub(/([a-z\d])([A-Z])/, '\1_\2').
+          tr("-", "_").
+          downcase
+    end
+
     def section *args, &block
       first_arg = args.first
       if first_arg.is_a?(Symbol)
@@ -69,6 +77,13 @@ module PageMagic
 
       elsif first_arg < PageMagic::Element
         section_class, name, selector = args
+
+        unless selector
+          selector = name
+          name = nil
+        end
+
+        name = underscore section_class.name unless name
         add_element_definition(name) do |parent_browser_element|
           section_class.new(name, parent_browser_element, :section, selector)
         end

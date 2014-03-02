@@ -4,6 +4,8 @@ require 'sinatra'
 
 describe 'Page elements' do
 
+
+
   before :each do
     Capybara.app = Class.new(Sinatra::Base) do
       get '/' do
@@ -18,6 +20,31 @@ describe 'Page elements' do
     end
 
     Capybara.current_session.visit('/')
+  end
+
+  describe 'construction' do
+
+    let(:page_section_class) do
+      Class.new(PageMagic::Element)
+    end
+
+    let(:selector) { {css: '.class_name'} }
+
+    let!(:browser) { double('browser', find: :browser_element) }
+    let!(:parent_page_element){ double('parent_page_element', browser_element: browser)}
+
+    context 'selector' do
+      it 'should use the class defined selector if one is not given to the constructor' do
+        page_section_class.selector selector
+        page_section_class.new(:name, parent_page_element, :type).selector.should == selector
+      end
+
+      it 'should raise an error if a class selector is not defined and one is not given to the constructor' do
+        expect { page_section_class.new(:name, parent_page_element, :type) }.to raise_error(PageMagic::UndefinedSelectorException)
+      end
+    end
+
+
   end
 
   describe 'location' do
@@ -87,4 +114,49 @@ describe 'Page elements' do
       PageMagic::Element.new(:help, page, :link, :selector).session.should == page.session
     end
   end
+
+
+
+
+  context 'tests coppied in from section' do
+    include_context :webapp
+
+    before :each do
+      @elements_page = elements_page.new
+      @elements_page.visit
+    end
+
+    let!(:elements_page) do
+
+      Class.new do
+        include PageMagic
+        url '/elements'
+        section :form_by_css do
+          selector css: '.form'
+          link(:link_in_form, text: 'a in a form')
+        end
+
+        section :form_by_id do
+          selector id: 'form'
+          link(:link_in_form, text: 'a in a form')
+        end
+      end
+    end
+
+    describe 'method_missing' do
+      it 'should delegate to capybara' do
+        @elements_page.form_by_css.visible?.should be(true)
+      end
+
+      it 'should throw default exception if the method does not exist on the capybara object' do
+        expect { @elements_page.form_by_css.bobbins }.to raise_exception NoMethodError
+      end
+    end
+
+    it 'can have elements' do
+      @elements_page.form_by_css.link_in_form.visible?.should be_true
+    end
+  end
+
+
 end

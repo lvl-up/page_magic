@@ -56,6 +56,15 @@ describe PageMagic::Elements do
           page_elements.elements(parent_page_element).first.should == expected_section
         end
 
+        context 'name' do
+          it 'should default to the name of the class if one is not supplied' do
+            section_class.stub(:name).and_return('PageSection')
+            page_elements.section section_class, selector
+            page_elements.elements(parent_page_element).first.name.should == :page_section
+
+          end
+        end
+
         it 'does not require a block' do
           expect { page_elements.section :page_section, :object }.not_to raise_exception
         end

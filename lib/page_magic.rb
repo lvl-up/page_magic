@@ -7,7 +7,6 @@ require 'page_magic/elements'
 require 'page_magic/element_context'
 require 'page_magic/element'
 require 'page_magic/page_magic'
-require 'page_magic/section'
 
 module PageMagic
   class << self
