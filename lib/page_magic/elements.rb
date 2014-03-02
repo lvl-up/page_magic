@@ -45,19 +45,11 @@ module PageMagic
 
     def section *args, &block
       first_arg = args.first
-      if first_arg.kind_of?(PageMagic::Section)
-        section_class, name, selector = args
-        add_element_definition(name) do |parent_browser_element|
-          section_class.new(parent_browser_element, name, selector)
-        end
-
-      elsif first_arg.is_a?(Symbol)
+      if first_arg.is_a?(Symbol)
         name, selector = args
 
         add_element_definition(name) do |parent_browser_element, *args_for_section|
-          page_section = Class.new do
-            extend PageMagic::Section
-          end
+          page_section = Class.new(PageMagic::Element)
 
           page_section.parent_browser_element = parent_browser_element.browser_element
 
@@ -65,13 +57,22 @@ module PageMagic
             when Hash
               page_section.selector selector
             else
-              #page_section.browser_element = selector
+              page_section.browser_element = selector
           end
 
           block = block || Proc.new{}
           page_section.class_exec *args_for_section, &block
-          page_section.new(parent_browser_element, name, selector)
+          page_section.new(name, parent_browser_element, :section, selector)
+          #page_section.new(parent_browser_element, name, selector)
         end
+
+
+      elsif first_arg < PageMagic::Element
+        section_class, name, selector = args
+        add_element_definition(name) do |parent_browser_element|
+          section_class.new(name, parent_browser_element, :section, selector)
+        end
+
       end
 
 

@@ -82,13 +82,14 @@ describe 'Element Context' do
       elements_page.class_eval do
         section :form do
           selector css: '.form'
+          link :form_link, text: 'in a form'
         end
       end
 
       page = elements_page.new
       page.visit
 
-      PageMagic::ElementContext.new(page, page.browser, self).form('a', 'b')
+      PageMagic::ElementContext.new(page, page.browser, self).form
     end
   end
 

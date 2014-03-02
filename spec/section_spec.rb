@@ -28,8 +28,8 @@ describe PageMagic::Section do
 
   context 'class level' do
     let(:section) do
-      Class.new do
-        extend PageMagic::Section
+      Class.new(PageMagic::Element) do
+        #extend PageMagic::Section
       end
     end
 
