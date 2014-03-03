@@ -95,23 +95,12 @@ describe PageMagic::Elements do
             element = @element
 
             page_elements.section :page_section do
-              browser_element.should == nil
               selector css: :selector
               browser_element.should == element
             end
 
             page_elements.elements(@parent_page_element, nil)
           end
-        end
-
-        it 'should raise an exception if the selector is not passed' do
-
-          arg, browser, element = {}, double('browser'), double('element')
-          parent_page_element = double('parent_browser_element', browser_element: browser)
-
-          page_elements.section :page_section, nil
-
-          expect { page_elements.elements(parent_page_element, arg) }.to raise_error(PageMagic::UndefinedSelectorException)
         end
 
 

@@ -8,6 +8,35 @@ RSpec.configure do
 
   include Capybara::DSL
 
+  module PageMagic
+    class Element
+      class << self
+        def default_before_hook
+          @default_before_hook ||= Proc.new {}
+        end
+
+        def default_after_hook
+          @default_after_hook ||= Proc.new {}
+        end
+      end
+      alias_method :initialize_backup, :initialize
+      def initialize *args, &block
+        @before_hook, @after_hook = self.class.default_before_hook, self.class.default_after_hook
+        initialize_backup *args, &block
+      end
+
+      def == page_element
+        page_element.is_a?(Element) &&
+            @type == page_element.type &&
+            @name == page_element.name &&
+            @selector == page_element.selector
+            @before_hook == page_element.before &&
+            @after_hook == page_element.after
+      end
+
+    end
+  end
+
   shared_context :webapp do
     require 'sinatra/base'
 

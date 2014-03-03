@@ -1,9 +1,6 @@
-require 'spec_helper'
 require 'sinatra'
 
-
 describe 'Page elements' do
-
 
 
   before :each do
@@ -31,20 +28,14 @@ describe 'Page elements' do
     let(:selector) { {css: '.class_name'} }
 
     let!(:browser) { double('browser', find: :browser_element) }
-    let!(:parent_page_element){ double('parent_page_element', browser_element: browser)}
+    let!(:parent_page_element) { double('parent_page_element', browser_element: browser) }
 
-    context 'selector' do
-      it 'should use the class defined selector if one is not given to the constructor' do
-        page_section_class.selector selector
-        page_section_class.new(:name, parent_page_element, :type).selector.should == selector
-      end
+  end
 
-      it 'should raise an error if a class selector is not defined and one is not given to the constructor' do
-        expect { page_section_class.new(:name, parent_page_element, :type) }.to raise_error(PageMagic::UndefinedSelectorException)
-      end
+  describe 'browser_element' do
+    it 'should raise an error if a selector has not been specified' do
+      expect { PageMagic::Element.new(:name, Object.new, :type).browser_element }.to raise_error(PageMagic::UndefinedSelectorException)
     end
-
-
   end
 
   describe 'location' do
@@ -57,53 +48,52 @@ describe 'Page elements' do
     end
 
     it 'should find by xpath' do
-      element = PageMagic::Element.new(:my_input, page, :text_field, xpath: '//input').locate
+      element = PageMagic::Element.new(:my_input, page, :text_field, xpath: '//input').browser_element
       element.value == 'filled in'
     end
 
     it 'should locate an element using its id' do
-      element = PageMagic::Element.new(:my_input, page, :text_field, id: 'field_id').locate
+      element = PageMagic::Element.new(:my_input, page, :text_field, id: 'field_id').browser_element
       element.value.should == 'filled in'
     end
 
     it 'should locate an element using its name' do
-      element = PageMagic::Element.new(:my_input, page, :text_field, name: 'field_name').locate
+      element = PageMagic::Element.new(:my_input, page, :text_field, name: 'field_name').browser_element
       element.value.should == 'filled in'
     end
 
 
     it 'should locate an element using its label' do
-      element = PageMagic::Element.new(:my_link, page, :link, label: 'enter text').locate
+      element = PageMagic::Element.new(:my_link, page, :link, label: 'enter text').browser_element
       element[:id].should == 'field_id'
     end
 
     it 'should raise an exception when finding another element using its text' do
-      expect { PageMagic::Element.new(:my_link, page, :text_field, text: 'my link').locate }.to raise_error(PageMagic::UnsupportedSelectorException)
+      expect { PageMagic::Element.new(:my_link, page, :text_field, text: 'my link').browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
     end
 
     it 'should locate an element using css' do
-      element = PageMagic::Element.new(:my_link, page, :link, css: "input[name='field_name']").locate
+      element = PageMagic::Element.new(:my_link, page, :link, css: "input[name='field_name']").browser_element
       element[:id].should == 'field_id'
     end
 
 
-
     it 'should return a prefetched value' do
-      PageMagic::Element.new(:help, page, :link, :prefetched_object).locate.should == :prefetched_object
+      PageMagic::Element.new(:help, page, :link, :prefetched_object).browser_element.should == :prefetched_object
     end
 
     it 'should raise errors for unsupported selectors' do
-      expect { PageMagic::Element.new(:my_link, page, :link, unsupported: "").locate }.to raise_error(PageMagic::UnsupportedSelectorException)
+      expect { PageMagic::Element.new(:my_link, page, :link, unsupported: "").browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
     end
 
     context 'text selector' do
       it 'should locate a link' do
-        element = PageMagic::Element.new(:my_link, page, :link, text: 'my link').locate
+        element = PageMagic::Element.new(:my_link, page, :link, text: 'my link').browser_element
         element[:id].should == 'my_link'
       end
 
       it 'should locate a button' do
-        element = PageMagic::Element.new(:my_button, page, :button, text: 'my button').locate
+        element = PageMagic::Element.new(:my_button, page, :button, text: 'my button').browser_element
         element[:id].should == 'my_button'
       end
     end
@@ -119,8 +109,6 @@ describe 'Page elements' do
       PageMagic::Element.new(:help, page, :link, :selector).session.should == page.session
     end
   end
-
-
 
 
   context 'tests coppied in from section' do

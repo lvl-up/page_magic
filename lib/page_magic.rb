@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift("#{File.dirname(__FILE__)}")
 require 'capybara'
+require 'page_magic/exceptions'
 require 'page_magic/location'
 require 'page_magic/browser'
 require 'page_magic/session'

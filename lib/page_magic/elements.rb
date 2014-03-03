@@ -59,20 +59,9 @@ module PageMagic
         name, selector = args
 
         add_element_definition(name) do |parent_browser_element, *args_for_section|
-          page_section = Class.new(PageMagic::Element)
-
-          page_section.parent_browser_element = parent_browser_element.browser_element
-
-          case selector
-            when Hash
-              page_section.browser_element = locate_in(page_section.parent_browser_element, selector)
-            else
-              page_section.browser_element = selector
-          end
-
-          block = block || Proc.new {}
-          page_section.class_exec *args_for_section, &block
-          page_section.new(name, parent_browser_element, :section, selector)
+          page_section = PageMagic::Element.new name, parent_browser_element, :section, selector
+          page_section.instance_exec *args_for_section, &(block || Proc.new {})
+          page_section
         end
 
 
@@ -84,19 +73,19 @@ module PageMagic
           name = nil
         end
 
-        name = underscore section_class.name unless name
+        name = underscore(section_class.name) unless name
         add_element_definition(name) do |parent_browser_element|
           section_class.new(name, parent_browser_element, :section, selector)
         end
 
       end
-
-
     end
 
     def add_element_definition name, &block
       raise InvalidElementNameException, "duplicate page element defined" if element_definitions[name]
-      raise InvalidElementNameException, "a method already exists with this method name" if instance_methods.find { |method| method == name }
+
+      methods = respond_to?(:instance_methods) ? instance_methods : methods()
+      raise InvalidElementNameException, "a method already exists with this method name" if methods.find { |method| method == name }
 
       element_definitions[name] = block
     end
