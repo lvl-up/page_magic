@@ -27,7 +27,7 @@ RSpec.configure do
           <input type='submit' value='a button'/>
 
           <div id='form' class="form">
-            <a href='#'>a in a form</a>
+            <a id='form_link' href='/page2'>a in a form</a>
           </form>
         ELEMENTS
 

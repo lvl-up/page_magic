@@ -91,6 +91,21 @@ describe 'Element Context' do
 
       PageMagic::ElementContext.new(page, page.browser, self).form
     end
+
+    it 'they are clickable too' do
+      elements_page.class_eval do
+        section :section do
+          selector id: 'form_link'
+        end
+      end
+
+      page = elements_page.new
+      page.visit
+
+
+      PageMagic::ElementContext.new(page, page.browser, self).click_section
+      page.session.current_path.should == '/page2'
+    end
   end
 
   describe 'hooks' do

@@ -14,14 +14,26 @@ module PageMagic
       case method
         when :id
           browser_element.find("##{selector}")
+        when :name
+          browser_element.find("*[name='#{selector}']")
+        when :label
+          browser_element.find_field(selector)
+        when :text
+          if @type == :link
+            browser_element.find_link(selector)
+          elsif @type == :button
+            browser_element.find_button(selector)
+          else
+            raise UnsupportedSelectorException
+          end
         when :css
           browser_element.find(:css, selector)
-        when :xpath
-          browser_element.find(:xpath, selector)
         else
           raise UnsupportedSelectorException
       end
     end
+
+
   end
 
   class Element
@@ -34,6 +46,7 @@ module PageMagic
     attr_reader :type, :name, :selector, :before_hook, :after_hook, :browser_element, :locator
 
     extend Location
+    include Location
     extend Elements
     class << self
       def selector selector=nil
@@ -45,6 +58,7 @@ module PageMagic
 
         @selector = selector
       end
+
       def default_before_hook
         @default_before_hook ||= Proc.new {}
       end
@@ -76,7 +90,7 @@ module PageMagic
     end
 
     def complex?
-      !self.class.element_definitions.empty?
+      @type == :section
     end
 
     def session
@@ -106,29 +120,8 @@ module PageMagic
 
     def locate *args
       return @browser_element if complex?
-      #return @browser_element if @browser_element
       if @selector && @selector.is_a?(Hash)
-        method, selector = @selector.to_a.flatten
-        case method
-          when :id
-            @browser_element.find("##{selector}")
-          when :name
-            @browser_element.find("*[name='#{selector}']")
-          when :label
-            @browser_element.find_field(selector)
-          when :text
-            if @type == :link
-              @browser_element.find_link(selector)
-            elsif @type == :button
-              @browser_element.find_button(selector)
-            else
-              raise UnsupportedSelectorException
-            end
-          when :css
-            @browser_element.find(:css, selector)
-          else
-            raise UnsupportedSelectorException
-        end
+        locate_in(@browser_element, @selector)
       else
         @browser_element
       end
