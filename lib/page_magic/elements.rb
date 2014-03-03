@@ -33,12 +33,34 @@ module PageMagic
       !element_definitions.empty?
     end
 
-    TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
+    TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
     TYPES.each do |type|
       define_method type do |*args, &block|
-        name, selector = args
-        add_element_definition(name) do |parent_element|
-          Element.new(name, parent_element, type, selector, &block)
+
+        first_arg = args.first
+        if first_arg.is_a?(Symbol)
+          name, selector = args
+
+          add_element_definition(name) do |*args_for_block|
+            page_section = PageMagic::Element.new name, args_for_block.delete_at(0), type, selector
+            page_section.instance_exec *args_for_block, &(block || Proc.new {})
+            page_section
+          end
+
+
+        elsif first_arg < PageMagic::Element
+          section_class, name, selector = args
+
+          unless selector
+            selector = name
+            name = nil
+          end
+
+          name = underscore(section_class.name) unless name
+          add_element_definition(name) do |parent_browser_element|
+            section_class.new(name, parent_browser_element, :section, selector)
+          end
+
         end
       end
     end
@@ -49,34 +71,6 @@ module PageMagic
           gsub(/([a-z\d])([A-Z])/, '\1_\2').
           tr("-", "_").
           downcase
-    end
-
-    def section *args, &block
-      first_arg = args.first
-      if first_arg.is_a?(Symbol)
-        name, selector = args
-
-        add_element_definition(name) do |parent_browser_element, *args_for_section|
-          page_section = PageMagic::Element.new name, parent_browser_element, :section, selector
-          page_section.instance_exec *args_for_section, &(block || Proc.new {})
-          page_section
-        end
-
-
-      elsif first_arg < PageMagic::Element
-        section_class, name, selector = args
-
-        unless selector
-          selector = name
-          name = nil
-        end
-
-        name = underscore(section_class.name) unless name
-        add_element_definition(name) do |parent_browser_element|
-          section_class.new(name, parent_browser_element, :section, selector)
-        end
-
-      end
     end
 
     def add_element_definition name, &block
