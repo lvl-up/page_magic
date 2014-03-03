@@ -5,7 +5,9 @@ module PageMagic
 
   end
   class UndefinedSelectorException < Exception
+  end
 
+  class MissingLocatorOrSelector < Exception
   end
 
   module Location
@@ -40,8 +42,6 @@ module PageMagic
 
   class Element
 
-    class MissingLocatorOrSelector < Exception
-    end
 
     include AjaxSupport
 
@@ -82,12 +82,11 @@ module PageMagic
         @browser_element = selector
       end
 
-      @type = type
-      @name = name.downcase.to_sym
-
-      raise UndefinedSelectorException, "Pass a selector to the constructor/define one the class" unless @selector || @browser_element
-
+      @type, @name = type, name.downcase.to_sym
       @before_hook, @after_hook = self.class.default_before_hook, self.class.default_after_hook
+
+      raise UndefinedSelectorException, "Pass a selector/define one on the class" unless @selector || @browser_element
+
       instance_eval &block if block_given?
     end
 
