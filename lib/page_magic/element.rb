@@ -91,7 +91,7 @@ module PageMagic
       instance_eval &block if block_given?
     end
 
-    def complex?
+    def section?
       @type == :section
     end
 
@@ -116,12 +116,11 @@ module PageMagic
         rescue
           super
         end
-
       end
     end
 
     def locate *args
-      return @browser_element if complex?
+      return @browser_element if section?
       if @selector && @selector.is_a?(Hash)
         locate_in(@browser_element, @selector)
       else
