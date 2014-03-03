@@ -18,12 +18,14 @@ module PageMagic
     class << self
       def selector selector=nil
         return @selector unless selector
+        @selector = selector
+      end
 
-        if @parent_browser_element
+      def browser_element
+        return @browser_element if @browser_element
+        if @parent_browser_element && selector
           @browser_element = locate_in @parent_browser_element, selector
         end
-
-        @selector = selector
       end
 
       def default_before_hook
@@ -34,7 +36,8 @@ module PageMagic
         @default_after_hook ||= Proc.new {}
       end
 
-      attr_accessor :parent_browser_element, :browser_element
+      attr_accessor :parent_browser_element
+      attr_writer :browser_element
     end
 
     def initialize name, parent_page_element, type=nil, selector=nil, &block

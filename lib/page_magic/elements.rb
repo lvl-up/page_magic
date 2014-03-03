@@ -51,16 +51,6 @@ module PageMagic
           downcase
     end
 
-    def selector selector=nil
-      return @selector unless selector
-
-      if @parent_browser_element
-        @browser_element = locate_in @parent_browser_element, selector
-      end
-
-      @selector = selector
-    end
-
     include Location
 
     def section *args, &block
@@ -83,7 +73,6 @@ module PageMagic
           block = block || Proc.new {}
           page_section.class_exec *args_for_section, &block
           page_section.new(name, parent_browser_element, :section, selector)
-          #page_section.new(parent_browser_element, name, selector)
         end
 
 
