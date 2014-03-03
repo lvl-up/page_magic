@@ -51,8 +51,6 @@ module PageMagic
           downcase
     end
 
-    include Location
-
     def section *args, &block
       first_arg = args.first
       if first_arg.is_a?(Symbol)
