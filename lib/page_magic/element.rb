@@ -3,7 +3,7 @@ module PageMagic
   class Element
     attr_reader :type, :name, :selector, :browser_element
 
-    include Location, AjaxSupport, Elements
+    include AjaxSupport, Elements
 
     def initialize name, parent_page_element, type=nil, selector=nil, &block
       if selector.is_a?(Hash)
@@ -54,7 +54,33 @@ module PageMagic
     def browser_element *args
       return @browser_element if @browser_element
       raise UndefinedSelectorException, "Pass a selector/define one on the class" unless @selector
-      @browser_element = locate_in(@parent_page_element.browser_element, @selector) if @selector
+      if @selector
+        method, selector = @selector.to_a.flatten
+        browser_element = @parent_page_element.browser_element
+        @browser_element = case method
+                             when :id
+                               browser_element.find("##{selector}")
+                             when :xpath
+                               browser_element.find(:xpath, selector)
+                             when :name
+                               browser_element.find("*[name='#{selector}']")
+                             when :label
+                               browser_element.find_field(selector)
+                             when :text
+                               if @type == :link
+                                 browser_element.find_link(selector)
+                               elsif @type == :button
+                                 browser_element.find_button(selector)
+                               else
+                                 raise UnsupportedSelectorException
+                               end
+                             when :css
+                               browser_element.find(:css, selector)
+                             else
+                               raise UnsupportedSelectorException
+                           end
+      end
+      @browser_element
     end
   end
 end
