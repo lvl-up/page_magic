@@ -12,7 +12,7 @@ module PageMagic
         @browser_element = selector
       end
 
-      @parent_page_element, @type, @name = parent_page_element, type, name.downcase.to_sym
+      @parent_page_element, @type, @name = parent_page_element, type, name.to_s.downcase.to_sym
       instance_eval &block if block_given?
     end
 

@@ -1,3 +1,4 @@
+require 'ext/string'
 module PageMagic
   module Elements
     class InvalidElementNameException < Exception
@@ -24,13 +25,8 @@ module PageMagic
       raise InvalidMethodNameException, "method name matches element name" if element_definitions[method]
     end
 
-
     def elements(browser_element, *args)
       element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
-    end
-
-    def elements?
-      !element_definitions.empty?
     end
 
     TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
@@ -53,24 +49,15 @@ module PageMagic
 
           unless selector
             selector = name
-            name = nil
+            name = section_class.name.to_snake_case
           end
 
-          name = underscore(section_class.name) unless name
           add_element_definition(name) do |parent_browser_element|
             section_class.new(name, parent_browser_element, :section, selector)
           end
 
         end
       end
-    end
-
-    def underscore string
-      string.gsub(/::/, '/').
-          gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
-          gsub(/([a-z\d])([A-Z])/, '\1_\2').
-          tr("-", "_").
-          downcase
     end
 
     def add_element_definition name, &block

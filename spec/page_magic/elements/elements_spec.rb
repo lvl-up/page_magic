@@ -16,13 +16,6 @@ describe PageMagic::Elements do
     double('parent_page_element', browser_element: browser_element)
   end
 
-  it 'should say you have fields when you do' do
-    page_elements.elements?.should == false
-    page_elements.link(:link, :text => "text")
-    page_elements.elements?.should == true
-  end
-
-
   describe 'adding elements' do
 
     context 'using a selector' do
