@@ -14,6 +14,8 @@ module PageMagic
       case method
         when :id
           browser_element.find("##{selector}")
+        when :xpath
+          browser_element.find(:xpath, selector)
         when :name
           browser_element.find("*[name='#{selector}']")
         when :label

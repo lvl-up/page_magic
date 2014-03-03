@@ -106,7 +106,13 @@ describe 'Element Context' do
       PageMagic::ElementContext.new(page, page.browser, self).click_section
       page.session.current_path.should == '/page2'
     end
+
+    it 'should delegate to page element if method not found' do
+      #TODO call page method, look for subelement, delagate to capybara object
+    end
   end
+
+
 
   describe 'hooks' do
 

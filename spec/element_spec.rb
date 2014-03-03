@@ -56,14 +56,19 @@ describe 'Page elements' do
       page_class.new
     end
 
+    it 'should find by xpath' do
+      element = PageMagic::Element.new(:my_input, page, :text_field, xpath: '//input').locate
+      element.value == 'filled in'
+    end
+
     it 'should locate an element using its id' do
       element = PageMagic::Element.new(:my_input, page, :text_field, id: 'field_id').locate
-      element.value == 'filled in'
+      element.value.should == 'filled in'
     end
 
     it 'should locate an element using its name' do
       element = PageMagic::Element.new(:my_input, page, :text_field, name: 'field_name').locate
-      element.value == 'filled in'
+      element.value.should == 'filled in'
     end
 
 
