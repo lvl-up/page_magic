@@ -41,15 +41,10 @@ module PageMagic
   end
 
   class Element
-
-
-    include AjaxSupport
-
     attr_reader :type, :name, :selector, :before_hook, :after_hook, :browser_element, :locator
 
-    extend Location
-    include Location
-    extend Elements
+    include Location, AjaxSupport
+    extend Location, Elements
     class << self
       def selector selector=nil
         return @selector unless selector
