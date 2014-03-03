@@ -43,7 +43,6 @@ module PageMagic
             page_section
           end
 
-
         elsif first_arg < PageMagic::Element
           section_class, name, selector = args
 
