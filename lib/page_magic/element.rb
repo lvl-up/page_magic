@@ -22,7 +22,7 @@ module PageMagic
     end
 
     def section?
-      @type == :section
+      !element_definitions.empty?
     end
 
     def session
