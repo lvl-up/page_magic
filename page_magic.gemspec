@@ -5,17 +5,18 @@
 
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = "0.10.0"
+  s.version = "0.11.0.alpha"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leon Davis"]
-  s.date = "2013-12-16"
+  s.date = "2014-03-05"
   s.description = "Framework for modeling and interacting with webpages which wraps capybara"
   s.email = "info@lad-tech.com"
   s.extra_rdoc_files = [
     "README.md"
   ]
   s.files = [
+    ".rspec",
     ".ruby-gemset",
     ".ruby-version",
     ".travis.yml",
@@ -24,35 +25,39 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
+    "lib/ext/string.rb",
     "lib/page_magic.rb",
     "lib/page_magic/ajax_support.rb",
     "lib/page_magic/browser.rb",
     "lib/page_magic/element.rb",
     "lib/page_magic/element_context.rb",
     "lib/page_magic/elements.rb",
+    "lib/page_magic/exceptions.rb",
     "lib/page_magic/page_magic.rb",
-    "lib/page_magic/section.rb",
     "lib/page_magic/session.rb",
     "page_magic.gemspec",
     "spec/browser_spec.rb",
     "spec/element_context_spec.rb",
     "spec/element_spec.rb",
-    "spec/elements_spec.rb",
     "spec/helpers/capybara.rb",
     "spec/member_methods_spec.rb",
-    "spec/defining_pages_spec.rb",
-    "spec/section_spec.rb",
+    "spec/page_magic/elements/elements_spec.rb",
+    "spec/page_magic/usage/defining_page_elements_spec.rb",
+    "spec/page_magic/usage/defining_pages_spec.rb",
+    "spec/page_magic/usage/include_page_magic_spec.rb",
+    "spec/page_magic/usage/interacting_with_pages_spec.rb",
+    "spec/page_magic/usage/starting_a_session_spec.rb",
     "spec/session_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = "https://github.com/ladtech/page_magic"
   s.licenses = ["ruby"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.25"
+  s.rubygems_version = "2.0.3"
   s.summary = "Framework for modeling and interacting with webpages"
 
   if s.respond_to? :specification_version then
-    s.specification_version = 3
+    s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<capybara>, [">= 0"])
