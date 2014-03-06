@@ -21,8 +21,8 @@ RSpec.configure do
       end
       alias_method :initialize_backup, :initialize
       def initialize *args, &block
-        @before_hook, @after_hook = self.class.default_before_hook, self.class.default_after_hook
         initialize_backup *args, &block
+        @before_hook, @after_hook = self.class.default_before_hook, self.class.default_after_hook
       end
 
       def == page_element
