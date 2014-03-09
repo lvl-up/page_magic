@@ -1,5 +1,3 @@
-require 'sinatra'
-
 describe 'Page elements' do
 
 

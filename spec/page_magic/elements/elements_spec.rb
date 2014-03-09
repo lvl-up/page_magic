@@ -1,5 +1,3 @@
-require 'page_magic'
-
 describe PageMagic::Elements do
 
 

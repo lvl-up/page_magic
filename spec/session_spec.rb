@@ -1,4 +1,3 @@
-
 describe PageMagic::Session do
 
   let(:page) do

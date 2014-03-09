@@ -1,4 +1,3 @@
-
 describe 'including PageMagic' do
   include Capybara::DSL
 

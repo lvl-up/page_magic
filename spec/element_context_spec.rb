@@ -1,5 +1,3 @@
-require 'page_magic'
-
 describe 'Element Context' do
 
   include_context :webapp

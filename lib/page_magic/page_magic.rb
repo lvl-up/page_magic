@@ -17,10 +17,6 @@ module PageMagic
     @browser.title
   end
 
-  def refresh
-    @browser.refresh
-  end
-
   def text_on_page? text
     text().downcase.include?(text.downcase)
   end
