@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'sinatra/base'
 
 describe 'The Elements of a Page' do

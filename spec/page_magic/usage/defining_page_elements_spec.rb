@@ -1,4 +1,3 @@
-require 'spec_helper'
 describe 'The Elements of a Page' do
   include Capybara::DSL
 

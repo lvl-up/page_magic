@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'page_magic'
 
 describe 'Element Context' do

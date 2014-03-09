@@ -1,8 +1,17 @@
 Bundler.require
 $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/lib")
+if ENV['coverage']
+  require 'simplecov'
+  SimpleCov.start do
+
+    add_filter "/spec/"
+  end
+end
 require 'page_magic'
 require 'capybara/rspec'
 require 'helpers/capybara'
+
+
 
 RSpec.configure do
 

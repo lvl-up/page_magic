@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PageMagic::Browser do
   let(:app) { Object.new }
 

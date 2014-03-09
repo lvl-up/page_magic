@@ -1,4 +1,3 @@
-require 'spec_helper'
 describe 'PageMagic.session' do
   let(:app_class) do
     Class.new do

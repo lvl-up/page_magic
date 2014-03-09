@@ -11,10 +11,6 @@ module PageMagic
       clazz.class_eval do
         attr_reader :browser_element
 
-        def elements browser_element, *args
-          self.class.elements browser_element, *args
-        end
-
         def element_definitions
           self.class.element_definitions
         end
