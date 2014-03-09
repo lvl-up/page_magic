@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = "0.11.0.alpha"
+  s.version = "0.11.0.alpha2"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Leon Davis"]
-  s.date = "2014-03-05"
+  s.date = "2014-03-09"
   s.description = "Framework for modeling and interacting with webpages which wraps capybara"
   s.email = "info@lad-tech.com"
   s.extra_rdoc_files = [
@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
     "spec/element_spec.rb",
     "spec/helpers/capybara.rb",
     "spec/member_methods_spec.rb",
-    "spec/page_magic/elements/elements_spec.rb",
+    "spec/page_magic/elements_spec.rb",
     "spec/page_magic/usage/defining_page_elements_spec.rb",
     "spec/page_magic/usage/defining_pages_spec.rb",
     "spec/page_magic/usage/include_page_magic_spec.rb",
@@ -53,11 +53,11 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/ladtech/page_magic"
   s.licenses = ["ruby"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.25"
+  s.rubygems_version = "2.0.3"
   s.summary = "Framework for modeling and interacting with webpages"
 
   if s.respond_to? :specification_version then
-    s.specification_version = 3
+    s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<capybara>, [">= 0"])
