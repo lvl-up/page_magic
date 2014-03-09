@@ -15,8 +15,6 @@ require 'helpers/capybara'
 
 RSpec.configure do
 
-  include Capybara::DSL
-
   module PageMagic
     class Element
       class << self
