@@ -12,5 +12,5 @@ group :test do
 end
 
 group :development do
-  gem "jeweler", "~> 1.8.4"
+  gem "jeweler"
 end
