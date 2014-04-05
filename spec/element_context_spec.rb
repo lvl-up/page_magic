@@ -1,4 +1,4 @@
-describe 'Element Context' do
+describe PageMagic::ElementContext do
 
   include_context :webapp
 
@@ -33,12 +33,12 @@ describe 'Element Context' do
       page = page1.new
       page.visit
 
-      PageMagic::ElementContext.new(page, page.browser, self).next
+      described_class.new(page, page.browser, self).next
     end
   end
 
   it 'should raise an error if an element is not found' do
-    expect { PageMagic::ElementContext.new(page1.new(session), session, self).missing_thing }.to raise_error PageMagic::ElementMissingException
+    expect { described_class.new(page1.new(session), session, self).missing_thing }.to raise_error PageMagic::ElementMissingException
   end
 
   it 'should attempt to execute method on page object it is defined' do
@@ -48,7 +48,7 @@ describe 'Element Context' do
       end
     end
 
-    PageMagic::ElementContext.new(page1.new(session), session, self).page_method.should == :called
+    described_class.new(page1.new(session), session, self).page_method.should == :called
   end
 
   describe 'retrieving elements' do
@@ -56,7 +56,7 @@ describe 'Element Context' do
       page = elements_page.new
       page.visit
 
-      element = PageMagic::ElementContext.new(page, page.browser, self).a_link
+      element = described_class.new(page, page.browser, self).a_link
       element.text.should == 'a link'
     end
   end
@@ -66,7 +66,7 @@ describe 'Element Context' do
       page = page1.new
       page.visit
 
-      PageMagic::ElementContext.new(page, page.browser, self).click_next
+      described_class.new(page, page.browser, self).click_next
       page.session.current_path.should == '/page2'
       page.text.should == 'page 2 content'
     end
@@ -86,7 +86,7 @@ describe 'Element Context' do
       page = elements_page.new
       page.visit
 
-      PageMagic::ElementContext.new(page, page.browser, self).form
+      described_class.new(page, page.browser, self).form
     end
 
     it 'they are clickable too' do
@@ -100,7 +100,7 @@ describe 'Element Context' do
       page.visit
 
 
-      PageMagic::ElementContext.new(page, page.browser, self).click_section
+      described_class.new(page, page.browser, self).click_section
       page.session.current_path.should == '/page2'
     end
 
@@ -134,7 +134,7 @@ describe 'Element Context' do
         end
       end
 
-      PageMagic::ElementContext.new(page, page.browser, self).create.click
+      described_class.new(page, page.browser, self).create.click
     end
 
   end
