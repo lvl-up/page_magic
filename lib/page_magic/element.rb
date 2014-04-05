@@ -5,7 +5,17 @@ module PageMagic
 
     include AjaxSupport, Elements
 
-    def initialize name, parent_page_element, type=nil, selector=nil, &block
+    class << self
+      def inherited clazz
+        clazz.extend(Elements, AjaxSupport)
+        def clazz.selector selector=nil
+          return @selector unless selector
+          @selector = selector
+        end
+      end
+    end
+
+    def initialize name, parent_page_element, type=nil, selector, &block
       if selector.is_a?(Hash)
         @selector = selector
       else

@@ -9,7 +9,9 @@ module PageMagic
 
     def self.extended clazz
       clazz.class_eval do
-        attr_reader :browser_element
+        unless instance_methods.include?(:browser_element)
+          attr_reader :browser_element
+        end
 
         def element_definitions
           self.class.element_definitions
@@ -43,12 +45,12 @@ module PageMagic
           section_class, name, selector = args
 
           unless selector
-            selector = name
-            name = section_class.name.to_snake_case
+            selector = section_class.selector
+            name = section_class.name.to_snake_case.to_sym
           end
 
           add_element_definition(name) do |parent_browser_element|
-            section_class.new(name, parent_browser_element, :section, selector)
+            section_class.new(name, parent_browser_element, :section, selector|| section_class.selector)
           end
 
         end

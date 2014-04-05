@@ -17,17 +17,31 @@ describe 'Page elements' do
     Capybara.current_session.visit('/')
   end
 
-  describe 'construction' do
+  describe 'inheriting' do
 
-    let(:page_section_class) do
-      Class.new(PageMagic::Element)
+    include_context :webapp
+
+    it 'lets you create custom elements' do
+      custom_element = Class.new(PageMagic::Element) do
+        selector css: '.form'
+
+        link :form_link, id: 'form_link'
+        def self.name
+          'Form'
+        end
+      end
+
+
+      page = Class.new do
+        include PageMagic
+        url '/elements'
+        section custom_element
+      end
+
+      page = page.new
+      page.visit
+      page.form.form_link.visible?.should be_true
     end
-
-    let(:selector) { {css: '.class_name'} }
-
-    let!(:browser) { double('browser', find: :browser_element) }
-    let!(:parent_page_element) { double('parent_page_element', browser_element: browser) }
-
   end
 
   describe 'browser_element' do
