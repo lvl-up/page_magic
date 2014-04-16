@@ -15,7 +15,7 @@ module PageMagic
       end
     end
 
-    def initialize name, parent_page_element, type=nil, selector, &block
+    def initialize name, parent_page_element, type=nil, selector=nil, &block
       if selector.is_a?(Hash)
         @selector = selector
       else
