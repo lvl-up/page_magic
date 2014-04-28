@@ -15,8 +15,8 @@ module PageMagic
       end
     end
 
-    def initialize name, parent_page_element, type=nil, selector=nil, &block
-      if selector.is_a?(Hash)
+    def initialize name, parent_page_element, options={}, &block
+      if (selector = options[:selector]).is_a?(Hash)
         @selector = selector
       else
         @browser_element = selector
@@ -24,7 +24,7 @@ module PageMagic
 
       @before_hook = proc{}
       @after_hook = proc{}
-      @parent_page_element, @type, @name = parent_page_element, type, name.to_s.downcase.to_sym
+      @parent_page_element, @type, @name = parent_page_element, options[:type], name.to_s.downcase.to_sym
       instance_eval &block if block_given?
     end
 
