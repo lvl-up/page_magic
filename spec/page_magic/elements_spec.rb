@@ -2,7 +2,7 @@ describe PageMagic::Elements do
 
 
   let(:page_elements) do
-    page_element = Class.new do
+    Class.new do
       extend(PageMagic::Elements)
     end
   end
@@ -118,7 +118,7 @@ describe PageMagic::Elements do
       describe 'location' do
         context 'a prefetched object' do
           it 'should add a section' do
-            expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: :object)
+            expected_section = section_class.new(:page_section, parent_page_element, type: :section, browser_element: :object)
             page_elements.section :page_section, :object
             expected_section.should == page_elements.elements(parent_page_element).first
           end

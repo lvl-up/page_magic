@@ -15,16 +15,13 @@ module PageMagic
       end
     end
 
-    def initialize name, parent_page_element, options={}, &block
-      if (selector = options[:selector]).is_a?(Hash)
-        @selector = selector
-      else
-        @browser_element = selector
-      end
+    def initialize name, parent_page_element, type: :element, selector: {}, browser_element: nil, &block
+      @browser_element = browser_element
+      @selector = selector
 
       @before_hook = proc{}
       @after_hook = proc{}
-      @parent_page_element, @type, @name = parent_page_element, options[:type], name.to_s.downcase.to_sym
+      @parent_page_element, @type, @name = parent_page_element, type, name.to_s.downcase.to_sym
       instance_eval &block if block_given?
     end
 
@@ -65,7 +62,7 @@ module PageMagic
 
     def browser_element *args
       return @browser_element if @browser_element
-      raise UndefinedSelectorException, "Pass a selector/define one on the class" unless @selector
+      raise UndefinedSelectorException, "Pass a selector/define one on the class" if @selector.empty?
       if @selector
         method, selector = @selector.to_a.flatten
         browser_element = @parent_page_element.browser_element

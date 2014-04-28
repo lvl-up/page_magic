@@ -91,7 +91,7 @@ describe 'Page elements' do
 
 
     it 'should return a prefetched value' do
-      PageMagic::Element.new(:help, page, type: :link, selector: :prefetched_object).browser_element.should == :prefetched_object
+      PageMagic::Element.new(:help, page, type: :link, browser_element: :prefetched_object).browser_element.should == :prefetched_object
     end
 
     it 'should raise errors for unsupported selectors' do
