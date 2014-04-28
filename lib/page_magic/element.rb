@@ -15,13 +15,14 @@ module PageMagic
       end
     end
 
-    def initialize name, parent_page_element, type: :element, selector: {}, browser_element: nil, &block
-      @browser_element = browser_element
-      @selector = selector
+    def initialize name, parent_page_element, options, &block
+      options = {type: :element, selector: {}, browser_element: nil}.merge(options)
+      @browser_element = options[:browser_element]
+      @selector = options[:selector]
 
       @before_hook = proc{}
       @after_hook = proc{}
-      @parent_page_element, @type, @name = parent_page_element, type, name.to_s.downcase.to_sym
+      @parent_page_element, @type, @name = parent_page_element, options[:type], name.to_s.downcase.to_sym
       instance_eval &block if block_given?
     end
 
