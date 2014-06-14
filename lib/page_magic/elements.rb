@@ -33,10 +33,16 @@ module PageMagic
 
         first_arg = args.first
         if first_arg.is_a?(Symbol)
-          name, selector = args
+          name, object = args
+          options = {type: type}
+          if object.is_a?(Hash)
+            options[:selector] = object
+          else
+            options[:browser_element] = object
+          end
 
           add_element_definition(name) do |*args_for_block|
-            page_section = PageMagic::Element.new name, args_for_block.delete_at(0), type, selector
+            page_section = PageMagic::Element.new name, args_for_block.delete_at(0), options
             page_section.instance_exec *args_for_block, &(block || Proc.new {})
             page_section
           end
@@ -50,7 +56,7 @@ module PageMagic
           end
 
           add_element_definition(name) do |parent_browser_element|
-            section_class.new(name, parent_browser_element, :section, selector|| section_class.selector)
+            section_class.new(name, parent_browser_element, type: :section, selector: (selector || section_class.selector))
           end
 
         end

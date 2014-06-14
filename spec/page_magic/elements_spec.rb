@@ -2,7 +2,7 @@ describe PageMagic::Elements do
 
 
   let(:page_elements) do
-    page_element = Class.new do
+    Class.new do
       extend(PageMagic::Elements)
     end
   end
@@ -17,7 +17,7 @@ describe PageMagic::Elements do
 
     context 'using a selector' do
       it 'should add an element' do
-        expected_element = PageMagic::Element.new(:name, parent_page_element, :text_field, selector)
+        expected_element = PageMagic::Element.new(:name, parent_page_element, type: :text_field, selector: selector)
         page_elements.text_field :name, selector
         page_elements.element_definitions[:name].call(parent_page_element).should == expected_element
       end
@@ -40,7 +40,7 @@ describe PageMagic::Elements do
 
       context 'using a predefined class' do
         it 'should add a section' do
-          expected_section = section_class.new(:page_section, parent_page_element, :section, selector)
+          expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: selector)
 
           page_elements.section section_class, :page_section, selector
           page_elements.elements(parent_page_element).first.should == expected_section
@@ -118,7 +118,7 @@ describe PageMagic::Elements do
       describe 'location' do
         context 'a prefetched object' do
           it 'should add a section' do
-            expected_section = section_class.new(:page_section, parent_page_element, :section, :object)
+            expected_section = section_class.new(:page_section, parent_page_element, type: :section, browser_element: :object)
             page_elements.section :page_section, :object
             expected_section.should == page_elements.elements(parent_page_element).first
           end
