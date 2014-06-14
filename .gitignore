@@ -2,3 +2,8 @@
 *.iml
 test.rb
 coverage
+.tags
+gems.tags
+stdlib.tags
+tags
+.tags_sorted_by_file

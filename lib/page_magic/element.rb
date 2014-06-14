@@ -3,11 +3,11 @@ module PageMagic
   class Element
     attr_reader :type, :name, :selector, :browser_element
 
-    include AjaxSupport, Elements
+    include Elements
 
     class << self
       def inherited clazz
-        clazz.extend(Elements, AjaxSupport)
+        clazz.extend(Elements)
         def clazz.selector selector=nil
           return @selector unless selector
           @selector = selector

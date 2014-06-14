@@ -1,8 +1,6 @@
 module PageMagic
   attr_reader :browser, :session
 
-  include AjaxSupport
-
   def initialize session=Session.new(Capybara.current_session), options={}, &block
 
     @browser = session.raw_session
