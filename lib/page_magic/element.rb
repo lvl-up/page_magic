@@ -80,14 +80,14 @@ module PageMagic
 
     def browser_element *args
       return @browser_element if @browser_element
-      raise UndefinedSelectorException, "Pass a selector/define one on the class" unless @selector
+      raise UndefinedSelectorException, "Pass a selector/define one on the class" if @selector.empty?
       if @selector
         selector_copy = @selector.dup
         method = selector.keys.first
         selector = selector_copy.delete(method)
         options = selector_copy
 
-        browser_element = @parent_page_element.browser_element
+
         finder_method, selector_type, selector_arg = case method
                                                        when :id
                                                          [:find, "##{selector}"]
@@ -112,8 +112,10 @@ module PageMagic
                                                          raise UnsupportedSelectorException
                                                      end
 
-        finder_args = [selector_type, selector_arg, options].compact
-        @browser_element = browser_element.send(finder_method, *finder_args)
+
+        finder_args = [selector_type, selector_arg].compact
+        finder_args << options unless options.empty?
+        @browser_element = @parent_page_element.browser_element.send(finder_method, *finder_args)
       end
       @browser_element
     end
