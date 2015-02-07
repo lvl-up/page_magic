@@ -1,5 +1,15 @@
 module PageMagic
 
+  module MethodObserver
+    def singleton_method_added arg
+      @singleton_methods_added = true unless arg == :singleton_method_added
+    end
+
+    def singleton_methods_added?
+      @singleton_methods_added == true
+    end
+  end
+
   class Element
     attr_reader :type, :name, :selector, :browser_element
 
@@ -8,6 +18,7 @@ module PageMagic
     class << self
       def inherited clazz
         clazz.extend(Elements)
+
         def clazz.selector selector=nil
           return @selector unless selector
           @selector = selector
@@ -20,10 +31,16 @@ module PageMagic
       @browser_element = options[:browser_element]
       @selector = options[:selector]
 
-      @before_hook = proc{}
-      @after_hook = proc{}
+      @before_hook = proc {}
+      @after_hook = proc {}
       @parent_page_element, @type, @name = parent_page_element, options[:type], name.to_s.downcase.to_sym
-      instance_eval &block if block_given?
+
+      extend MethodObserver
+      expand &block if block
+    end
+
+    def expand *args, &block
+      instance_exec *args, &block
     end
 
     def selector selector=nil
@@ -32,7 +49,7 @@ module PageMagic
     end
 
     def section?
-      !element_definitions.empty?
+      !element_definitions.empty? || singleton_methods_added?
     end
 
     def session

@@ -111,6 +111,41 @@ describe 'Page elements' do
     end
   end
 
+  describe '#section?' do
+    context 'element definitions exist' do
+      subject do
+        PageMagic::Element.new(:my_link, :page, type: :link, selector: {text: 'my link'}) do
+          element :thing, text: 'text'
+        end
+      end
+      it 'returns true' do
+        expect(subject.section?).to eq(true)
+      end
+    end
+
+    context 'method defined' do
+      subject do
+        PageMagic::Element.new(:my_link, :page, type: :link, selector: {text: 'my link'}) do
+          def custom_method
+          end
+        end
+      end
+
+      it 'returns true' do
+        expect(subject.section?).to eq(true)
+      end
+    end
+
+    context 'neither method or elements defined' do
+      subject do
+        PageMagic::Element.new(:my_link, :page, type: :link, selector: {text: 'my link'})
+      end
+      it 'returns false' do
+        expect(subject.section?).to eq(false)
+      end
+    end
+  end
+
   describe 'session' do
     it 'should have a handle to the session' do
       page_class = Class.new do
