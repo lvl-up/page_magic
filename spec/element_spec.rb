@@ -50,13 +50,22 @@ describe 'Page elements' do
     end
   end
 
-  describe 'location' do
+  describe '#browser_element' do
     let!(:browser) { double('browser') }
     let!(:page) do
       page_class = Class.new do
         include PageMagic
       end
       page_class.new
+    end
+
+    context 'options supplied to selector' do
+      it 'passes them on to the cappybara finder method' do
+        options = {key: :value}
+        xpath_selector = '//input'
+        expect(Capybara.current_session).to receive(:find).with(:xpath, xpath_selector, options)
+        PageMagic::Element.new(:my_input, page, type: :text_field, selector: {xpath: xpath_selector}.merge(options)).browser_element
+      end
     end
 
     it 'should find by xpath' do
