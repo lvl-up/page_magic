@@ -113,6 +113,11 @@ describe PageMagic::ElementContext do
 
   describe 'hooks' do
 
+
+    #it 'only applies them if browser element supports event' do
+    #  page = elements_page.new
+    #end
+
     it 'should execute a before and after action that gives access to the browser' do
 
       page = elements_page.new

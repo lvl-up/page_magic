@@ -59,13 +59,14 @@ module PageMagic
     def apply_hooks(options)
       _self = self
       page_element, capybara_method = options[:page_element], options[:capybara_method]
+      if page_element.respond_to?(capybara_method)
+        original_method = page_element.method(capybara_method)
 
-      original_method = page_element.method(capybara_method)
-
-      page_element.define_singleton_method capybara_method do |*arguments, &block|
-        _self.call_hook &options[:before_hook]
-        original_method.call *arguments, &block
-        _self.call_hook &options[:after_hook]
+        page_element.define_singleton_method capybara_method do |*arguments, &block|
+          _self.call_hook &options[:before_hook]
+          original_method.call *arguments, &block
+          _self.call_hook &options[:after_hook]
+        end
       end
     end
 
