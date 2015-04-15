@@ -20,6 +20,32 @@ describe PageMagic::Session do
 
   let(:browser) { double('browser', current_url: 'url') }
 
+  describe '#current_page' do
+    subject do
+      PageMagic::Session.new(browser).tap do |session|
+        session.define_transitions '/another_page1' => another_page_class
+      end
+    end
+    context 'page url has not changed' do
+      it 'returns the original page' do
+        browser.should_receive(:visit).with(page.url)
+        subject.visit(page)
+        expect(subject.current_page).to be_an_instance_of(page)
+      end
+    end
+
+    context 'page url has changed' do
+
+      it 'returns the mapped page object' do
+        browser.should_receive(:visit).with(page.url)
+        subject.visit(page)
+        allow(browser).to receive(:current_url).and_return('http://example.com/another_page1')
+        expect(subject.current_page).to be_an_instance_of(another_page_class)
+      end
+
+    end
+  end
+
   it 'should visit the given url' do
     browser.should_receive(:visit).with(page.url)
     session = PageMagic::Session.new(browser).visit(page)
@@ -36,32 +62,6 @@ describe PageMagic::Session do
       browser.stub(:visit)
       session = PageMagic::Session.new(browser).visit(page)
       session.my_method.should be(:called)
-    end
-  end
-
-  context 'move_to moves the session object to another page' do
-    it 'can take a class' do
-      page_magic_session = PageMagic::Session.new(double(:browser, current_url: '/another_page1'))
-      page_magic_session.move_to(another_page_class)
-      page_magic_session.current_page.should be_a(another_page_class)
-    end
-
-    it 'can take the name of the class as a string' do
-      class ThePage
-        include PageMagic
-        url '/the_page'
-      end
-
-      page_magic_session = PageMagic::Session.new(double(:browser, current_url: '/the_page'))
-      page_magic_session.move_to("ThePage")
-      page_magic_session.current_page.should be_a(ThePage)
-    end
-
-    it 'should wait until the browser url has changed' do
-      mock_browser = double(:browser, current_url: 'a')
-      page_magic_session = PageMagic::Session.new(mock_browser)
-
-      expect { page_magic_session.move_to(another_page_class) }.to raise_error(Wait::ResultInvalid)
     end
   end
 end

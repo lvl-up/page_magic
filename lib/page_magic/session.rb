@@ -1,7 +1,7 @@
 require 'wait'
 module PageMagic
   class Session
-    attr_accessor :current_page, :raw_session
+    attr_accessor :current_page, :raw_session, :transitions
 
     def initialize browser
       @raw_session = browser
@@ -11,24 +11,28 @@ module PageMagic
       @transitions = transitions
     end
 
+    def current_page
+      if transitions
+        mapping = transitions.keys.find do |key|
+          current_url.include?(key)
+        end
+        @current_page = transitions[mapping].new(self) if transitions[mapping]
+      end
+      @current_page
+    end
+
     def visit page
-      @raw_session.visit page.url
+      raw_session.visit page.url
       @current_page = page.new self
       self
     end
 
     def current_path
-      @raw_session.current_path
+      raw_session.current_path
     end
 
     def current_url
-      @raw_session.current_url
-    end
-
-    def move_to page_class
-      page_class = eval(page_class) if page_class.is_a?(String)
-      @current_page = page_class.new self
-      wait_until { raw_session.current_url == page_class.url }
+      raw_session.current_url
     end
 
     def wait_until &block
@@ -37,7 +41,7 @@ module PageMagic
     end
 
     def method_missing name, *args, &block
-      @current_page.send(name, *args, &block)
+      current_page.send(name, *args, &block)
     end
 
   end
