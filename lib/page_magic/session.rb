@@ -7,6 +7,10 @@ module PageMagic
       @raw_session = browser
     end
 
+    def define_transitions transitions
+      @transitions = transitions
+    end
+
     def visit page
       @raw_session.visit page.url
       @current_page = page.new self

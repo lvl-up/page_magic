@@ -61,18 +61,6 @@ describe PageMagic::ElementContext do
     end
   end
 
-  describe 'actions' do
-    it 'should click the element' do
-      page = page1.new
-      page.visit
-
-      described_class.new(page, page.browser, self).click_next
-      page.session.current_path.should == '/page2'
-      page.text.should == 'page 2 content'
-    end
-  end
-
-
   describe 'accessing page sections' do
     it 'should go through page sections' do
 
@@ -89,20 +77,6 @@ describe PageMagic::ElementContext do
       described_class.new(page, page.browser, self).form
     end
 
-    it 'they are clickable too' do
-      elements_page.class_eval do
-        section :section do
-          selector id: 'form_link'
-        end
-      end
-
-      page = elements_page.new
-      page.visit
-
-
-      described_class.new(page, page.browser, self).click_section
-      page.session.current_path.should == '/page2'
-    end
 
     it 'should delegate to page element if method not found' do
       #TODO call page method, look for subelement, delagate to capybara object

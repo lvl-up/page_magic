@@ -43,7 +43,7 @@ describe 'The Elements of a Page' do
 
     it 'should access a field' do
       @page.visit
-      @page.click_next
+      @page.next.click
       @page.text.should == 'page 2 content'
     end
 
