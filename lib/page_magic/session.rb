@@ -7,18 +7,33 @@ module PageMagic
       @raw_session = browser
     end
 
-    def define_transitions transitions
+    def define_page_mappings transitions
       @transitions = transitions
     end
 
     def current_page
       if transitions
-        mapping = transitions.keys.find do |key|
-          current_url.include?(key)
-        end
-        @current_page = transitions[mapping].new(self) if transitions[mapping]
+        mapping = find_mapped_page(current_path)
+        @current_page = mapping.new(self) if mapping
       end
       @current_page
+    end
+
+    def find_mapped_page path
+      mapping = transitions.keys.find do |key|
+        string_matches?(path, key)
+      end
+      transitions[mapping]
+    end
+
+    def string_matches?(string, matcher)
+      if matcher.is_a?(Regexp)
+        string =~ matcher
+      elsif matcher.is_a?(String)
+        string == matcher
+      else
+        false
+      end
     end
 
     def visit page
