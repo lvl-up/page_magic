@@ -70,11 +70,23 @@ describe PageMagic::Session do
     end
   end
 
-  it 'should visit the given url' do
-    browser.should_receive(:visit).with(page.url)
-    session = PageMagic::Session.new(browser).visit(page)
-    session.current_page.should be_a(page)
+  describe '#visit' do
+    context 'url supplied' do
+      it 'uses this url instead of the one defined on the page class' do
+        expect(browser).to receive(:visit).with(:custom_url)
+        session = PageMagic::Session.new(browser).visit(page, url: :custom_url)
+        session.current_page.should be_a(page)
+      end
+    end
+
+    it 'visits the url on defined on the page class' do
+      browser.should_receive(:visit).with(page.url)
+      session = PageMagic::Session.new(browser).visit(page)
+      session.current_page.should be_a(page)
+    end
   end
+
+
 
   it 'should return the current url' do
     session = PageMagic::Session.new(browser)
