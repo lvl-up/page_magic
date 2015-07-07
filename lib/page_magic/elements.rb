@@ -43,7 +43,7 @@ module PageMagic
 
           add_element_definition(name) do |*args_for_block|
             page_section = PageMagic::Element.new name, args_for_block.delete_at(0), options
-            page_section.instance_exec *args_for_block, &(block || Proc.new {})
+            page_section.expand *args_for_block, &(block || Proc.new {})
             page_section
           end
 

@@ -1,5 +1,15 @@
 module PageMagic
 
+  module MethodObserver
+    def singleton_method_added arg
+      @singleton_methods_added = true unless arg == :singleton_method_added
+    end
+
+    def singleton_methods_added?
+      @singleton_methods_added == true
+    end
+  end
+
   class Element
     attr_reader :type, :name, :selector, :browser_element
 
@@ -8,6 +18,7 @@ module PageMagic
     class << self
       def inherited clazz
         clazz.extend(Elements)
+
         def clazz.selector selector=nil
           return @selector unless selector
           @selector = selector
@@ -20,10 +31,16 @@ module PageMagic
       @browser_element = options[:browser_element]
       @selector = options[:selector]
 
-      @before_hook = proc{}
-      @after_hook = proc{}
+      @before_hook = proc {}
+      @after_hook = proc {}
       @parent_page_element, @type, @name = parent_page_element, options[:type], name.to_s.downcase.to_sym
-      instance_eval &block if block_given?
+
+      extend MethodObserver
+      expand &block if block
+    end
+
+    def expand *args, &block
+      instance_exec *args, &block
     end
 
     def selector selector=nil
@@ -32,7 +49,7 @@ module PageMagic
     end
 
     def section?
-      !element_definitions.empty?
+      !element_definitions.empty? || singleton_methods_added?
     end
 
     def session
@@ -65,30 +82,40 @@ module PageMagic
       return @browser_element if @browser_element
       raise UndefinedSelectorException, "Pass a selector/define one on the class" if @selector.empty?
       if @selector
-        method, selector = @selector.to_a.flatten
-        browser_element = @parent_page_element.browser_element
-        @browser_element = case method
-                             when :id
-                               browser_element.find("##{selector}")
-                             when :xpath
-                               browser_element.find(:xpath, selector)
-                             when :name
-                               browser_element.find("*[name='#{selector}']")
-                             when :label
-                               browser_element.find_field(selector)
-                             when :text
-                               if @type == :link
-                                 browser_element.find_link(selector)
-                               elsif @type == :button
-                                 browser_element.find_button(selector)
-                               else
-                                 raise UnsupportedSelectorException
-                               end
-                             when :css
-                               browser_element.find(:css, selector)
-                             else
-                               raise UnsupportedSelectorException
-                           end
+        selector_copy = @selector.dup
+        method = selector.keys.first
+        selector = selector_copy.delete(method)
+        options = selector_copy
+
+
+        finder_method, selector_type, selector_arg = case method
+                                                       when :id
+                                                         [:find, "##{selector}"]
+                                                       when :xpath
+                                                         [:find, :xpath, selector]
+                                                       when :name
+                                                         [:find, "*[name='#{selector}']"]
+                                                       when :css
+                                                         [:find, :css, selector]
+                                                       when :label
+                                                         [:find_field, selector]
+                                                       when :text
+                                                         if @type == :link
+                                                           [:find_link, selector]
+                                                         elsif @type == :button
+                                                           [:find_button, selector]
+                                                         else
+                                                           raise UnsupportedSelectorException
+                                                         end
+
+                                                       else
+                                                         raise UnsupportedSelectorException
+                                                     end
+
+
+        finder_args = [selector_type, selector_arg].compact
+        finder_args << options unless options.empty?
+        @browser_element = @parent_page_element.browser_element.send(finder_method, *finder_args)
       end
       @browser_element
     end

@@ -18,14 +18,7 @@ module PageMagic
       return @caller.send(method, *args) if @executing_hooks
       return @page_element.send(method, *args) if @page_element.methods.include?(method)
 
-
       element_locator_factory =  @page_element.element_definitions[method]
-
-      action = nil
-      unless element_locator_factory
-        action = resolve_action(method)
-        element_locator_factory = @page_element.element_definitions[method.to_s.gsub("#{action}_", '').to_sym]
-      end
 
       raise ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
@@ -37,7 +30,7 @@ module PageMagic
 
       result = element_locator.browser_element
 
-      return element_locator if element_locator.section? && action.nil?
+      return element_locator if element_locator.section?
 
       [:set, :select_option, :unselect_option, :click].each do |action_method|
         apply_hooks(page_element: result,
@@ -47,25 +40,20 @@ module PageMagic
         )
       end
 
-      action ? result.send(action) : result
-    end
-
-    def resolve_action(field)
-      {/^click_/ => :click}.each do |prefix, action|
-        return action if field.to_s =~ prefix
-      end
+      result
     end
 
     def apply_hooks(options)
       _self = self
       page_element, capybara_method = options[:page_element], options[:capybara_method]
+      if page_element.respond_to?(capybara_method)
+        original_method = page_element.method(capybara_method)
 
-      original_method = page_element.method(capybara_method)
-
-      page_element.define_singleton_method capybara_method do |*arguments, &block|
-        _self.call_hook &options[:before_hook]
-        original_method.call *arguments, &block
-        _self.call_hook &options[:after_hook]
+        page_element.define_singleton_method capybara_method do |*arguments, &block|
+          _self.call_hook &options[:before_hook]
+          original_method.call *arguments, &block
+          _self.call_hook &options[:after_hook]
+        end
       end
     end
 
