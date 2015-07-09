@@ -36,8 +36,8 @@ module PageMagic
       end
     end
 
-    def visit page
-      raw_session.visit page.url
+    def visit(page, url: nil)
+      raw_session.visit url || page.url
       @current_page = page.new self
       self
     end
