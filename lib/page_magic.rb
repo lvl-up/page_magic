@@ -40,7 +40,6 @@ module PageMagic
           PageMagic.pages << clazz
         end
       end
-
     end
 
     def pages
