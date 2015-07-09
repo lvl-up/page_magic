@@ -28,19 +28,15 @@ module PageMagic
         element_locator = element_locator_factory.call(@page_element, *args)
       end
 
-      result = element_locator.browser_element
-
-      return element_locator if element_locator.section?
-
       [:set, :select_option, :unselect_option, :click].each do |action_method|
-        apply_hooks(page_element: result,
+        apply_hooks(page_element: element_locator.browser_element,
                     capybara_method: action_method,
                     before_hook: element_locator.before,
                     after_hook: element_locator.after,
         )
       end
 
-      result
+      element_locator.section? ? element_locator : element_locator.browser_element
     end
 
     def apply_hooks(options)
