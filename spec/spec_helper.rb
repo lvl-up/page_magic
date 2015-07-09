@@ -11,7 +11,22 @@ require 'page_magic'
 require 'capybara/rspec'
 require 'helpers/capybara'
 
+shared_context :files do
+  require 'tmpdir'
+  def scratch_dir
+    @dir ||= Dir.mktmpdir
+  end
+end
 
+shared_context :rack_application do
+  let(:rack_application) do
+    Class.new do
+      def call env
+        [200, {}, ["hello world!!"]]
+      end
+    end
+  end
+end
 
 RSpec.configure do
 

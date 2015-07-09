@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 
 gem 'capybara'
+gem 'activesupport'
 gem 'wait'
 
 group :test do
