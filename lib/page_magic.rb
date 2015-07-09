@@ -9,6 +9,8 @@ require 'page_magic/page_magic'
 require 'page_magic/drivers'
 
 module PageMagic
+  class UnspportedBrowserException < Exception;end
+
   class << self
 
     def drivers
@@ -18,8 +20,11 @@ module PageMagic
     end
 
     def session(application: nil, browser: :rack_test, options: {})
+      driver = drivers.find(browser)
+      raise UnspportedBrowserException unless driver
+
       Capybara.register_driver browser do |app|
-        drivers.find(browser).build(app, browser: browser, options: options)
+        driver.build(app, browser: browser, options: options)
       end
 
       Session.new(Capybara::Session.new(browser, application))

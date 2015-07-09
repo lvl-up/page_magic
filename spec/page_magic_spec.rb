@@ -34,5 +34,11 @@ describe PageMagic do
         expect(session.raw_session.driver.options).to include(options)
       end
     end
+
+    context 'driver for browser not found' do
+      it 'raises an error' do
+        expect{described_class.session(browser: :invalid)}.to raise_exception described_class::UnspportedBrowserException
+      end
+    end
   end
 end
