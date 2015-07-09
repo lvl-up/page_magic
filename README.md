@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/Ladtech/page_magic.png)](https://travis-ci.org/Ladtech/page_magic)
-#PageMagic 
+#PageMagic
 PageMagic is an API for testing web applications. 
 
 It has a simple but powerful DSL which makes modelling and interacting with your pages easy.
