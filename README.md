@@ -10,10 +10,11 @@ Wouldn't it be great if you could write some page objects that:
 - Were really dynamic so that you could do even more things at runtime?
 
 Well PageMagic might just be the answer!
-## installation
-gem install page_magic --pre
 
 Give it a try and let us know what you think! It's there will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
+
+## installation
+`gem install page_magic --pre`
 
 # An Example
 Imagine the scene. You've written a we based mail client and now you want to test it...
