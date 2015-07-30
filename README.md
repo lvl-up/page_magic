@@ -17,7 +17,7 @@ Give it a try and let us know what you think! It's there will undoubtedly be thi
 `gem install page_magic --pre`
 
 # An Example
-Imagine the scene. You've written a we based mail client and now you want to test it...
+Imagine the scene. You've written a web based mail client and now you want to test it...
 You have a scenario in mind that goes something along the lines of:
 - Send yourself an email with a unique subject
 - Go to the Login page and login
