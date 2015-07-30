@@ -158,19 +158,15 @@ class MessagePage
 end
 ```
 ## Page Mapping
-
+You will have noticed that, in the example, we performed actions that would move us from page to page but did not do anything to tell PageMagic to use the `MailBox` or `MessagePage` when we peformed actions relating to them. With PageMagic you can map which pages it should be used to handle which paths! This is a pretty killer feature that which will remove a lot of the juggling and bring back fluency to your code.
 ```ruby
 # define what pages map to what
 browser.define_page_mappings %r{/messages/\d+} => MessagePage,
-                             '/login' => LoginPage
+                             '/login' => LoginPage,
                              '/' => MailBox
-                             
-#Visit your site
-browser.visit(LoginPage, url: 'https://theapp.com/login')
-#start browsing :)
-browser.via_google.login.click
-browser.messages.message(5).read
-browser.message(5).delete
 ```
+You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping path that that starts with '/messages/' followed one ore more digits to the `MessagePage` class.
 
+##What else can you do with PageMagic?
+PageMagic has lots of other useful features. I'm writing up the documentation so check back here soon!
 
