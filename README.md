@@ -13,7 +13,7 @@ Well PageMagic might just be the answer!
 
 Give it a try and let us know what you think! It's there will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
 
-## installation
+# Installation
 `gem install page_magic --pre`
 
 # An Example
