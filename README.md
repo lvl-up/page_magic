@@ -56,14 +56,14 @@ session = PageMagic.session(browser: :chrome)
 Out of the box, PageMagic knows how to work with:
 - Chrome and Firefox
 - poltergeist
-- rack_test - Read more on testing rack compliant object's directly later on
+- RackTest - Read more on testing rack compliant object's directly later on
 
-Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register capybara specific driver you want and use it. See below for how to do this.
+Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register any Capybara specific driver you want. See below for how to do this.
 
-**Note:** We don't want to impose a particular driver so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
+**Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
 
 ## Defining Pages
-To define something that PageMagic can work with simply include PageMagic in to a class. Here are the classes we would need for the example above.
+To define something that PageMagic can work with, simply include PageMagic in to a class. Here are the classes we would need for the example above.
 ```ruby
 class LoginPage
   include PageMagic
@@ -78,15 +78,15 @@ class MessageView
 end
 ```
 
-##Visiting a page
+## Visiting a page
 To use a page ojbect you need to 'visit' it.
 ```ruby
 session.visit(LoginPage, url: 'https://21st-century-mail.com')
 ```
-soon you won't even have to specify the page class :)
+**Note:** soon you won't even have to specify the page class :)
 
 ##Defining elements
-Your pages are going to have elements on them that you will want to interact with. In the case of the Login page, it's easy to imagine that it will have text fields for a username and password and a button to login in with.
+Your pages are going to have elements on them that you will want to interact with. In the case of the Login page, it's easy to imagine that it will have text fields for a username and password and a button to login in with. 
 ```ruby
 class LoginPage
   include PageMagic
@@ -96,14 +96,18 @@ class LoginPage
 end
 ```
 ##Interacting with elements
-after visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
+Elements are defined with a id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
+
+After visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
 ```ruby
 session.username.set 'joe@blogs.com'
 session.password.set 'passw0rd'
 session.login_button.click
 ```
 ##Defining helper methods
-Using elements that are defined on a page is great, but if you are enacting some procedure using a few of them then you could end up with some pretty repetitive code. In this case you could define a helper method instead. In the above example we used a `login` helper.
+Using elements that are defined on a page is great, but if you are enacting a procedure through interacting with a few of them then your code could end up with some pretty repetitive code. In this case you can define helper methods instead. 
+
+In the above [example](#an example) we used a helper called `login`.
 ```ruby
 class LoginPage
   # ... code defining elements as shown above
@@ -115,10 +119,15 @@ class LoginPage
   end
 end
 ```
-##Defining sub elements
-Your page may be a complex one and elements that you want to work with maybe inside other widgets. With PageMagic you can compose your pages their elements and subelements to as many levels as you need to.
 
-In the above example we accessed a read link that resided with a particular message
+We can interact with helper in the same way as we did page elements.
+```ruby
+session.login('joe', 'blogs')
+```
+##Defining sub elements
+If your pages are complex you can use PageMagic to compose pages, their elements and subelements to as many levels as you need to.
+
+In the example we accessed a read link that resided with a particular message
 ```ruby
 class MailBox
   include PageMagic
@@ -127,8 +136,9 @@ class MailBox
     link(:read, text: 'read')
   end
 end
-
-#here we can access the read link through the message
+```
+Sub elements can be accessed through their parent elements e.g:
+```
 session.message.read.click
 ```
 ## Dynamic Selectors
@@ -139,17 +149,17 @@ class MailBox
   include PageMagic
   
   element :message do |subject:|
-    selector xpath: '//tr[text()="#{subject}"]'
+    selector xpath: '//tr[text()="#{subject}"]' 
     link(:read, text: 'read')
   end
 end
 ```
-In the above example we have defined the 'message' element using a block that takes subject argument. This is passed in at run time and given to the xpath selector.
+Here we have defined the 'message' element using a block that takes subject argument. This is passed in at run time and given to the xpath selector.
 ```ruby
 session.message(subject: 'test message')
 ```
 ## Interaction hooks
-Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, this doesn't mean that the action is finished and that you are safe to proceed. For these occasions PageMagic provides `before` and `after` hooks that you use to wait for things to happen or perform custom actions. In the above example we could imagine that when deleting the email, that a fancy spinner is displayed whilst the application sends an ajax request to have the message deleted. In this case we wouldn't want to proceed until this has disappeared.
+Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before` and `after` hooks that you use to perform custom actions and wait for things to happen. In the case of our web based mail client, we could imagine that when deleting the email, a fancy spinner is displayed whilst the application sends an ajax request to have the message deleted. In this case we wouldn't want to proceed until this has disappeared.
 
 ```ruby
 class MessagePage
@@ -158,20 +168,20 @@ class MessagePage
   
   link(:delete, id: 'delete-message') do
     after do
-      wait_until #some fancy animation has happened
+      wait_until{fancy_animation_has_disapered?}
     end
   end
 end
 ```
 ## Page Mapping
-You will have noticed that, in the example, we performed actions that would move us from page to page but did not do anything to tell PageMagic to use the `MailBox` or `MessagePage` when we peformed actions relating to them. With PageMagic you can map which pages it should be used to handle which paths! This is a pretty killer feature that which will remove a lot of the juggling and bring back fluency to your code.
+You will have noticed that, that we have been performing actions that would move us from page to page but have not done anything to tell PageMagic to use the `MailBox` or `MessagePage`. With PageMagic you can map which pages should be used to handle which URL paths. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
 ```ruby
 # define what pages map to what
 browser.define_page_mappings %r{/messages/\d+} => MessagePage,
                              '/login' => LoginPage,
                              '/' => MailBox
 ```
-You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping path that that starts with '/messages/' followed one ore more digits to the `MessagePage` class.
+You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping paths that that starts with '/messages/' and are followed by one ore more digits to the `MessagePage` class.
 
 ##What else can you do with PageMagic?
 PageMagic has lots of other useful features. I'm writing up the documentation so check back here soon!
