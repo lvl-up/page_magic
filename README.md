@@ -97,7 +97,7 @@ session.password.set 'passw0rd'
 session.login_button.click
 ```
 ##Defining helper methods
-Using elements that are defined on a page is great, but if you are enacting some procedure using a few of them then you could end up with some pretty repetitive code. In this case you could define a helper method instead. In the above example we used a `login` method to deal with signing in.
+Using elements that are defined on a page is great, but if you are enacting some procedure using a few of them then you could end up with some pretty repetitive code. In this case you could define a helper method instead. In the above example we used a `login` helper.
 ```ruby
 class LoginPage
   # ... code defining elements as shown above
@@ -109,9 +109,26 @@ class LoginPage
   end
 end
 ```
+##Defining sub elements
+Your page may be a complex one and elements that you want to work with maybe inside other widgets. With PageMagic you can compose your pages their elements and subelements to as many levels as you need to.
+
+In the above example we accessed a read link that resided with a particular message
+```ruby
+class MailBox
+  include PageMagic
+  
+  element :message, id: 'message_id' do
+    link(:read, text: 'read')
+  end
+end
+
+#here we can access the read link through the message
+session.message.read.click
+```
+## Dynamic Selectors
+In our scenario we actually selected a message based on a subject that was randomly generated. In this case we would not be able to hard code the selector for our message but instead would need to set the selector dynamically.
 
 ```ruby
-
 class MailBox
   include PageMagic
   
@@ -120,6 +137,14 @@ class MailBox
     link(:read, text: 'read')
   end
 end
+```
+In the above example we have defined the 'message' element using a block that takes subject argument. This is passed in at run time and given to the xpath selector.
+```ruby
+session.message(subject: 'test message')
+```
+## Interaction hooks
+
+```ruby
 
 class MessagePage
   include PageMagic
