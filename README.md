@@ -20,15 +20,29 @@ class LoginPage
   end
 end
 
-class Mailbox
+class MailBox
   include PageMagic
   
-  element(:nav, '.nav') do
-    link(:profile, text: 'profile') do
-      after do
-        wait_until{#clever animation has finished}
-      end
+  element(:messages, '.messages') do
+    element :message do |subject:|
+      selector xpath: '//a[text()=#{subject}]
+      link(:read, text: 'read')
     end
+  end
+end
+
+class MessagePage
+  include PageMagic
+  element(:subject, '.subject')
+  element(:body, '.body')
+  link(:delete, id: 'delete-message') do
+    after do
+      wait_until #some fancy animation has happened
+    end
+  end
+  
+  def delete
+    #Code to click the link and accept the 'are you sure confirmation'
   end
 end
 
@@ -38,13 +52,13 @@ browser = PageMagic.session(browser: :chrome)
 # define what pages map to what
 browser.define_page_mappings %r{/messages/\d+} => MessagePage,
                              '/login' => LoginPage
-                             '/home' => HomePage
+                             '/' => MailBox
                              
 #Visit your site
 browser.visit(LoginPage, url: 'https://theapp.com/login')
 #start browsing :)
-browser.via_google.login
-browser.nav.messages.click
+browser.via_google.login.click
+browser.messages(5).read.click
 browser.message(5).delete
 ```
 
