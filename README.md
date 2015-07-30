@@ -143,27 +143,23 @@ In the above example we have defined the 'message' element using a block that ta
 session.message(subject: 'test message')
 ```
 ## Interaction hooks
+Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, this doesn't mean that the action is finished and that you are safe to proceed. For these occasions PageMagic provides `before` and `after` hooks that you use to wait for things to happen or perform custom actions. In the above example we could imagine that when deleting the email, that a fancy spinner is displayed whilst the application sends an ajax request to have the message deleted. In this case we wouldn't want to proceed until this has disappeared.
 
 ```ruby
-
 class MessagePage
   include PageMagic
-  element(:subject, '.subject')
-  element(:body, '.body')
+  ## code defining other elements, such as subject and body
+  
   link(:delete, id: 'delete-message') do
     after do
       wait_until #some fancy animation has happened
     end
   end
-  
-  def delete
-    #Code to click the link and accept the 'are you sure confirmation'
-  end
 end
+```
+## Page Mapping
 
-# Create a session
-browser = PageMagic.session(browser: :chrome)
-
+```ruby
 # define what pages map to what
 browser.define_page_mappings %r{/messages/\d+} => MessagePage,
                              '/login' => LoginPage
