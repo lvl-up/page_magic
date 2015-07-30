@@ -3,7 +3,7 @@ PageMagic is an API for testing web applications.
 
 It has a simple but powerful DSL which makes modelling and interacting with your pages easy.
 
-Wouldn't it be great if there was a frame work that could:
+Wouldn't it be great if there was a framework that could:
 - Model your pages
 - Define custom wait activity that should occur before or after you interact with a page element at the point the element is defined
 - Map the paths to pages so that when you transition from one page to another, you don't have to do awkward things to work out which page object you need to use next?
