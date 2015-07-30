@@ -3,14 +3,19 @@ PageMagic is an API for testing web applications.
 
 It has a simple but powerful DSL which makes modelling and interacting with your pages easy.
 
-So... Wouldn't it be great if you could write some page objects that:
+Wouldn't it be great if you could write some page objects that:
 - Modelled your pages
 - Define custom wait activity that should occur before or after you interact with a page element at the point the element is defined
 - Map the paths that pages map to so, that when you transition from one page to another, you don't have to do awkward things to work out which page object you need to use next?
 - Were really dynamic so that you could do even more things at runtime?
 
 Well PageMagic might just be the answer!
+## installation
+gem install page_magic --pre
 
+Give it a try and let us know what you think! It's there will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
+
+# An Example
 Imagine the scene. You've written a we based mail client and now you want to test it...
 You have a scenario in mind that goes something along the lines of:
 - Send yourself an email with a unique subject
