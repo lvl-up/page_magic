@@ -53,7 +53,7 @@ To start a PageMagic session simply decide what browser you want to use and pass
 ```ruby
 session = PageMagic.session(browser: :chrome)
 ```
-Out of the box, PageMagic has knows how to work with:
+Out of the box, PageMagic knows how to work with:
 - Chrome and Firefox
 - poltergeist
 - rack_test - Read more on testing rack compliant object's directly later on
