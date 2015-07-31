@@ -86,6 +86,8 @@ describe PageMagic::Session do
     end
   end
 
+
+
   it 'should return the current url' do
     session = PageMagic::Session.new(browser)
     session.current_url.should == 'url'
