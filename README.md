@@ -168,7 +168,7 @@ class MessagePage
   
   link(:delete, id: 'delete-message') do
     after do
-      wait_until{fancy_animation_has_disapered?}
+      wait_until{fancy_animation_has_disappeared?}
     end
   end
 end
