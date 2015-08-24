@@ -1,4 +1,5 @@
 require 'ext/string'
+require 'active_support/inflector'
 module PageMagic
   module Elements
     class InvalidElementNameException < Exception
@@ -52,7 +53,7 @@ module PageMagic
 
           unless selector
             selector = section_class.selector
-            name = section_class.name.to_snake_case.to_sym
+            name = section_class.name.demodulize.to_snake_case.to_sym
           end
 
           add_element_definition(name) do |parent_browser_element|
