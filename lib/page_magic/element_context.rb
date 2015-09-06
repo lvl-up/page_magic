@@ -39,6 +39,10 @@ module PageMagic
       element_locator.section? ? element_locator : element_locator.browser_element
     end
 
+    def respond_to? *args
+      @page_element.element_definitions.keys.include?(args.first)
+    end
+
     def apply_hooks(options)
       _self = self
       page_element, capybara_method = options[:page_element], options[:capybara_method]

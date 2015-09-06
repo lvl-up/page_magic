@@ -68,7 +68,7 @@ module PageMagic
 
     def method_missing method, *args
       begin
-        ElementContext.new(self, @browser_element, self, *args).send(method, args.first)
+        element_context(args).send(method, args.first)
       rescue ElementMissingException
         begin
           @browser_element.send(method, *args)
@@ -76,6 +76,12 @@ module PageMagic
           super
         end
       end
+    end
+
+
+
+    def respond_to? *args
+      super || element_context.respond_to?(*args) || @browser_element.respond_to?(*args)
     end
 
     def browser_element *args
@@ -118,6 +124,11 @@ module PageMagic
         @browser_element = @parent_page_element.browser_element.send(finder_method, *finder_args)
       end
       @browser_element
+    end
+
+    private
+    def element_context(*args)
+      ElementContext.new(self, @browser_element, self, *args)
     end
   end
 end

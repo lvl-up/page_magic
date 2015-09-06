@@ -135,4 +135,13 @@ describe PageMagic::ElementContext do
 
   end
 
+  describe '#respond_to?' do
+    subject do
+      described_class.new(page1.new(session), session, self)
+    end
+    it 'checks against the names of the elements passed in' do
+       expect(subject.respond_to?(:next)).to eq(true)
+    end
+  end
+
 end

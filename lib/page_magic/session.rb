@@ -59,5 +59,9 @@ module PageMagic
       current_page.send(name, *args, &block)
     end
 
+    def respond_to? *args
+      super || current_page.respond_to?(*args)
+    end
+
   end
 end

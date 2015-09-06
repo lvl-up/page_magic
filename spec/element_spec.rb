@@ -44,9 +44,26 @@ describe 'Page elements' do
     end
   end
 
-  describe 'browser_element' do
-    it 'should raise an error if a selector has not been specified' do
-      expect { PageMagic::Element.new(:name, Object.new, type: :element).browser_element }.to raise_error(PageMagic::UndefinedSelectorException)
+  it 'should raise an error if a selector has not been specified' do
+    expect { PageMagic::Element.new(:name, Object.new, type: :element).browser_element }.to raise_error(PageMagic::UndefinedSelectorException)
+  end
+
+  describe '#respond_to?' do
+    subject do
+      PageMagic::Element.new(:name, Object.new, type: :element, browser_element: double(element_method: '')) do
+        element :sub_element, css: '.sub-element'
+      end
+    end
+    it 'checks for methods on self' do
+      expect(subject.respond_to?(:session)).to eq(true)
+    end
+
+    it 'checks against registered elements' do
+      expect(subject.respond_to?(:sub_element)).to eq(true)
+    end
+
+    it 'checks for the method of the browser_element' do
+      expect(subject.respond_to?(:element_method)).to eq(true)
     end
   end
 
@@ -58,6 +75,8 @@ describe 'Page elements' do
       end
       page_class.new
     end
+
+
 
     context 'options supplied to selector' do
       it 'passes them on to the cappybara finder method' do

@@ -100,4 +100,19 @@ describe PageMagic::Session do
       session.my_method.should be(:called)
     end
   end
+
+  context '#respond_to?' do
+    subject do
+      PageMagic::Session.new(browser).tap do |s|
+        s.current_page = page.new
+      end
+    end
+    it 'checks self' do
+      expect(subject.respond_to?(:current_url)).to eq(true)
+    end
+
+    it 'checks the current page' do
+      expect(subject.respond_to?(:my_method)).to eq(true)
+    end
+  end
 end

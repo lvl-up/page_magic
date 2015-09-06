@@ -29,7 +29,16 @@ module PageMagic
   end
 
   def method_missing method, *args
-    ElementContext.new(self, @browser, self).send(method, *args)
+    element_context.send(method, *args)
+  end
+
+  def respond_to? *args
+    super || element_context.respond_to?(*args)
+
+  end
+
+  def element_context
+    ElementContext.new(self, @browser, self)
   end
 end
 
