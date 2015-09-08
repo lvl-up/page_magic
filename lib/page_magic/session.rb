@@ -26,16 +26,6 @@ module PageMagic
       transitions[mapping]
     end
 
-    def string_matches?(string, matcher)
-      if matcher.is_a?(Regexp)
-        string =~ matcher
-      elsif matcher.is_a?(String)
-        string == matcher
-      else
-        false
-      end
-    end
-
     def visit(page, url: nil)
       raw_session.visit url || page.url
       @current_page = page.new self
@@ -61,6 +51,17 @@ module PageMagic
 
     def respond_to? *args
       super || current_page.respond_to?(*args)
+    end
+
+    private
+    def string_matches?(string, matcher)
+      if matcher.is_a?(Regexp)
+        string =~ matcher
+      elsif matcher.is_a?(String)
+        string == matcher
+      else
+        false
+      end
     end
 
   end
