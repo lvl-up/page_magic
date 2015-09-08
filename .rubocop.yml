@@ -1,0 +1,9 @@
+Documentation:
+  Enabled: false
+
+AllCops:
+  Exclude:
+    - 'pkg/**/*'
+    - 'vendor/**/*'
+    - 'coverage/**/*'
+    - '.idea/**/*'
