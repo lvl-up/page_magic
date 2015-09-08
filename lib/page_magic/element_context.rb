@@ -1,26 +1,23 @@
 module PageMagic
-
   class ElementMissingException < Exception
-
   end
 
   class ElementContext
-
     attr_reader :caller, :page_element
 
-    def initialize page_element, browser, caller, *args
+    def initialize(page_element, browser, caller, *_args)
       @page_element = page_element
       @browser = browser
       @caller = caller
     end
 
-    def method_missing method, *args
+    def method_missing(method, *args)
       return @caller.send(method, *args) if @executing_hooks
       return @page_element.send(method, *args) if @page_element.methods.include?(method)
 
-      element_locator_factory =  @page_element.element_definitions[method]
+      element_locator_factory = @page_element.element_definitions[method]
 
-      raise ElementMissingException, "Could not find: #{method}" unless element_locator_factory
+      fail ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
       if args.empty?
         element_locator = element_locator_factory.call(@page_element, nil)
@@ -32,20 +29,21 @@ module PageMagic
         apply_hooks(page_element: element_locator.browser_element,
                     capybara_method: action_method,
                     before_hook: element_locator.before,
-                    after_hook: element_locator.after,
-        )
+                    after_hook: element_locator.after
+                   )
       end
 
       element_locator.section? ? element_locator : element_locator.browser_element
     end
 
-    def respond_to? *args
+    def respond_to?(*args)
       @page_element.element_definitions.keys.include?(args.first)
     end
 
     def apply_hooks(options)
       _self = self
-      page_element, capybara_method = options[:page_element], options[:capybara_method]
+      page_element = options[:page_element]
+      capybara_method = options[:capybara_method]
       if page_element.respond_to?(capybara_method)
         original_method = page_element.method(capybara_method)
 
@@ -57,13 +55,11 @@ module PageMagic
       end
     end
 
-
-    def call_hook &block
+    def call_hook(&block)
       @executing_hooks = true
-      result = self.instance_exec @browser, &block
+      result = instance_exec @browser, &block
       @executing_hooks = false
       result
     end
-
   end
 end

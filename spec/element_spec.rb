@@ -1,6 +1,4 @@
 describe 'Page elements' do
-
-
   before :each do
     Capybara.app = Class.new(Sinatra::Base) do
       get '/' do
@@ -18,7 +16,6 @@ describe 'Page elements' do
   end
 
   describe 'inheriting' do
-
     include_context :webapp
 
     it 'lets you create custom elements' do
@@ -30,7 +27,6 @@ describe 'Page elements' do
           'Form'
         end
       end
-
 
       page = Class.new do
         include PageMagic
@@ -76,64 +72,60 @@ describe 'Page elements' do
       page_class.new
     end
 
-
-
     context 'options supplied to selector' do
       it 'passes them on to the cappybara finder method' do
-        options = {key: :value}
+        options = { key: :value }
         xpath_selector = '//input'
         expect(Capybara.current_session).to receive(:find).with(:xpath, xpath_selector, options)
-        PageMagic::Element.new(:my_input, page, type: :text_field, selector: {xpath: xpath_selector}.merge(options)).browser_element
+        PageMagic::Element.new(:my_input, page, type: :text_field, selector: { xpath: xpath_selector }.merge(options)).browser_element
       end
     end
 
     it 'should find by xpath' do
-      element = PageMagic::Element.new(:my_input, page, type: :text_field, selector: {xpath: '//input'}).browser_element
+      element = PageMagic::Element.new(:my_input, page, type: :text_field, selector: { xpath: '//input' }).browser_element
       element.value == 'filled in'
     end
 
     it 'should locate an element using its id' do
-      element = PageMagic::Element.new(:my_input, page, type: :text_field, selector: {id: 'field_id'}).browser_element
+      element = PageMagic::Element.new(:my_input, page, type: :text_field, selector: { id: 'field_id' }).browser_element
       element.value.should == 'filled in'
     end
 
     it 'should locate an element using its name' do
-      element = PageMagic::Element.new(:my_input, page, type: :text_field, selector: {name: 'field_name'}).browser_element
+      element = PageMagic::Element.new(:my_input, page, type: :text_field, selector: { name: 'field_name' }).browser_element
       element.value.should == 'filled in'
     end
 
-
     it 'should locate an element using its label' do
-      element = PageMagic::Element.new(:my_link, page, type: :link, selector: {label: 'enter text'}).browser_element
+      element = PageMagic::Element.new(:my_link, page, type: :link, selector: { label: 'enter text' }).browser_element
       element[:id].should == 'field_id'
     end
 
     it 'should raise an exception when finding another element using its text' do
-      expect { PageMagic::Element.new(:my_link, page, type: :text_field, selector: {text: 'my link'}).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
+      expect { PageMagic::Element.new(:my_link, page, type: :text_field, selector: { text: 'my link' }).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
     end
 
     it 'should locate an element using css' do
-      element = PageMagic::Element.new(:my_link, page, type: :link, selector: {css: "input[name='field_name']"}).browser_element
+      element = PageMagic::Element.new(:my_link, page, type: :link, selector: { css: "input[name='field_name']" }).browser_element
       element[:id].should == 'field_id'
     end
-
 
     it 'should return a prefetched value' do
       PageMagic::Element.new(:help, page, type: :link, browser_element: :prefetched_object).browser_element.should == :prefetched_object
     end
 
     it 'should raise errors for unsupported selectors' do
-      expect { PageMagic::Element.new(:my_link, page, type: :link, selector: {unsupported: ""}).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
+      expect { PageMagic::Element.new(:my_link, page, type: :link, selector: { unsupported: '' }).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
     end
 
     context 'text selector' do
       it 'should locate a link' do
-        element = PageMagic::Element.new(:my_link, page, type: :link, selector: {text: 'my link'}).browser_element
+        element = PageMagic::Element.new(:my_link, page, type: :link, selector: { text: 'my link' }).browser_element
         element[:id].should == 'my_link'
       end
 
       it 'should locate a button' do
-        element = PageMagic::Element.new(:my_button, page, type: :button, selector: {text: 'my button'}).browser_element
+        element = PageMagic::Element.new(:my_button, page, type: :button, selector: { text: 'my button' }).browser_element
         element[:id].should == 'my_button'
       end
     end
@@ -142,7 +134,7 @@ describe 'Page elements' do
   describe '#section?' do
     context 'element definitions exist' do
       subject do
-        PageMagic::Element.new(:my_link, :page, type: :link, selector: {text: 'my link'}) do
+        PageMagic::Element.new(:my_link, :page, type: :link, selector: { text: 'my link' }) do
           element :thing, text: 'text'
         end
       end
@@ -153,7 +145,7 @@ describe 'Page elements' do
 
     context 'method defined' do
       subject do
-        PageMagic::Element.new(:my_link, :page, type: :link, selector: {text: 'my link'}) do
+        PageMagic::Element.new(:my_link, :page, type: :link, selector: { text: 'my link' }) do
           def custom_method
           end
         end
@@ -166,7 +158,7 @@ describe 'Page elements' do
 
     context 'neither method or elements defined' do
       subject do
-        PageMagic::Element.new(:my_link, :page, type: :link, selector: {text: 'my link'})
+        PageMagic::Element.new(:my_link, :page, type: :link, selector: { text: 'my link' })
       end
       it 'returns false' do
         expect(subject.section?).to eq(false)
@@ -185,7 +177,6 @@ describe 'Page elements' do
     end
   end
 
-
   context 'tests coppied in from section' do
     include_context :webapp
 
@@ -195,7 +186,6 @@ describe 'Page elements' do
     end
 
     let!(:elements_page) do
-
       Class.new do
         include PageMagic
         url '/elements'
@@ -225,6 +215,4 @@ describe 'Page elements' do
       @elements_page.form_by_css.link_in_form.visible?.should be_true
     end
   end
-
-
 end

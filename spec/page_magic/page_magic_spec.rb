@@ -1,6 +1,5 @@
 describe PageMagic do
   context '#respond_to?' do
-
     subject do
       page_class = Class.new do
         include PageMagic
@@ -17,5 +16,4 @@ describe PageMagic do
       expect(subject.respond_to?(:sub_element)).to eq(true)
     end
   end
-
 end

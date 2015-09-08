@@ -3,7 +3,7 @@ describe 'including PageMagic' do
 
   context 'lets you define pages' do
     let :page_class do
-      Class.new{include PageMagic}
+      Class.new { include PageMagic }
     end
 
     it 'gives a method for defining the url' do

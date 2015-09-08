@@ -6,7 +6,7 @@ module PageMagic
       @supported_browsers = supported_browsers
     end
 
-    def support? browser
+    def support?(browser)
       supported_browsers.include?(browser)
     end
 

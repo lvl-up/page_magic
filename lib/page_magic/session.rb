@@ -3,11 +3,11 @@ module PageMagic
   class Session
     attr_accessor :current_page, :raw_session, :transitions
 
-    def initialize browser
+    def initialize(browser)
       @raw_session = browser
     end
 
-    def define_page_mappings transitions
+    def define_page_mappings(transitions)
       @transitions = transitions
     end
 
@@ -19,7 +19,7 @@ module PageMagic
       @current_page
     end
 
-    def find_mapped_page path
+    def find_mapped_page(path)
       mapping = transitions.keys.find do |key|
         string_matches?(path, key)
       end
@@ -40,20 +40,21 @@ module PageMagic
       raw_session.current_url
     end
 
-    def wait_until &block
+    def wait_until(&block)
       @wait ||= Wait.new
       @wait.until &block
     end
 
-    def method_missing name, *args, &block
+    def method_missing(name, *args, &block)
       current_page.send(name, *args, &block)
     end
 
-    def respond_to? *args
+    def respond_to?(*args)
       super || current_page.respond_to?(*args)
     end
 
     private
+
     def string_matches?(string, matcher)
       if matcher.is_a?(Regexp)
         string =~ matcher
@@ -63,6 +64,5 @@ module PageMagic
         false
       end
     end
-
   end
 end

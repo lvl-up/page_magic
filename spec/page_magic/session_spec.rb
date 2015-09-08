@@ -1,5 +1,4 @@
 describe PageMagic::Session do
-
   let(:page) do
     Class.new do
       include PageMagic
@@ -7,7 +6,7 @@ describe PageMagic::Session do
     end
   end
 
-  subject {PageMagic::Session.new(browser)}
+  subject { PageMagic::Session.new(browser) }
 
   let(:browser) { double('browser', current_url: 'url', visit: nil, current_path: :current_path) }
 
@@ -24,7 +23,6 @@ describe PageMagic::Session do
   end
 
   describe '#current_page' do
-
     let(:another_page_class) do
       Class.new do
         include PageMagic

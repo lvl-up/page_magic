@@ -51,6 +51,4 @@ describe 'interacting with pages' do
       page.next_page.tag_name.should == 'a'
     end
   end
-
 end
-

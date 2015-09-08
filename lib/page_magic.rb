@@ -9,19 +9,16 @@ require 'page_magic/page_magic'
 require 'page_magic/drivers'
 
 module PageMagic
-  class UnspportedBrowserException < Exception;end
+  class UnspportedBrowserException < Exception; end
 
   class << self
-
     def drivers
-      @drivers ||= Drivers.new.tap do |drivers|
-        drivers.load
-      end
+      @drivers ||= Drivers.new.tap(&:load)
     end
 
     def session(application: nil, browser: :rack_test, options: {})
       driver = drivers.find(browser)
-      raise UnspportedBrowserException unless driver
+      fail UnspportedBrowserException unless driver
 
       Capybara.register_driver browser do |app|
         driver.build(app, browser: browser, options: options)
@@ -30,17 +27,17 @@ module PageMagic
       Session.new(Capybara::Session.new(browser, application))
     end
 
-    def included clazz
+    def included(clazz)
       clazz.extend Elements
       pages << clazz if clazz.is_a? Class
 
       class << clazz
-        def url url=nil
+        def url(url = nil)
           @url = url if url
           @url
         end
 
-        def inherited clazz
+        def inherited(clazz)
           clazz.element_definitions.merge!(element_definitions)
           PageMagic.pages << clazz
         end
@@ -48,7 +45,7 @@ module PageMagic
     end
 
     def pages
-      @pages||=[]
+      @pages ||= []
     end
   end
 end

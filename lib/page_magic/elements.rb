@@ -8,7 +8,7 @@ module PageMagic
     class InvalidMethodNameException < Exception
     end
 
-    def self.extended clazz
+    def self.extended(clazz)
       clazz.class_eval do
         unless instance_methods.include?(:browser_element)
           attr_reader :browser_element
@@ -20,8 +20,8 @@ module PageMagic
       end
     end
 
-    def method_added method
-      raise InvalidMethodNameException, "method name matches element name" if element_definitions[method]
+    def method_added(method)
+      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
     end
 
     def elements(browser_element, *args)
@@ -31,11 +31,10 @@ module PageMagic
     TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
     TYPES.each do |type|
       define_method type do |*args, &block|
-
         first_arg = args.first
         if first_arg.is_a?(Symbol)
           name, object = args
-          options = {type: type}
+          options = { type: type }
           if object.is_a?(Hash)
             options[:selector] = object
           else
@@ -44,7 +43,7 @@ module PageMagic
 
           add_element_definition(name) do |*args_for_block|
             page_section = PageMagic::Element.new name, args_for_block.delete_at(0), options
-            page_section.expand *args_for_block, &(block || Proc.new {})
+            page_section.expand *args_for_block, &(block || proc {})
             page_section
           end
 
@@ -64,11 +63,11 @@ module PageMagic
       end
     end
 
-    def add_element_definition name, &block
-      raise InvalidElementNameException, "duplicate page element defined" if element_definitions[name]
+    def add_element_definition(name, &block)
+      fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
       methods = respond_to?(:instance_methods) ? instance_methods : methods()
-      raise InvalidElementNameException, "a method already exists with this method name" if methods.find { |method| method == name }
+      fail InvalidElementNameException, 'a method already exists with this method name' if methods.find { |method| method == name }
 
       element_definitions[name] = block
     end

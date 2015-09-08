@@ -3,9 +3,7 @@ require 'page_magic'
 describe PageMagic do
   describe '::drivers' do
     it 'returns loaded drivers' do
-      expected_drivers = described_class::Drivers.new.tap do |drivers|
-        drivers.load
-      end
+      expected_drivers = described_class::Drivers.new.tap(&:load)
 
       expect(described_class.drivers).to eq(expected_drivers)
     end
@@ -28,7 +26,7 @@ describe PageMagic do
 
     context 'specifying options' do
       it 'passes the options to the browser driver' do
-        options = {option: :config}
+        options = { option: :config }
         session = described_class.session(options: options, browser: :chrome)
 
         expect(session.raw_session.driver.options).to include(options)
@@ -37,7 +35,7 @@ describe PageMagic do
 
     context 'driver for browser not found' do
       it 'raises an error' do
-        expect{described_class.session(browser: :invalid)}.to raise_exception described_class::UnspportedBrowserException
+        expect { described_class.session(browser: :invalid) }.to raise_exception described_class::UnspportedBrowserException
       end
     end
   end

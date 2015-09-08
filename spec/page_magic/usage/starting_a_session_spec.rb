@@ -1,14 +1,13 @@
 describe 'PageMagic.session' do
-
   let(:app_class) do
     Class.new do
-      def call env
-        [200, {}, ["hello world!!"]]
+      def call(_env)
+        [200, {}, ['hello world!!']]
       end
     end
   end
 
-  def registered_driver browser
+  def registered_driver(browser)
     Capybara.drivers[browser].call(nil)
   end
 
@@ -20,7 +19,6 @@ describe 'PageMagic.session' do
   end
 
   context 'testing against rack applications' do
-
     it 'requires the app to be supplied' do
       session = PageMagic.session(application: app_class.new)
       session.raw_session.visit('/')
@@ -34,5 +32,4 @@ describe 'PageMagic.session' do
       session.raw_session.text.should == 'hello world!!'
     end
   end
-
 end

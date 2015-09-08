@@ -5,5 +5,4 @@ module PageMagic
       Capybara::Poltergeist::Driver
     end
   end
-
 end
