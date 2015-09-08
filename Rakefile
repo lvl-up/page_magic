@@ -1,5 +1,7 @@
 Bundler.require :test,:development
 
+RuboCop::RakeTask.new
+
 RSpec::Core::RakeTask.new(:spec) do
   ENV['coverage'] = "true"
 end

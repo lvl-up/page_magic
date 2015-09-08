@@ -14,6 +14,5 @@ end
 
 group :development do
   gem "jeweler"
-  gem 'guard'
-  gem 'guard-ctags-bundler'
+  gem 'rubocop', require: 'rubocop/rake_task'
 end
