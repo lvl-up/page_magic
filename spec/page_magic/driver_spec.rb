@@ -2,15 +2,15 @@ require 'page_magic/driver'
 
 module PageMagic
   describe Driver do
-
     let(:driver_class) do
       Class.new do
         attr_reader :rack_app, :options
-        def initialize rack_app, options
+        def initialize(rack_app, options)
           @rack_app = rack_app
           @options = options
         end
-        def == driver
+
+        def ==(driver)
           driver.rack_app == rack_app && driver.options == options
         end
       end
@@ -40,7 +40,7 @@ module PageMagic
       end
 
       it 'creates an instance of the supplied driver' do
-        expect(subject.build(:rack_app,browser: :custom_browser, options: {})).to eq(driver_class.new(:rack_app, {browser: :custom_browser}))
+        expect(subject.build(:rack_app, browser: :custom_browser, options: {})).to eq(driver_class.new(:rack_app, browser: :custom_browser))
       end
     end
   end

@@ -1,6 +1,5 @@
 module PageMagic
   class UnsupportedSelectorException < Exception
-
   end
   class UndefinedSelectorException < Exception
   end

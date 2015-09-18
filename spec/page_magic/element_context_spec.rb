@@ -1,12 +1,11 @@
 describe PageMagic::ElementContext do
-
   include_context :webapp
 
   let!(:page1) do
     Class.new do
       include PageMagic
       url '/page1'
-      link(:next, :text => "next page")
+      link(:next, text: 'next page')
     end
   end
 
@@ -14,7 +13,7 @@ describe PageMagic::ElementContext do
     Class.new do
       include PageMagic
       url '/elements'
-      link(:a_link, :text => "a link")
+      link(:a_link, text: 'a link')
     end
   end
 
@@ -23,11 +22,10 @@ describe PageMagic::ElementContext do
   end
 
   describe 'resolving field definitions' do
-
     it 'should only evaluate the targeted field definition' do
       page1.class_eval do
         link(:link, :selector) do
-          fail("should not have been evaluated")
+          fail('should not have been evaluated')
         end
       end
       page = page1.new
@@ -63,7 +61,6 @@ describe PageMagic::ElementContext do
 
   describe 'accessing page sections' do
     it 'should go through page sections' do
-
       elements_page.class_eval do
         section :form do
           selector css: '.form'
@@ -77,20 +74,14 @@ describe PageMagic::ElementContext do
       described_class.new(page, page.browser, self).form
     end
 
-
     it 'should delegate to page element if method not found' do
-      #TODO call page method, look for subelement, delagate to capybara object
+      # TODO: call page method, look for subelement, delagate to capybara object
     end
   end
 
-
-
   describe 'hooks' do
-
     subject(:page) do
-      elements_page.new.tap do|p|
-        p.visit
-      end
+      elements_page.new.tap(&:visit)
     end
 
     before do
@@ -99,20 +90,14 @@ describe PageMagic::ElementContext do
       browser.should_receive(:call_in_after_before_hook)
     end
 
-
     context 'section' do
       it 'applies the hooks' do
-
         elements_page.section(:form, id: 'form') do
           link :form_link, id: 'form_link'
 
-          before do |page_browser|
-            page_browser.call_in_before_hook
-          end
+          before(&:call_in_before_hook)
 
-          after do |page_browser|
-            page_browser.call_in_after_before_hook
-          end
+          after(&:call_in_after_before_hook)
         end
 
         described_class.new(page, page.browser, self).form.click
@@ -121,18 +106,21 @@ describe PageMagic::ElementContext do
 
     it 'should execute a before and after action that gives access to the browser' do
       elements_page.link(:create, text: 'a link') do
-        before do |page_browser|
-          page_browser.call_in_before_hook
-        end
+        before(&:call_in_before_hook)
 
-        after do |page_browser|
-          page_browser.call_in_after_before_hook
-        end
+        after(&:call_in_after_before_hook)
       end
 
       described_class.new(page, page.browser, self).create.click
     end
-
   end
 
+  describe '#respond_to?' do
+    subject do
+      described_class.new(page1.new(session), session, self)
+    end
+    it 'checks against the names of the elements passed in' do
+      expect(subject.respond_to?(:next)).to eq(true)
+    end
+  end
 end

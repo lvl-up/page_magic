@@ -2,19 +2,18 @@ require 'page_magic/driver'
 module PageMagic
   class Drivers
     def all
-      @all ||=[]
+      @all ||= []
     end
 
     def register(driver)
       all << driver
     end
 
-
-    def find browser
-      all.find{|driver|driver.support?(browser)}
+    def find(browser)
+      all.find { |driver| driver.support?(browser) }
     end
 
-    def load path="#{__dir__}/drivers"
+    def load(path = "#{__dir__}/drivers")
       require 'active_support/inflector'
 
       Dir["#{path}/*.rb"].each do |driver_file|
@@ -24,7 +23,7 @@ module PageMagic
       end
     end
 
-    def == other
+    def ==(other)
       other.is_a?(Drivers) && other.all == other.all
     end
   end
