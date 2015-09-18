@@ -11,20 +11,20 @@ module PageMagic
   end
 
   def title
-    @browser.title
+    browser.title
   end
 
   def text_on_page?(text)
-    text.downcase.include?(text.downcase)
+    text().downcase.include?(text.downcase)
   end
 
   def visit
-    @browser.visit self.class.url
+    browser.visit self.class.url
     self
   end
 
   def text
-    @browser.text
+    browser.text
   end
 
   def method_missing(method, *args)
