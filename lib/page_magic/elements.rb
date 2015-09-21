@@ -29,41 +29,27 @@ module PageMagic
     end
 
     TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
+
+
     TYPES.each do |type|
       define_method type do |*args, &block|
-        first_arg = args.first
-        if first_arg.is_a?(Symbol)
-          name, object = args
-          options = { type: type }
-          if object.is_a?(Hash)
-            options[:selector] = object
-          else
-            options[:browser_element] = object
+
+        section_class = remove_argument(args, Class) || Element
+
+        selector = remove_argument(args, Hash)
+        selector ||= section_class.selector if section_class.respond_to?(:selector)
+
+        name = remove_argument(args, Symbol)
+        name ||= section_class.name.demodulize.to_snake_case.to_sym unless section_class.is_a?(Element)
+
+        options =  selector ? {selector: selector} : {browser_element: args.delete_at(0)}
+
+        add_element_definition(name) do |parent_browser_element, *e_args|
+          section_class.new(name, parent_browser_element, options.merge(type: type)).tap do |section|
+            section.expand(*e_args, &(block || proc {}))
           end
-
-          add_element_definition(name) do |*e_args|
-            Element.new(name, e_args.delete_at(0), options).tap do |section|
-              section.expand(*e_args, &(block || proc {}))
-            end
-          end
-
-        elsif first_arg < Element
-          section_class = args.delete_at(0)
-
-          selector = args.find{|arg| arg.is_a?(Hash)}
-          args.delete(selector)
-
-          name = args.last
-
-          selector = section_class.selector unless selector
-
-          name = section_class.name.demodulize.to_snake_case.to_sym unless name
-
-          add_element_definition(name) do |parent_browser_element|
-            section_class.new(name, parent_browser_element, type: :section, selector: (selector || section_class.selector))
-          end
-
         end
+
       end
     end
 
@@ -78,6 +64,12 @@ module PageMagic
 
     def element_definitions
       @element_definitions ||= {}
+    end
+
+    private
+    def remove_argument(args, clazz)
+      argument = args.find { |arg| arg.is_a?(clazz) }
+      args.delete(argument)
     end
   end
 end
