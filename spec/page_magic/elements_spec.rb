@@ -5,7 +5,7 @@ describe PageMagic::Elements do
     end
   end
 
-  let(:selector) { { id: 'id' } }
+  let(:selector) { {id: 'id'} }
   let(:browser_element) { double('browser_element', find: :browser_element) }
   let(:parent_page_element) do
     double('parent_page_element', browser_element: browser_element)
@@ -25,12 +25,13 @@ describe PageMagic::Elements do
         Class.new(PageMagic::Element) do
           def ==(other)
             other.name == name &&
-              other.browser_element == browser_element
+                other.browser_element == browser_element
           end
         end
       end
 
       context 'using a predefined class' do
+
         it 'should add a section' do
           expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: selector)
 
@@ -38,11 +39,33 @@ describe PageMagic::Elements do
           page_elements.elements(parent_page_element).first.should == expected_section
         end
 
+        describe 'selector' do
+          it 'uses the supplied selector' do
+            page_elements.section section_class, :alias, selector
+            expect(page_elements.elements(parent_page_element).first.selector).to eq(selector)
+          end
+
+          context 'with no selector supplied' do
+            it 'defaults the selector to the one on the class' do
+              section_class.selector selector
+              page_elements.section section_class, :alias
+              expect(page_elements.elements(parent_page_element).first.selector).to eq(selector)
+            end
+          end
+        end
+
         context 'name' do
-          it 'should default to the name of the class if one is not supplied' do
-            section_class.stub(:name).and_return('PageSection')
-            page_elements.section section_class, selector
-            page_elements.elements(parent_page_element).first.name.should == :page_section
+          context 'with no name supplied' do
+            it 'should default to the name of the class if one is not supplied' do
+              section_class.stub(:name).and_return('PageSection')
+              page_elements.section section_class, selector
+              page_elements.elements(parent_page_element).first.name.should == :page_section
+            end
+          end
+
+          it 'should use the supplied name' do
+            page_elements.section section_class, :alias, selector
+            expect(page_elements.elements(parent_page_element).first.name).to eq(:alias)
           end
         end
 
