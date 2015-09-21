@@ -41,19 +41,23 @@ module PageMagic
             options[:browser_element] = object
           end
 
-          add_element_definition(name) do |*args_for_block|
-            page_section = PageMagic::Element.new name, args_for_block.delete_at(0), options
-            page_section.expand *args_for_block, &(block || proc {})
-            page_section
+          add_element_definition(name) do |*e_args|
+            Element.new(name, e_args.delete_at(0), options).tap do |section|
+              section.expand(*e_args, &(block || proc {}))
+            end
           end
 
-        elsif first_arg < PageMagic::Element
-          section_class, name, selector = args
+        elsif first_arg < Element
+          section_class = args.delete_at(0)
 
-          unless selector
-            selector = section_class.selector
-            name = section_class.name.demodulize.to_snake_case.to_sym
-          end
+          selector = args.find{|arg| arg.is_a?(Hash)}
+          args.delete(selector)
+
+          name = args.last
+
+          selector = section_class.selector unless selector
+
+          name = section_class.name.demodulize.to_snake_case.to_sym unless name
 
           add_element_definition(name) do |parent_browser_element|
             section_class.new(name, parent_browser_element, type: :section, selector: (selector || section_class.selector))
