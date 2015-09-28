@@ -11,9 +11,7 @@ module PageMagic
     end
 
     def build(app, browser:, options:{})
-      options[:browser] = browser
-      driver_clazz = handler.call
-      driver_clazz.new(app, options)
+      handler.call(app, options, browser)
     end
   end
 end
