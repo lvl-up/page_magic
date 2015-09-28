@@ -2,23 +2,8 @@ require 'page_magic/driver'
 
 module PageMagic
   describe Driver do
-    let(:driver_class) do
-      Class.new do
-        attr_reader :rack_app, :options
-        def initialize(rack_app, options)
-          @rack_app = rack_app
-          @options = options
-        end
-
-        def ==(driver)
-          driver.rack_app == rack_app && driver.options == options
-        end
-      end
-    end
     subject do
-      described_class.new :custom_browser do
-        driver_class
-      end
+      described_class.new :custom_browser
     end
 
     describe '#supports?' do
@@ -35,12 +20,22 @@ module PageMagic
       end
     end
     describe '#build' do
-      it 'adds the browser to the options supplied to the driver' do
-        expect(subject.build(:rack_app, browser: :custom_browser, options: {}).options).to eq(browser: :custom_browser)
+
+      it 'returns the result of the block passed to the driver class constructor' do
+        subject = described_class.new(:custom_browser)do
+          :driver
+        end
+        expect(subject.build(:rack_app, browser: :custom_browser, options: :options)).to eq(:driver)
       end
 
-      it 'creates an instance of the supplied driver' do
-        expect(subject.build(:rack_app, browser: :custom_browser, options: {})).to eq(driver_class.new(:rack_app, browser: :custom_browser))
+      it 'passes rack app to the handler' do
+        subject = described_class.new(:custom_browser) do |app, options, browser|
+            expect(app).to eq(:rack_app)
+            expect(options).to eq(:options)
+            expect(browser).to eq(:browser)
+        end
+
+        subject.build(:rack_app, options: :options, browser: :browser)
       end
     end
   end

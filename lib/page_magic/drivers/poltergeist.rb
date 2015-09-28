@@ -1,8 +1,8 @@
 module PageMagic
   class Drivers
-    Poltergeist = Driver.new(:poltergeist) do
+    Poltergeist = Driver.new(:poltergeist) do |app, options|
       require 'capybara/poltergeist'
-      Capybara::Poltergeist::Driver
+      Capybara::Poltergeist::Driver.new(app, options)
     end
   end
 end
