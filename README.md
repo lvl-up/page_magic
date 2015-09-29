@@ -58,7 +58,7 @@ Out of the box, PageMagic knows how to work with:
 - poltergeist
 - RackTest - Read more on testing rack compliant object's directly later on
 
-Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register any Capybara specific driver you want. See below for how to do this.
+Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register any Capybara specific driver you want. See [below](#registering-a-custom-driver) for how to do this.
 
 **Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
 
@@ -180,6 +180,23 @@ browser.define_page_mappings %r{/messages/\d+} => MessagePage,
 ```
 You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping paths that that starts with '/messages/' and are followed by one ore more digits to the `MessagePage` class.
 
+## Registering a custom driver
+You can register any Capybara compliant driver as follows
+
+```ruby
+#1.  Define driver
+Webkit = Driver.new(:webkit) do |app, options, browser_name|
+  # Write the code necessary to initialise the driver you have chosen
+  require 'capybara/webkit'
+  Capybara::Webkit::Driver.new(app, options)
+end
+
+#2. Register driver
+PageMagic.drivers.register Webkit
+
+#3. Use registered driver
+session = PageMagic.session(browser: webkit)
+```
 ##What else can you do with PageMagic?
 PageMagic has lots of other useful features. I'm writing up the documentation so check back here soon!
 
