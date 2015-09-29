@@ -4,10 +4,10 @@ PageMagic is an API for testing web applications.
 It has a simple but powerful DSL which makes modelling and interacting with your pages easy.
 
 Wouldn't it be great if there was a framework that could:
-- Model your pages
-- Define custom wait activity that should occur before or after you interact with a page element at the point the element is defined
-- Map the paths to pages so that when you transition from one page to another, you don't have to do awkward things to work out which page object you need to use next?
-- Be really really dynamic so that you could do even more things at runtime?
+- [Model your pages](#modelling-pages)
+- [Fluently define interaction hooks / waiters on page elements](#interaction-hooks)
+- [Provide urls to pages to avoid awkward page object switching](#page-mapping)
+- [Be super dynamic](#dynamic-selectors)
 
 Well PageMagic might just be the answer!
 
@@ -62,6 +62,29 @@ Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capyba
 
 **Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
 
+## Modeling pages
+To define something that PageMagic can work with, simply include PageMagic in to a class. Your you will also want to model the elements on your page so that you can interact with them. Here are we are modelling the login page we would need for the example above
+
+```ruby
+class LoginPage
+  include PageMagic
+  text_field(:username, label: 'username')
+  text_field(:password, label: 'password')
+  button(:login_button, text: 'login')
+end
+```
+In the case of the Login page, it's easy to imagine that it will have text fields for a username and password and a button to login in with.
+
+##Interacting with elements
+Elements are defined with a id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
+
+After visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
+```ruby
+session.username.set 'joe@blogs.com'
+session.password.set 'passw0rd'
+session.login_button.click
+```
+
 ## Defining Pages
 To define something that PageMagic can work with, simply include PageMagic in to a class. Here are the classes we would need for the example above.
 ```ruby
@@ -78,33 +101,7 @@ class MessageView
 end
 ```
 
-## Visiting a page
-To use a page ojbect you need to 'visit' it.
-```ruby
-session.visit(LoginPage, url: 'https://21st-century-mail.com')
-```
-**Note:** soon you won't even have to specify the page class :)
-
-##Defining elements
-Your pages are going to have elements on them that you will want to interact with. In the case of the Login page, it's easy to imagine that it will have text fields for a username and password and a button to login in with. 
-```ruby
-class LoginPage
-  include PageMagic
-  text_field(:username, label: 'username')
-  text_field(:password, label: 'password')
-  button(:login_button, text: 'login')
-end
-```
-##Interacting with elements
-Elements are defined with a id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
-
-After visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
-```ruby
-session.username.set 'joe@blogs.com'
-session.password.set 'passw0rd'
-session.login_button.click
-```
-##Defining helper methods
+## Helper methods
 Using elements that are defined on a page is great, but if you are enacting a procedure through interacting with a few of them then your code could end up with some pretty repetitive code. In this case you can define helper methods instead. 
 
 In the above [example](#an example) we used a helper called `login`.
