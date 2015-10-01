@@ -184,8 +184,9 @@ You can use even use regular expressions to map multiple paths to the same page.
 You can register any Capybara compliant driver as follows
 
 ```ruby
-#1.  Define driver
-Webkit = Driver.new(:webkit) do |app, options, browser_name|
+#1. Define driver, constructor to PageMagic::Driver takes a list of browser aliases.
+# Selenium Webdriver for example supports driving more than one.
+Webkit = PageMagic::Driver.new(:webkit) do |app, options, browser_alias_chosen|
   # Write the code necessary to initialise the driver you have chosen
   require 'capybara/webkit'
   Capybara::Webkit::Driver.new(app, options)
