@@ -3,6 +3,8 @@ module PageMagic
   end
 
   class ElementContext
+    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
+
     attr_reader :caller, :page_element
 
     def initialize(page_element, browser, caller, *_args)
@@ -11,13 +13,13 @@ module PageMagic
       @caller = caller
     end
 
-    def method_missing(method, *args)
-      return @caller.send(method, *args) if @executing_hooks
-      return @page_element.send(method, *args) if @page_element.methods.include?(method)
+    def method_missing(method, *args, &block)
+      return @caller.send(method, *args, &block) if @executing_hooks
+      return @page_element.send(method, *args, &block) if @page_element.methods.include?(method)
 
       element_locator_factory = @page_element.element_definitions[method]
 
-      fail ElementMissingException, "Could not find: #{method}" unless element_locator_factory
+      raise ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
       if args.empty?
         element_locator = element_locator_factory.call(@page_element, nil)
@@ -25,12 +27,11 @@ module PageMagic
         element_locator = element_locator_factory.call(@page_element, *args)
       end
 
-      [:set, :select_option, :unselect_option, :click].each do |action_method|
+      EVENT_TYPES.each do |action_method|
         apply_hooks(page_element: element_locator.browser_element,
                     capybara_method: action_method,
                     before_hook: element_locator.before,
-                    after_hook: element_locator.after
-                   )
+                    after_hook: element_locator.after)
       end
 
       element_locator.section? ? element_locator : element_locator.browser_element
