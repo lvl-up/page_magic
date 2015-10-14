@@ -10,6 +10,7 @@ module PageMagic
   end
 
   class Element
+    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     attr_reader :type, :name, :selector, :browser_element
 
     include Elements
@@ -67,13 +68,19 @@ module PageMagic
       @after_hook = block
     end
 
-    def method_missing(method, *args)
-      element_context(args).send(method, args.first)
-    rescue ElementMissingException
+    def method_missing method, *args, &block
       begin
-        @browser_element.send(method, *args)
-      rescue
-        super
+        ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
+      rescue ElementMissingException
+        begin
+          if browser_element.respond_to?(method)
+            browser_element.send(method, *args, &block)
+          else
+            @parent_page_element.send(method, *args, &block)
+          end
+        rescue
+          super
+        end
       end
     end
 
@@ -91,34 +98,63 @@ module PageMagic
         options = selector_copy
 
         finder_method, selector_type, selector_arg = case method
-                                                     when :id
-                                                       [:find, "##{selector}"]
-                                                     when :xpath
-                                                       [:find, :xpath, selector]
-                                                     when :name
-                                                       [:find, "*[name='#{selector}']"]
-                                                     when :css
-                                                       [:find, :css, selector]
-                                                     when :label
-                                                       [:find_field, selector]
-                                                     when :text
-                                                       if @type == :link
-                                                         [:find_link, selector]
-                                                       elsif @type == :button
-                                                         [:find_button, selector]
+                                                       when :id
+                                                         [:find, "##{selector}"]
+                                                       when :xpath
+                                                         [:find, :xpath, selector]
+                                                       when :name
+                                                         [:find, "*[name='#{selector}']"]
+                                                       when :css
+                                                         [:find, :css, selector]
+                                                       when :label
+                                                         [:find_field, selector]
+                                                       when :text
+                                                         if @type == :link
+                                                           [:find_link, selector]
+                                                         elsif @type == :button
+                                                           [:find_button, selector]
+                                                         else
+                                                           fail UnsupportedSelectorException
+                                                         end
+
                                                        else
                                                          fail UnsupportedSelectorException
-                                                       end
-
-                                                     else
-                                                       fail UnsupportedSelectorException
                                                      end
 
         finder_args = [selector_type, selector_arg].compact
         finder_args << options unless options.empty?
-        @browser_element = @parent_page_element.browser_element.send(finder_method, *finder_args)
+        @browser_element = @parent_page_element.browser_element.send(finder_method, *finder_args).tap do |browser_element|
+          EVENT_TYPES.each do |action_method|
+            apply_hooks(page_element: browser_element,
+                        capybara_method: action_method,
+                        before_hook: before,
+                        after_hook: after)
+          end
+        end
+
       end
-      @browser_element
+    end
+
+    def apply_hooks(options)
+      _self = self
+      page_element = options[:page_element]
+      capybara_method = options[:capybara_method]
+      if page_element.respond_to?(capybara_method)
+        original_method = page_element.method(capybara_method)
+
+        page_element.define_singleton_method capybara_method do |*arguments, &block|
+          _self.call_hook &options[:before_hook]
+          original_method.call *arguments, &block
+          _self.call_hook &options[:after_hook]
+        end
+      end
+    end
+
+    def call_hook(&block)
+      @executing_hooks = true
+      result = instance_exec @browser, &block
+      @executing_hooks = false
+      result
     end
 
     private

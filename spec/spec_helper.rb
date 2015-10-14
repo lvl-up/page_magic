@@ -12,6 +12,7 @@ require 'helpers/capybara'
 
 shared_context :files do
   require 'tmpdir'
+
   def scratch_dir
     @dir ||= Dir.mktmpdir
   end
@@ -40,19 +41,20 @@ RSpec.configure do
         end
       end
       alias_method :initialize_backup, :initialize
+
       def initialize(*args, &block)
         initialize_backup *args, &block
-        @before_hook = self.class.default_before_hook
-        @after_hook = self.class.default_after_hook
+        # @before_hook = self.class.default_before_hook
+        # @after_hook = self.class.default_after_hook
       end
 
       def ==(page_element)
         page_element.is_a?(Element) &&
-          @type == page_element.type &&
-          @name == page_element.name &&
-          @selector == page_element.selector
-        @before_hook == page_element.before &&
-          @after_hook == page_element.after
+            @type == page_element.type &&
+            @name == page_element.name &&
+            @selector == page_element.selector
+        # @before_hook == page_element.before &&
+        #     @after_hook == page_element.after
       end
     end
   end

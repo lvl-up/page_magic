@@ -79,42 +79,6 @@ describe PageMagic::ElementContext do
     end
   end
 
-  describe 'hooks' do
-    subject(:page) do
-      elements_page.new.tap(&:visit)
-    end
-
-    before do
-      browser = page.browser
-      browser.should_receive(:call_in_before_hook)
-      browser.should_receive(:call_in_after_before_hook)
-    end
-
-    context 'section' do
-      it 'applies the hooks' do
-        elements_page.section(:form, id: 'form') do
-          link :form_link, id: 'form_link'
-
-          before(&:call_in_before_hook)
-
-          after(&:call_in_after_before_hook)
-        end
-
-        described_class.new(page, page.browser, self).form.click
-      end
-    end
-
-    it 'should execute a before and after action that gives access to the browser' do
-      elements_page.link(:create, text: 'a link') do
-        before(&:call_in_before_hook)
-
-        after(&:call_in_after_before_hook)
-      end
-
-      described_class.new(page, page.browser, self).create.click
-    end
-  end
-
   describe '#respond_to?' do
     subject do
       described_class.new(page1.new(session), session, self)
