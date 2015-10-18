@@ -199,8 +199,7 @@ module PageMagic
 
       before do
         page_class.class_eval do
-          section :form_by_css do
-            selector css: '.form'
+          section :form_by_css, css: '.form' do
             link(:link_in_form, text: 'a in a form')
           end
 
