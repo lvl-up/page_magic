@@ -208,8 +208,6 @@ module PageMagic
             :called
           end
         end
-
-        page.visit
       end
 
       it 'can delegate to capybara' do
