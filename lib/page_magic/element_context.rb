@@ -14,23 +14,23 @@ module PageMagic
     end
 
     def method_missing(method, *args, &block)
-      return @page_element.send(method, *args, &block) if @page_element.methods.include?(method)
+      return page_element.send(method, *args, &block) if page_element.methods.include?(method)
 
-      element_locator_factory = @page_element.element_definitions[method]
+      element_locator_factory = page_element.element_definitions[method]
 
       raise ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
       if args.empty?
-        element_locator = element_locator_factory.call(@page_element, nil)
+        element_locator = element_locator_factory.call(page_element, nil)
       else
-        element_locator = element_locator_factory.call(@page_element, *args)
+        element_locator = element_locator_factory.call(page_element, *args)
       end
 
       element_locator.section? ? element_locator : element_locator.browser_element
     end
 
     def respond_to?(*args)
-      @page_element.element_definitions.keys.include?(args.first)
+      page_element.element_definitions.keys.include?(args.first)
     end
   end
 end
