@@ -202,10 +202,6 @@ module PageMagic
           section :form_by_css, css: '.form' do
             link(:link_in_form, text: 'a in a form')
           end
-
-          def parent_method
-            :called
-          end
         end
       end
 
@@ -215,6 +211,11 @@ module PageMagic
 
       context 'method not on capybara browser element' do
         it 'uses the parent page element' do
+          page_class.class_eval do
+            def parent_method
+              :called
+            end
+          end
           expect(page.form_by_css.parent_method).to eq(:called)
         end
       end
