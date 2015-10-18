@@ -74,11 +74,16 @@ RSpec.configure do
       get '/elements' do
         <<-ELEMENTS
           <a href='#'>a link</a>
-          <input type='submit' value='a button'/>
+
 
           <div id='form' class="form">
-            <a id='form_link' href='/page2'>a in a form</a>
+            <a id='form_link' href='/page2'>link in a form</a>
+            <label>enter text
+              <input id='field_id' name='field_name' class='input_class' type='text' value='filled in'/>
+            </label>
+            <input id='form_button' type='submit' value='a button'/>
           </form>
+
         ELEMENTS
       end
     end

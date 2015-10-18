@@ -1,45 +1,38 @@
 module PageMagic
 
   describe Element do
-    before :each do
-      Capybara.app = Class.new(Sinatra::Base) do
-        get '/' do
-          <<-HTML
-          <label>enter text
-          <input id='field_id' name='field_name' class='input_class' type='text' value='filled in'/>
-          </label>
-          <a id=my_link href='#'>my link</a>
-          <button id=my_button href='#'>my button</button>
-          HTML
-        end
-      end
 
-      Capybara.current_session.visit('/')
+    include_context :webapp
+
+    let(:page_class) do
+      Class.new do
+        include PageMagic
+        url '/elements'
+      end
+    end
+
+    let(:page) do
+      page_class.new.tap do |page|
+        page.visit
+      end
     end
 
     describe 'inheriting' do
-      include_context :webapp
 
       it 'lets you create custom elements' do
         custom_element = Class.new(described_class) do
-          selector css: '.form'
-
-          link :form_link, id: 'form_link'
+          text_field :form_field, id: 'field_id'
 
           def self.name
             'Form'
           end
         end
 
-        page = Class.new do
-          include PageMagic
-          url '/elements'
-          section custom_element
+        page_class.class_eval do
+          section custom_element, css: '.form'
         end
 
-        page = page.new
-        page.visit
-        page.form.form_link.visible?.should be_true
+        expect(page.form.form_field).to be_visible
       end
     end
 
@@ -66,44 +59,36 @@ module PageMagic
       end
     end
 
-    let!(:page) do
-      page_class = Class.new do
-        include PageMagic
-      end
-      page_class.new
-    end
-
-
     describe '#browser_element' do
       let!(:browser) { double('browser') }
 
       context 'options supplied to selector' do
         it 'passes them on to the cappybara finder method' do
-          options = {key: :value}
-          xpath_selector = '//input'
+          options = {count: 1}
+          xpath_selector = '//div/input'
           expect(Capybara.current_session).to receive(:find).with(:xpath, xpath_selector, options)
           described_class.new(:my_input, page, type: :text_field, selector: {xpath: xpath_selector}.merge(options)).browser_element
         end
       end
 
       it 'should find by xpath' do
-        element = described_class.new(:my_input, page, type: :text_field, selector: {xpath: '//input'}).browser_element
-        element.value == 'filled in'
+        element = described_class.new(:my_input, page, type: :text_field, selector: {xpath: '//div/label/input'}).browser_element
+        expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its id' do
         element = described_class.new(:my_input, page, type: :text_field, selector: {id: 'field_id'}).browser_element
-        element.value.should == 'filled in'
+        expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its name' do
         element = described_class.new(:my_input, page, type: :text_field, selector: {name: 'field_name'}).browser_element
-        element.value.should == 'filled in'
+        expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its label' do
         element = described_class.new(:my_link, page, type: :link, selector: {label: 'enter text'}).browser_element
-        element[:id].should == 'field_id'
+        expect(element[:id]).to eq('field_id')
       end
 
       it 'should raise an exception when finding another element using its text' do
@@ -112,7 +97,7 @@ module PageMagic
 
       it 'should locate an element using css' do
         element = described_class.new(:my_link, page, type: :link, selector: {css: "input[name='field_name']"}).browser_element
-        element[:id].should == 'field_id'
+        expect(element[:id]).to eq('field_id')
       end
 
       it 'should return a prefetched value' do
@@ -125,13 +110,13 @@ module PageMagic
 
       context 'text selector' do
         it 'should locate a link' do
-          element = described_class.new(:my_link, page, type: :link, selector: {text: 'my link'}).browser_element
-          element[:id].should == 'my_link'
+          element = described_class.new(:my_link, page, type: :link, selector: {text: 'link in a form'}).browser_element
+          expect(element[:id]).to eq('form_link')
         end
 
         it 'should locate a button' do
-          element = described_class.new(:my_button, page, type: :button, selector: {text: 'my button'}).browser_element
-          element[:id].should == 'my_button'
+          element = described_class.new(:my_button, page, type: :button, selector: {text: 'a button'}).browser_element
+          element[:id].should == 'form_button'
         end
       end
     end
@@ -173,12 +158,7 @@ module PageMagic
 
     describe 'session' do
       it 'should have a handle to the session' do
-        page_class = Class.new do
-          include PageMagic
-        end
-        page = page_class.new
-
-        described_class.new(:help, page, type: :link, selector: :selector).session.should == page.session
+        expect(described_class.new(:help, page, type: :link, selector: :selector).session).to eq(page.session)
       end
     end
 
@@ -215,44 +195,40 @@ module PageMagic
 
     end
 
+    describe '#method_missing' do
 
-    context 'tests copied in from section' do
-      include_context :webapp
-
-      before :each do
-        @elements_page = elements_page.new
-        @elements_page.visit
-      end
-
-      let!(:elements_page) do
-        Class.new do
-          include PageMagic
-          url '/elements'
+      before do
+        page_class.class_eval do
           section :form_by_css do
             selector css: '.form'
             link(:link_in_form, text: 'a in a form')
           end
 
-          section :form_by_id do
-            selector id: 'form'
-            link(:link_in_form, text: 'a in a form')
+          def parent_method
+            :called
           end
         end
+
+        page.visit
       end
 
-      describe 'method_missing' do
-        it 'should delegate to capybara' do
-          @elements_page.form_by_css.visible?.should be(true)
+      it 'can delegate to capybara' do
+        expect(page.form_by_css).to be_visible
+      end
+
+      context 'method not on capybara browser element' do
+        it 'uses the parent page element' do
+          expect(page.form_by_css.parent_method).to eq(:called)
         end
+      end
 
-        it 'should throw default exception if the method does not exist on the capybara object' do
-          expect { @elements_page.form_by_css.bobbins }.to raise_exception ElementMissingException
+      context 'no element definition and not a capybara method' do
+        it 'throws and exception' do
+          expect { page.form_by_css.bobbins }.to raise_exception NoMethodError
         end
       end
 
-      it 'can have elements' do
-        @elements_page.form_by_css.link_in_form.visible?.should be_true
-      end
     end
+
   end
 end

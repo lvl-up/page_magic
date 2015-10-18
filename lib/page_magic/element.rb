@@ -27,7 +27,7 @@ module PageMagic
     end
 
     def initialize(name, parent_page_element, options, &block)
-      options = { type: :element, selector: {}, browser_element: nil }.merge(options)
+      options = {type: :element, selector: {}, browser_element: nil}.merge(options)
       @browser_element = options[:browser_element]
       @selector = options[:selector]
 
@@ -72,13 +72,11 @@ module PageMagic
       begin
         ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
       rescue ElementMissingException
-        begin
-          if browser_element.respond_to?(method)
-            browser_element.send(method, *args, &block)
-          else
-            @parent_page_element.send(method, *args, &block)
-          end
-        rescue
+        if browser_element.respond_to?(method)
+          browser_element.send(method, *args, &block)
+        elsif @parent_page_element.respond_to?(method)
+          @parent_page_element.send(method, *args, &block)
+        else
           super
         end
       end
