@@ -32,7 +32,8 @@ module PageMagic
       context 'method is a element defintion' do
         it 'returns the sub page element' do
           element = described_class.new(page, page.browser, self).a_link
-          expect(element).to eq(Element.new(:link, page, type: :link, selector: {text: 'a link'}))
+          #TODO - returns the capybara object. maybe we should think about wrapping this.
+          expect(element.text).to eq('a link')
         end
 
         it 'does not evaluate any of the other definitions' do
