@@ -15,7 +15,6 @@ module PageMagic
       double('session', raw_session: double('browser'))
     end
 
-
     describe '#method_missing' do
 
       let(:page) do
