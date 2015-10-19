@@ -11,7 +11,7 @@ module PageMagic
 
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
-    attr_reader :type, :name, :selector, :browser_element
+    attr_reader :type, :name, :selector, :parent_page_element, :browser_element
 
     include Elements
 
@@ -68,7 +68,7 @@ module PageMagic
       @after_hook = block
     end
 
-    def method_missing method, *args, &block
+    def method_missing(method, *args, &block)
       begin
         ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
       rescue ElementMissingException
@@ -76,9 +76,9 @@ module PageMagic
           if browser_element.respond_to?(method)
             browser_element.send(method, *args, &block)
           else
-            @parent_page_element.send(method, *args, &block)
+            parent_page_element.send(method, *args, &block)
           end
-        rescue ElementMissingException
+        rescue Exception
           super
         end
       end
@@ -89,76 +89,80 @@ module PageMagic
     end
 
     def browser_element(*_args)
+
       return @browser_element if @browser_element
-      fail UndefinedSelectorException, 'Pass a selector/define one on the class' if @selector.empty?
-      if @selector
-        selector_copy = @selector.dup
-        method = selector.keys.first
-        selector = selector_copy.delete(method)
-        options = selector_copy
 
-        finder_method, selector_type, selector_arg = case method
-                                                       when :id
-                                                         [:find, "##{selector}"]
-                                                       when :xpath
-                                                         [:find, :xpath, selector]
-                                                       when :name
-                                                         [:find, "*[name='#{selector}']"]
-                                                       when :css
-                                                         [:find, :css, selector]
-                                                       when :label
-                                                         [:find_field, selector]
-                                                       when :text
-                                                         if @type == :link
-                                                           [:find_link, selector]
-                                                         elsif @type == :button
-                                                           [:find_button, selector]
-                                                         else
-                                                           fail UnsupportedSelectorException
-                                                         end
+      fail UndefinedSelectorException, 'Pass a selector/define one on the class' if selector.empty?
 
+      selector_copy = selector.dup
+      method = selector_copy.keys.first
+      selector = selector_copy.delete(method)
+      options = selector_copy
+
+      finder_method, selector_type, selector_arg = case method
+                                                     when :id
+                                                       [:find, "##{selector}"]
+                                                     when :xpath
+                                                       [:find, :xpath, selector]
+                                                     when :name
+                                                       [:find, "*[name='#{selector}']"]
+                                                     when :css
+                                                       [:find, :css, selector]
+                                                     when :label
+                                                       [:find_field, selector]
+                                                     when :text
+                                                       if @type == :link
+                                                         [:find_link, selector]
+                                                       elsif @type == :button
+                                                         [:find_button, selector]
                                                        else
                                                          fail UnsupportedSelectorException
-                                                     end
+                                                       end
 
-        finder_args = [selector_type, selector_arg].compact
-        finder_args << options unless options.empty?
-        @browser_element = @parent_page_element.browser_element.send(finder_method, *finder_args).tap do |browser_element|
-          EVENT_TYPES.each do |action_method|
-            apply_hooks(page_element: browser_element,
-                        capybara_method: action_method,
-                        before_hook: before,
-                        after_hook: after)
-          end
+                                                     else
+                                                       fail UnsupportedSelectorException
+                                                   end
+
+      finder_args = [selector_type, selector_arg].compact
+      finder_args << options unless options.empty?
+
+      @browser_element = parent_browser_element.send(finder_method, *finder_args).tap do |browser_element|
+        EVENT_TYPES.each do |action_method|
+          apply_hooks(page_element: browser_element,
+                      capybara_method: action_method,
+                      before_hook: before,
+                      after_hook: after)
         end
-
       end
+
     end
 
-    def apply_hooks(options)
-      _self = self
-      page_element = options[:page_element]
-      capybara_method = options[:capybara_method]
+    def parent_browser_element
+      parent_page_element.browser_element
+    end
+
+    def apply_hooks(page_element:, capybara_method:, before_hook:, after_hook:)
+
       if page_element.respond_to?(capybara_method)
         original_method = page_element.method(capybara_method)
+        _self = self
 
-        page_element.define_singleton_method capybara_method do |*arguments, &block|
-          _self.call_hook &options[:before_hook]
+        page_element.define_singleton_method(capybara_method) do |*arguments, &block|
+          _self.call_hook &before_hook
           original_method.call *arguments, &block
-          _self.call_hook &options[:after_hook]
+          _self.call_hook &after_hook
         end
       end
     end
 
     def call_hook(&block)
       @executing_hooks = true
-      result = instance_exec @browser, &block
+      result = instance_exec &block
       @executing_hooks = false
       result
     end
 
     private
-
     def element_context(*args)
       ElementContext.new(self, @browser_element, self, *args)
     end

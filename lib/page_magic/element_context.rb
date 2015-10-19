@@ -7,9 +7,8 @@ module PageMagic
 
     attr_reader :caller, :page_element
 
-    def initialize(page_element, browser, caller, *_args)
+    def initialize(page_element, caller, *_args)
       @page_element = page_element
-      @browser = browser
       @caller = caller
     end
 

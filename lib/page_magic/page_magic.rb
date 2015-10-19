@@ -5,9 +5,9 @@ module PageMagic
     @browser = session.raw_session
     @session = session
 
-    @browser_element = @browser
+    @browser_element = browser
     navigate if options[:navigate_to_page]
-    block.call @browser if block
+    block.call browser if block
   end
 
   def title
@@ -36,6 +36,6 @@ module PageMagic
   end
 
   def element_context
-    ElementContext.new(self, @browser, self)
+    ElementContext.new(self, self)
   end
 end
