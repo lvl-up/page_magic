@@ -124,7 +124,7 @@ module PageMagic
     describe '#section?' do
       context 'element definitions exist' do
         subject do
-          described_class.new(:my_link, :page, type: :link, selector: {text: 'my link'}) do
+          described_class.new(:my_link, page, type: :button, selector: {text: 'a button'}) do
             element :thing, text: 'text'
           end
         end

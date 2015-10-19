@@ -83,7 +83,7 @@ module PageMagic
     end
 
     def respond_to?(*args)
-      super || element_context.respond_to?(*args) || @browser_element.respond_to?(*args)
+      super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
     end
 
     def browser_element(*_args)
