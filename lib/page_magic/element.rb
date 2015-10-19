@@ -72,11 +72,13 @@ module PageMagic
       begin
         ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
       rescue ElementMissingException
-        if browser_element.respond_to?(method)
-          browser_element.send(method, *args, &block)
-        elsif @parent_page_element.respond_to?(method)
-          @parent_page_element.send(method, *args, &block)
-        else
+        begin
+          if browser_element.respond_to?(method)
+            browser_element.send(method, *args, &block)
+          else
+            @parent_page_element.send(method, *args, &block)
+          end
+        rescue ElementMissingException
           super
         end
       end
