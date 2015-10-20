@@ -11,6 +11,17 @@ require 'page_magic/drivers'
 module PageMagic
   class UnspportedBrowserException < Exception; end
 
+  module ClassMethods
+    def url(url = nil)
+      @url = url if url
+      @url
+    end
+
+    def inherited(clazz)
+      clazz.element_definitions.merge!(element_definitions)
+    end
+  end
+
   class << self
     def drivers
       @drivers ||= Drivers.new.tap(&:load)
@@ -28,18 +39,7 @@ module PageMagic
     end
 
     def included(clazz)
-      clazz.extend Elements
-
-      class << clazz
-        def url(url = nil)
-          @url = url if url
-          @url
-        end
-
-        def inherited(clazz)
-          clazz.element_definitions.merge!(element_definitions)
-        end
-      end
+      clazz.extend(Elements, ClassMethods)
     end
   end
 end

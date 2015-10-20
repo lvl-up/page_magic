@@ -117,7 +117,7 @@ module PageMagic
 
             context 'mapping is a regular expression' do
               it 'raises an error' do
-                session.define_page_mappings /mapping/ => page
+                session.define_page_mappings(/mapping/ => page)
                 expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
               end
             end

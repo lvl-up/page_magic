@@ -44,7 +44,7 @@ module PageMagic
     end
 
     def expand(*args, &block)
-      instance_exec *args, &block
+      instance_exec(*args, &block)
     end
 
     def selector(selector = nil)
@@ -142,30 +142,30 @@ module PageMagic
     def apply_hooks(page_element:, capybara_method:, before_hook:, after_hook:)
       if page_element.respond_to?(capybara_method)
         original_method = page_element.method(capybara_method)
-        _self = self
+        this = self
 
         page_element.define_singleton_method(capybara_method) do |*arguments, &block|
-          _self.call_hook &before_hook
-          original_method.call *arguments, &block
-          _self.call_hook &after_hook
+          this.call_hook(&before_hook)
+          original_method.call(*arguments, &block)
+          this.call_hook(&after_hook)
         end
       end
     end
 
     def call_hook(&block)
       @executing_hooks = true
-      result = instance_exec &block
+      result = instance_exec(&block)
       @executing_hooks = false
       result
     end
 
-    def ==(page_element)
-      page_element.is_a?(Element) &&
-        type == page_element.type &&
-        name == page_element.name &&
-        selector == page_element.selector &&
-        before == page_element.before &&
-        after == page_element.after
+    def ==(other)
+      other.is_a?(Element) &&
+        type == other.type &&
+        name == other.name &&
+        selector == other.selector &&
+        before == other.before &&
+        after == other.after
     end
 
     private

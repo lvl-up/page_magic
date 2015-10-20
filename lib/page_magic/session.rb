@@ -62,7 +62,7 @@ module PageMagic
 
     def wait_until(&block)
       @wait ||= Wait.new
-      @wait.until &block
+      @wait.until(&block)
     end
 
     def method_missing(name, *args, &block)
