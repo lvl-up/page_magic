@@ -2,7 +2,7 @@ module PageMagic
 
   describe Element do
 
-    include_context :webapp
+    include_context :webapp_fixture
 
     let(:page_class) do
       Class.new do

@@ -1,5 +1,5 @@
 describe 'interacting with pages' do
-  include_context :webapp
+  include_context :webapp_fixture
 
   let :page do
     Class.new do

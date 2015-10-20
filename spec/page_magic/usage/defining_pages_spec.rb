@@ -1,6 +1,6 @@
 describe 'The Elements of a Page' do
   describe 'instances' do
-    include_context :webapp
+    include_context :webapp_fixture
 
     let(:my_page_class) do
       Class.new do

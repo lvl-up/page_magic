@@ -26,13 +26,16 @@ module PageMagic
       end
     end
 
+    DEFAULT_HOOK = proc{}.freeze
+
+
     def initialize(name, parent_page_element, options, &block)
       options = {type: :element, selector: {}, browser_element: nil}.merge(options)
       @browser_element = options[:browser_element]
       @selector = options[:selector]
 
-      @before_hook = proc {}
-      @after_hook = proc {}
+      @before_hook = DEFAULT_HOOK
+      @after_hook = DEFAULT_HOOK
       @parent_page_element = parent_page_element
       @type = options[:type]
       @name = name.to_s.downcase.to_sym
@@ -160,6 +163,15 @@ module PageMagic
       result = instance_exec &block
       @executing_hooks = false
       result
+    end
+
+    def ==(page_element)
+      page_element.is_a?(Element) &&
+          self.type == page_element.type &&
+          self.name == page_element.name &&
+          self.selector == page_element.selector &&
+          self.before == page_element.before &&
+          self.after == page_element.after
     end
 
     private
