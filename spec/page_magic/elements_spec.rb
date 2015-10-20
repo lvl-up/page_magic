@@ -5,14 +5,13 @@ describe PageMagic::Elements do
     end
   end
 
-  let(:selector) { {id: 'id'} }
+  let(:selector) { { id: 'id' } }
   let(:browser_element) { double('browser_element', find: :browser_element) }
   let(:parent_page_element) do
     double('parent_page_element', browser_element: browser_element)
   end
 
   describe 'adding elements' do
-
     context 'using a selector' do
       it 'should add an element' do
         expected_element = PageMagic::Element.new(:name, parent_page_element, type: :text_field, selector: selector)
@@ -31,13 +30,12 @@ describe PageMagic::Elements do
         Class.new(PageMagic::Element) do
           def ==(other)
             other.name == name &&
-                other.browser_element == browser_element
+              other.browser_element == browser_element
           end
         end
       end
 
       context 'using a predefined class' do
-
         it 'should add an element using that class section' do
           expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: selector)
 
@@ -129,7 +127,7 @@ describe PageMagic::Elements do
       it 'should be on instances created from a class' do
         browser_element = double(:browser_element, find: :browser_element)
         parent = double('parent', session: :current_session, browser_element: browser_element)
-        page_elements.element  :page_section, selector
+        page_elements.element :page_section, selector
 
         section = page_elements.element_definitions[:page_section].call(parent)
 

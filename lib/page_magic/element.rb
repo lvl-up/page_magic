@@ -26,11 +26,10 @@ module PageMagic
       end
     end
 
-    DEFAULT_HOOK = proc{}.freeze
-
+    DEFAULT_HOOK = proc {}.freeze
 
     def initialize(name, parent_page_element, options, &block)
-      options = {type: :element, selector: {}, browser_element: nil}.merge(options)
+      options = { type: :element, selector: {}, browser_element: nil }.merge(options)
       @browser_element = options[:browser_element]
       @selector = options[:selector]
 
@@ -72,18 +71,16 @@ module PageMagic
     end
 
     def method_missing(method, *args, &block)
+      ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
+    rescue ElementMissingException
       begin
-        ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
-      rescue ElementMissingException
-        begin
-          if browser_element.respond_to?(method)
-            browser_element.send(method, *args, &block)
-          else
-            parent_page_element.send(method, *args, &block)
-          end
-        rescue Exception
-          super
+        if browser_element.respond_to?(method)
+          browser_element.send(method, *args, &block)
+        else
+          parent_page_element.send(method, *args, &block)
         end
+      rescue Exception
+        super
       end
     end
 
@@ -92,7 +89,6 @@ module PageMagic
     end
 
     def browser_element(*_args)
-
       return @browser_element if @browser_element
 
       fail UndefinedSelectorException, 'Pass a selector/define one on the class' if selector.empty?
@@ -103,27 +99,27 @@ module PageMagic
       options = selector_copy
 
       finder_method, selector_type, selector_arg = case method
-                                                     when :id
-                                                       [:find, "##{selector}"]
-                                                     when :xpath
-                                                       [:find, :xpath, selector]
-                                                     when :name
-                                                       [:find, "*[name='#{selector}']"]
-                                                     when :css
-                                                       [:find, :css, selector]
-                                                     when :label
-                                                       [:find_field, selector]
-                                                     when :text
-                                                       if @type == :link
-                                                         [:find_link, selector]
-                                                       elsif @type == :button
-                                                         [:find_button, selector]
-                                                       else
-                                                         fail UnsupportedSelectorException
-                                                       end
-
+                                                   when :id
+                                                     [:find, "##{selector}"]
+                                                   when :xpath
+                                                     [:find, :xpath, selector]
+                                                   when :name
+                                                     [:find, "*[name='#{selector}']"]
+                                                   when :css
+                                                     [:find, :css, selector]
+                                                   when :label
+                                                     [:find_field, selector]
+                                                   when :text
+                                                     if @type == :link
+                                                       [:find_link, selector]
+                                                     elsif @type == :button
+                                                       [:find_button, selector]
                                                      else
                                                        fail UnsupportedSelectorException
+                                                     end
+
+                                                   else
+                                                     fail UnsupportedSelectorException
                                                    end
 
       finder_args = [selector_type, selector_arg].compact
@@ -137,7 +133,6 @@ module PageMagic
                       after_hook: after)
         end
       end
-
     end
 
     def parent_browser_element
@@ -145,7 +140,6 @@ module PageMagic
     end
 
     def apply_hooks(page_element:, capybara_method:, before_hook:, after_hook:)
-
       if page_element.respond_to?(capybara_method)
         original_method = page_element.method(capybara_method)
         _self = self
@@ -167,14 +161,15 @@ module PageMagic
 
     def ==(page_element)
       page_element.is_a?(Element) &&
-          self.type == page_element.type &&
-          self.name == page_element.name &&
-          self.selector == page_element.selector &&
-          self.before == page_element.before &&
-          self.after == page_element.after
+        type == page_element.type &&
+        name == page_element.name &&
+        selector == page_element.selector &&
+        before == page_element.before &&
+        after == page_element.after
     end
 
     private
+
     def element_context(*args)
       ElementContext.new(self, @browser_element, self, *args)
     end

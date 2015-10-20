@@ -7,9 +7,7 @@ describe PageMagic do
       url '/page1'
       link(:next_page, text: 'next page')
     end
-    page_class.new.tap do |page|
-      page.visit
-    end
+    page_class.new.tap(&:visit)
   end
 
   context '#respond_to?' do
@@ -40,7 +38,6 @@ describe PageMagic do
     end
 
     it 'returns false if the text is not present' do
-
       expect(subject.text_on_page?('not on page')). to eq(false)
     end
   end
@@ -62,5 +59,4 @@ describe PageMagic do
       expect(subject.next_page.tag_name).to eq('a')
     end
   end
-
 end

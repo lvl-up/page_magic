@@ -1,7 +1,6 @@
 require 'page_magic'
 
 describe PageMagic do
-
   subject do
     Class.new { include PageMagic }
   end
@@ -15,7 +14,6 @@ describe PageMagic do
     it 'lets you define elements' do
       expect(subject).to be_a(PageMagic::Elements)
     end
-
   end
 
   describe '.inherited' do
@@ -40,9 +38,7 @@ describe PageMagic do
         grand_child_class.element_definitions.should include(:next)
       end
     end
-
   end
-
 
   describe '::drivers' do
     it 'returns loaded drivers' do
@@ -53,7 +49,6 @@ describe PageMagic do
   end
 
   describe '::session' do
-
     it "defaults to capybara's default session " do
       Capybara.default_driver = :rack_test
       subject.new.browser.mode.should == :rack_test
@@ -75,7 +70,7 @@ describe PageMagic do
 
     context 'specifying options' do
       it 'passes the options to the browser driver' do
-        options = {option: :config}
+        options = { option: :config }
         session = described_class.session(options: options, browser: :chrome)
 
         expect(session.raw_session.driver.options).to include(options)

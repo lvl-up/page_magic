@@ -1,5 +1,4 @@
 module PageMagic
-
   describe ElementContext do
     include_context :webapp_fixture
 
@@ -16,11 +15,8 @@ module PageMagic
     end
 
     describe '#method_missing' do
-
       let(:page) do
-        elements_page.new.tap do |page|
-          page.visit
-        end
+        elements_page.new.tap(&:visit)
       end
 
       context 'neither a method or page element are defined' do
@@ -32,7 +28,7 @@ module PageMagic
       context 'method is a element defintion' do
         it 'returns the sub page element' do
           element = described_class.new(page, page.browser, self).a_link
-          #TODO - returns the capybara object. maybe we should think about wrapping this.
+          # TODO: - returns the capybara object. maybe we should think about wrapping this.
           expect(element.text).to eq('a link')
         end
 

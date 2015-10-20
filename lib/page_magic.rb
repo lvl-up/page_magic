@@ -41,6 +41,5 @@ module PageMagic
         end
       end
     end
-
   end
 end

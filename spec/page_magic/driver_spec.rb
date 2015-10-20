@@ -20,7 +20,6 @@ module PageMagic
       end
     end
     describe '#build' do
-
       it 'returns the result of the block passed to the driver class constructor' do
         subject = described_class.new(:custom_browser)do
           :driver
@@ -30,9 +29,9 @@ module PageMagic
 
       it 'passes rack app to the handler' do
         subject = described_class.new(:custom_browser) do |app, options, browser|
-            expect(app).to eq(:rack_app)
-            expect(options).to eq(:options)
-            expect(browser).to eq(:browser)
+          expect(app).to eq(:rack_app)
+          expect(options).to eq(:options)
+          expect(browser).to eq(:browser)
         end
 
         subject.build(:rack_app, options: :options, browser: :browser)

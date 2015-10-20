@@ -1,6 +1,6 @@
 require 'wait'
 module PageMagic
-  class InvalidURLException < Exception;end
+  class InvalidURLException < Exception; end
 
   class Session
     URL_MISSING_MSG = 'a url must be specified as either a parameter or on the page class'
@@ -17,7 +17,6 @@ module PageMagic
       @transitions = transitions
     end
 
-
     def current_page
       if transitions
         mapping = find_mapped_page(current_path)
@@ -33,8 +32,6 @@ module PageMagic
       transitions[mapping]
     end
 
-
-
     def visit(page_or_url, url:nil)
       if page_or_url.is_a?(String)
         raw_session.visit page_or_url
@@ -45,16 +42,15 @@ module PageMagic
         elsif page.url
           raw_session.visit(page.url)
         elsif path = transitions.key(page)
-          raise InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
+          fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
           raw_session.visit("#{current_url}#{path}")
         else
-          raise InvalidURLException, URL_MISSING_MSG
+          fail InvalidURLException, URL_MISSING_MSG
         end
         @current_page = page.new self
       end
       self
     end
-
 
     def current_path
       raw_session.current_path

@@ -77,7 +77,6 @@ module PageMagic
     end
 
     describe '#visit' do
-
       let(:session) do
         PageMagic::Session.new(browser)
       end
@@ -118,7 +117,7 @@ module PageMagic
 
             context 'mapping is a regular expression' do
               it 'raises an error' do
-                session.define_page_mappings %r{mapping} => page
+                session.define_page_mappings /mapping/ => page
                 expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
               end
             end
@@ -133,8 +132,6 @@ module PageMagic
           end
         end
       end
-
-
     end
 
     context '#method_missing' do
@@ -162,7 +159,7 @@ module PageMagic
 
       it 'checks the current page' do
         page.class_eval do
-          def my_method;
+          def my_method
           end
         end
         expect(subject.respond_to?(:my_method)).to eq(true)

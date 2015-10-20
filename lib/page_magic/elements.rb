@@ -29,10 +29,8 @@ module PageMagic
 
     TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
 
-
     TYPES.each do |type|
       define_method type do |*args, &block|
-
         section_class = remove_argument(args, Class) || Element
 
         selector = remove_argument(args, Hash)
@@ -41,14 +39,13 @@ module PageMagic
         name = remove_argument(args, Symbol)
         name ||= section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
 
-        options =  selector ? {selector: selector} : {browser_element: args.delete_at(0)}
+        options = selector ? { selector: selector } : { browser_element: args.delete_at(0) }
 
         add_element_definition(name) do |parent_browser_element, *e_args|
           section_class.new(name, parent_browser_element, options.merge(type: type)).tap do |section|
             section.expand(*e_args, &(block || proc {}))
           end
         end
-
       end
     end
 
@@ -66,6 +63,7 @@ module PageMagic
     end
 
     private
+
     def remove_argument(args, clazz)
       argument = args.find { |arg| arg.is_a?(clazz) }
       args.delete(argument)

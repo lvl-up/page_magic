@@ -17,7 +17,7 @@ module PageMagic
 
       element_locator_factory = page_element.element_definitions[method]
 
-      raise ElementMissingException, "Could not find: #{method}" unless element_locator_factory
+      fail ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
       if args.empty?
         element_locator = element_locator_factory.call(page_element, nil)

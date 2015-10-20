@@ -1,7 +1,5 @@
 module PageMagic
-
   describe Element do
-
     include_context :webapp_fixture
 
     let(:page_class) do
@@ -12,13 +10,10 @@ module PageMagic
     end
 
     let(:page) do
-      page_class.new.tap do |page|
-        page.visit
-      end
+      page_class.new.tap(&:visit)
     end
 
     describe 'inheriting' do
-
       it 'lets you create custom elements' do
         custom_element = Class.new(described_class) do
           text_field :form_field, id: 'field_id'
@@ -64,39 +59,39 @@ module PageMagic
 
       context 'options supplied to selector' do
         it 'passes them on to the cappybara finder method' do
-          options = {count: 1}
+          options = { count: 1 }
           xpath_selector = '//div/input'
           expect(Capybara.current_session).to receive(:find).with(:xpath, xpath_selector, options)
-          described_class.new(:my_input, page, type: :text_field, selector: {xpath: xpath_selector}.merge(options)).browser_element
+          described_class.new(:my_input, page, type: :text_field, selector: { xpath: xpath_selector }.merge(options)).browser_element
         end
       end
 
       it 'should find by xpath' do
-        element = described_class.new(:my_input, page, type: :text_field, selector: {xpath: '//div/label/input'}).browser_element
+        element = described_class.new(:my_input, page, type: :text_field, selector: { xpath: '//div/label/input' }).browser_element
         expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its id' do
-        element = described_class.new(:my_input, page, type: :text_field, selector: {id: 'field_id'}).browser_element
+        element = described_class.new(:my_input, page, type: :text_field, selector: { id: 'field_id' }).browser_element
         expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its name' do
-        element = described_class.new(:my_input, page, type: :text_field, selector: {name: 'field_name'}).browser_element
+        element = described_class.new(:my_input, page, type: :text_field, selector: { name: 'field_name' }).browser_element
         expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its label' do
-        element = described_class.new(:my_link, page, type: :link, selector: {label: 'enter text'}).browser_element
+        element = described_class.new(:my_link, page, type: :link, selector: { label: 'enter text' }).browser_element
         expect(element[:id]).to eq('field_id')
       end
 
       it 'should raise an exception when finding another element using its text' do
-        expect { described_class.new(:my_link, page, type: :text_field, selector: {text: 'my link'}).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
+        expect { described_class.new(:my_link, page, type: :text_field, selector: { text: 'my link' }).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
       end
 
       it 'should locate an element using css' do
-        element = described_class.new(:my_link, page, type: :link, selector: {css: "input[name='field_name']"}).browser_element
+        element = described_class.new(:my_link, page, type: :link, selector: { css: "input[name='field_name']" }).browser_element
         expect(element[:id]).to eq('field_id')
       end
 
@@ -105,17 +100,17 @@ module PageMagic
       end
 
       it 'should raise errors for unsupported selectors' do
-        expect { described_class.new(:my_link, page, type: :link, selector: {unsupported: ''}).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
+        expect { described_class.new(:my_link, page, type: :link, selector: { unsupported: '' }).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
       end
 
       context 'text selector' do
         it 'should locate a link' do
-          element = described_class.new(:my_link, page, type: :link, selector: {text: 'link in a form'}).browser_element
+          element = described_class.new(:my_link, page, type: :link, selector: { text: 'link in a form' }).browser_element
           expect(element[:id]).to eq('form_link')
         end
 
         it 'should locate a button' do
-          element = described_class.new(:my_button, page, type: :button, selector: {text: 'a button'}).browser_element
+          element = described_class.new(:my_button, page, type: :button, selector: { text: 'a button' }).browser_element
           element[:id].should == 'form_button'
         end
       end
@@ -124,7 +119,7 @@ module PageMagic
     describe '#section?' do
       context 'element definitions exist' do
         subject do
-          described_class.new(:my_link, page, type: :button, selector: {text: 'a button'}) do
+          described_class.new(:my_link, page, type: :button, selector: { text: 'a button' }) do
             element :thing, text: 'text'
           end
         end
@@ -135,7 +130,7 @@ module PageMagic
 
       context 'method defined' do
         subject do
-          described_class.new(:my_link, :page, type: :link, selector: {text: 'my link'}) do
+          described_class.new(:my_link, :page, type: :link, selector: { text: 'my link' }) do
             def custom_method
             end
           end
@@ -148,7 +143,7 @@ module PageMagic
 
       context 'neither method or elements defined' do
         subject do
-          described_class.new(:my_link, :page, type: :link, selector: {text: 'my link'})
+          described_class.new(:my_link, :page, type: :link, selector: { text: 'my link' })
         end
         it 'returns false' do
           expect(subject.section?).to eq(false)
@@ -164,7 +159,7 @@ module PageMagic
 
     describe 'hooks' do
       subject do
-        described_class.new(:my_button, page, type: :button, selector: {id: 'my_button'}) do
+        described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
           before do
             call_in_before_hook
           end
@@ -180,7 +175,7 @@ module PageMagic
 
       context 'method called in before hook' do
         subject do
-          described_class.new(:my_button, page, type: :button, selector: {id: 'my_button'}) do
+          described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
             after do
               call_in_after_hook
             end
@@ -192,11 +187,9 @@ module PageMagic
           subject.click
         end
       end
-
     end
 
     describe '#method_missing' do
-
       before do
         page_class.class_eval do
           section :form_by_css, css: '.form' do
@@ -225,8 +218,6 @@ module PageMagic
           expect { page.form_by_css.bobbins }.to raise_exception NoMethodError
         end
       end
-
     end
-
   end
 end
