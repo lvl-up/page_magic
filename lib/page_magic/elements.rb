@@ -27,7 +27,7 @@ module PageMagic
       element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
     end
 
-    def element *args, &block
+    def element(*args, &block)
       type = __callee__
       section_class = remove_argument(args, Class) || Element
 
@@ -37,7 +37,7 @@ module PageMagic
       name = remove_argument(args, Symbol)
       name ||= section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
 
-      options =  selector ? {selector: selector} : {browser_element: args.delete_at(0)}
+      options = selector ? { selector: selector } : { browser_element: args.delete_at(0) }
 
       add_element_definition(name) do |parent_browser_element, *e_args|
         section_class.new(name, parent_browser_element, options.merge(type: type)).tap do |section|
@@ -48,7 +48,7 @@ module PageMagic
 
     TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
 
-    TYPES.each{|type|alias_method type, :element}
+    TYPES.each { |type| alias_method type, :element }
 
     def add_element_definition(name, &block)
       fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
