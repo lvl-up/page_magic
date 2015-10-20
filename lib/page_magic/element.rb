@@ -40,7 +40,7 @@ module PageMagic
       @name = name.to_s.downcase.to_sym
 
       extend MethodObserver
-      expand &block if block
+      expand(&block) if block
     end
 
     def expand(*args, &block)
