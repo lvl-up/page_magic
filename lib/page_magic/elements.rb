@@ -1,4 +1,3 @@
-require 'ext/string'
 require 'active_support/inflector'
 module PageMagic
   module Elements
@@ -40,7 +39,7 @@ module PageMagic
         selector ||= section_class.selector if section_class.respond_to?(:selector)
 
         name = remove_argument(args, Symbol)
-        name ||= section_class.name.demodulize.to_snake_case.to_sym unless section_class.is_a?(Element)
+        name ||= section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
 
         options =  selector ? {selector: selector} : {browser_element: args.delete_at(0)}
 

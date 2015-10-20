@@ -29,7 +29,6 @@ module PageMagic
 
     def included(clazz)
       clazz.extend Elements
-      pages << clazz if clazz.is_a? Class
 
       class << clazz
         def url(url = nil)
@@ -39,13 +38,9 @@ module PageMagic
 
         def inherited(clazz)
           clazz.element_definitions.merge!(element_definitions)
-          PageMagic.pages << clazz
         end
       end
     end
 
-    def pages
-      @pages ||= []
-    end
   end
 end
