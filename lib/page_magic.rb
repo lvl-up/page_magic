@@ -17,6 +17,11 @@ module PageMagic
       @url
     end
 
+    def path(path = nil)
+      @path = path if path
+      @path
+    end
+
     def inherited(clazz)
       clazz.element_definitions.merge!(element_definitions)
     end
@@ -27,7 +32,7 @@ module PageMagic
       @drivers ||= Drivers.new.tap(&:load)
     end
 
-    def session(application: nil, browser: :rack_test, options: {})
+    def session(application: nil, browser: :rack_test, url:, options: {})
       driver = drivers.find(browser)
       fail UnspportedBrowserException unless driver
 
@@ -35,7 +40,7 @@ module PageMagic
         driver.build(app, browser: browser, options: options)
       end
 
-      Session.new(Capybara::Session.new(browser, application))
+      Session.new(Capybara::Session.new(browser, application), url)
     end
 
     def included(clazz)

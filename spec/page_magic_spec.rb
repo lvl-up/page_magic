@@ -49,6 +49,13 @@ describe PageMagic do
   end
 
   describe '::session' do
+    let(:url) { 'http://url.com/' }
+    let(:application) { rack_application.new }
+
+    before do
+      allow_any_instance_of(Capybara::Selenium::Driver).to receive(:visit)
+    end
+
     it "defaults to capybara's default session " do
       Capybara.default_driver = :rack_test
       subject.new.browser.mode.should == :rack_test
@@ -56,22 +63,28 @@ describe PageMagic do
 
     context 'specifying the browser' do
       it 'loads the correct driver' do
-        session = described_class.session(browser: :firefox)
+        session = described_class.session(application: rack_application.new, browser: :firefox, url: :url)
         session.raw_session.driver.is_a?(Capybara::Selenium::Driver).should be_true
       end
     end
 
+    include_context :rack_application
+    it 'sets the base url for the session' do
+      session = described_class.session(application: application, url: url)
+      expect(session.current_url).to eq(url)
+    end
+
     context 'specifying a rack application' do
       it 'configures capybara to run against the app' do
-        session = described_class.session(application: :rack_application)
-        expect(session.raw_session.app).to be(:rack_application)
+        session = described_class.session(application: application, url: url)
+        expect(session.raw_session.app).to be(application)
       end
     end
 
     context 'specifying options' do
       it 'passes the options to the browser driver' do
         options = { option: :config }
-        session = described_class.session(options: options, browser: :chrome)
+        session = described_class.session(options: options, browser: :chrome, url: url)
 
         expect(session.raw_session.driver.options).to include(options)
       end
@@ -79,7 +92,7 @@ describe PageMagic do
 
     context 'driver for browser not found' do
       it 'raises an error' do
-        expect { described_class.session(browser: :invalid) }.to raise_exception described_class::UnspportedBrowserException
+        expect { described_class.session(browser: :invalid, url: url) }.to raise_exception described_class::UnspportedBrowserException
       end
     end
   end

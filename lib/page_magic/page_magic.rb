@@ -1,12 +1,11 @@
 module PageMagic
   attr_reader :browser, :session
 
-  def initialize(session = Session.new(Capybara.current_session), options = {}, &block)
+  def initialize(session = Session.new(Capybara.current_session), &block)
     @browser = session.raw_session
     @session = session
 
     @browser_element = browser
-    navigate if options[:navigate_to_page]
     block.call browser if block
   end
 

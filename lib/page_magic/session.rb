@@ -8,8 +8,9 @@ module PageMagic
 
     attr_accessor :current_page, :raw_session, :transitions
 
-    def initialize(browser)
+    def initialize(browser, url = nil)
       @raw_session = browser
+      raw_session.visit(url) if url
       @transitions = {}
     end
 
@@ -32,15 +33,11 @@ module PageMagic
       transitions[mapping]
     end
 
-    def visit(page_or_url, url:nil)
-      if page_or_url.is_a?(String)
-        raw_session.visit page_or_url
-      elsif page_or_url.ancestors.include?(PageMagic)
-        page = page_or_url
-        if url
-          raw_session.visit(url)
-        elsif page.url
-          raw_session.visit(page.url)
+    def visit(page, use_page_mappings: false)
+      if page.ancestors.include?(PageMagic)
+        page = page
+        if page.path && !use_page_mappings
+          raw_session.visit("#{current_url}#{page.path}")
         elsif path = transitions.key(page)
           fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
           raw_session.visit("#{current_url}#{path}")
