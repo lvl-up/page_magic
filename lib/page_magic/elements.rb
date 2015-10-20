@@ -27,27 +27,28 @@ module PageMagic
       element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
     end
 
-    TYPES = [:element, :text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
+    def element *args, &block
+      type = __callee__
+      section_class = remove_argument(args, Class) || Element
 
-    TYPES.each do |type|
-      define_method type do |*args, &block|
-        section_class = remove_argument(args, Class) || Element
+      selector = remove_argument(args, Hash)
+      selector ||= section_class.selector if section_class.respond_to?(:selector)
 
-        selector = remove_argument(args, Hash)
-        selector ||= section_class.selector if section_class.respond_to?(:selector)
+      name = remove_argument(args, Symbol)
+      name ||= section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
 
-        name = remove_argument(args, Symbol)
-        name ||= section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
+      options =  selector ? {selector: selector} : {browser_element: args.delete_at(0)}
 
-        options = selector ? { selector: selector } : { browser_element: args.delete_at(0) }
-
-        add_element_definition(name) do |parent_browser_element, *e_args|
-          section_class.new(name, parent_browser_element, options.merge(type: type)).tap do |section|
-            section.expand(*e_args, &(block || proc {}))
-          end
+      add_element_definition(name) do |parent_browser_element, *e_args|
+        section_class.new(name, parent_browser_element, options.merge(type: type)).tap do |section|
+          section.expand(*e_args, &(block || proc {}))
         end
       end
     end
+
+    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
+
+    TYPES.each{|type|alias_method type, :element}
 
     def add_element_definition(name, &block)
       fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
