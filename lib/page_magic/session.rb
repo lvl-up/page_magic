@@ -34,7 +34,7 @@ module PageMagic
       transitions[mapping]
     end
 
-    def visit(page = nil, url: url)
+    def visit(page = nil, url: )
       if url
         raw_session.visit(url)
         transitions.find unless page
