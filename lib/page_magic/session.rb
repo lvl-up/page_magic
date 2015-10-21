@@ -1,9 +1,10 @@
 require 'wait'
 module PageMagic
-  class InvalidURLException < Exception; end
+  class InvalidURLException < Exception;
+  end
 
   class Session
-    URL_MISSING_MSG = 'a url must be specified as either a parameter or on the page class'
+    URL_MISSING_MSG = 'a path must be mapped or a url supplied'
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping is a Regexp'
 
     attr_accessor :current_page, :raw_session, :transitions
@@ -33,19 +34,19 @@ module PageMagic
       transitions[mapping]
     end
 
-    def visit(page, use_page_mappings: false)
-      if page.ancestors.include?(PageMagic)
-        page = page
-        if page.path && !use_page_mappings
-          raw_session.visit("#{current_url}#{page.path}")
-        elsif path = transitions.key(page)
-          fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
-          raw_session.visit("#{current_url}#{path}")
-        else
-          fail InvalidURLException, URL_MISSING_MSG
+    def visit(page=nil, url: url)
+      if url
+        raw_session.visit(url)
+        unless page
+          transitions.find
         end
-        @current_page = page.new self
+      elsif path = transitions.key(page)
+        fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
+        raw_session.visit("#{current_url}#{path}")
+      else
+        fail InvalidURLException, URL_MISSING_MSG
       end
+      @current_page = page.new(self) if page
       self
     end
 

@@ -17,11 +17,6 @@ module PageMagic
       @url
     end
 
-    def path(path = nil)
-      @path = path if path
-      @path
-    end
-
     def inherited(clazz)
       clazz.element_definitions.merge!(element_definitions)
     end
