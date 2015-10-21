@@ -34,10 +34,9 @@ module PageMagic
       transitions[mapping]
     end
 
-    def visit(page = nil, url: )
+    def visit(page = nil, url: nil)
       if url
         raw_session.visit(url)
-        transitions.find unless page
       elsif path = transitions.key(page)
         fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
         raw_session.visit("#{current_url}#{path}")
