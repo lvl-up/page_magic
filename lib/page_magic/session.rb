@@ -20,10 +20,8 @@ module PageMagic
     end
 
     def current_page
-      if transitions
-        mapping = find_mapped_page(current_path)
-        @current_page = mapping.new(self) if mapping
-      end
+      mapping = find_mapped_page(current_path)
+      @current_page = mapping.new(self) if mapping
       @current_page
     end
 
