@@ -75,33 +75,33 @@ module PageMagic
       selector_copy = selector.dup
       method = selector_copy.keys.first
       selector = selector_copy.delete(method)
-      finder_method, selector_type, selector_arg = case method
-                                                     when :id
-                                                       [:find, "##{selector}"]
-                                                     when :xpath
-                                                       [:find, :xpath, selector]
-                                                     when :name
-                                                       [:find, "*[name='#{selector}']"]
-                                                     when :css
-                                                       [:find, :css, selector]
-                                                     when :label
-                                                       [:find_field, selector]
-                                                     when :text
-                                                       if @type == :link
-                                                         [:find_link, selector]
-                                                       elsif @type == :button
-                                                         [:find_button, selector]
-                                                       else
-                                                         fail UnsupportedSelectorException
-                                                       end
-                                                     else
-                                                       fail UnsupportedSelectorException
-                                                   end
+      selector_type, selector_arg = case method
+                                      when :id
+                                        [:id, selector]
+                                      when :xpath
+                                        [:xpath, selector]
+                                      when :name
+                                        ["*[name='#{selector}']"]
+                                      when :css
+                                        [:css, selector]
+                                      when :label
+                                        [:field, selector]
+                                      when :text
+                                        if @type == :link
+                                          [:link, selector]
+                                        elsif @type == :button
+                                          [:button, selector]
+                                        else
+                                          fail UnsupportedSelectorException
+                                        end
+                                      else
+                                        fail UnsupportedSelectorException
+                                    end
 
       finder_args = [selector_type, selector_arg].compact
       finder_args << selector_copy unless selector_copy.empty?
 
-      @browser_element = parent_browser_element.send(finder_method, *finder_args).tap do |raw_element|
+      @browser_element = parent_browser_element.send(:find, *finder_args).tap do |raw_element|
         wrap_events(raw_element)
       end
     end
