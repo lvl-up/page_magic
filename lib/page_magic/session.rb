@@ -37,12 +37,18 @@ module PageMagic
         raw_session.visit(url)
       elsif path = transitions.key(page)
         fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
-        raw_session.visit("#{current_url}#{path}")
+        raw_session.visit(url(current_url, path))
       else
         fail InvalidURLException, URL_MISSING_MSG
       end
       @current_page = page.new(self) if page
       self
+    end
+
+    def url(base_url, path)
+      path = path.sub(%r{^/}, '')
+      base_url = base_url.sub(%r{/$}, '')
+      "#{base_url}/#{path}"
     end
 
     def current_path

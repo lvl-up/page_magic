@@ -116,6 +116,47 @@ module PageMagic
       end
     end
 
+    describe '#url' do
+
+      let!(:base_url){'http://example.com'}
+      let!(:path){'home'}
+      let!(:expected_url){"#{base_url}/#{path}"}
+
+      context 'base_url has a / on the end' do
+        before do
+          base_url << '/'
+        end
+
+        context 'path has / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, path)).to eq(expected_url)
+          end
+        end
+
+        context 'path does not have / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, "/#{path}")).to eq(expected_url)
+          end
+        end
+
+      end
+
+      context 'current_url does not have a / on the end' do
+        context 'path has / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, "/#{path}")).to eq(expected_url)
+          end
+        end
+
+        context 'path does not have / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, path)).to eq(expected_url)
+          end
+        end
+
+      end
+    end
+
     context '#method_missing' do
       it 'should delegate to current page' do
         page.class_eval do
