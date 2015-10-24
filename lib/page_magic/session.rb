@@ -1,15 +1,17 @@
 require 'wait'
 module PageMagic
-  class InvalidURLException < Exception; end
+  class InvalidURLException < Exception
+  end
 
   class Session
-    URL_MISSING_MSG = 'a url must be specified as either a parameter or on the page class'
+    URL_MISSING_MSG = 'a path must be mapped or a url supplied'
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping is a Regexp'
 
     attr_accessor :current_page, :raw_session, :transitions
 
-    def initialize(browser)
+    def initialize(browser, url = nil)
       @raw_session = browser
+      raw_session.visit(url) if url
       @transitions = {}
     end
 
@@ -18,10 +20,8 @@ module PageMagic
     end
 
     def current_page
-      if transitions
-        mapping = find_mapped_page(current_path)
-        @current_page = mapping.new(self) if mapping
-      end
+      mapping = find_mapped_page(current_path)
+      @current_page = mapping.new(self) if mapping
       @current_page
     end
 
@@ -32,24 +32,23 @@ module PageMagic
       transitions[mapping]
     end
 
-    def visit(page_or_url, url:nil)
-      if page_or_url.is_a?(String)
-        raw_session.visit page_or_url
-      elsif page_or_url.ancestors.include?(PageMagic)
-        page = page_or_url
-        if url
-          raw_session.visit(url)
-        elsif page.url
-          raw_session.visit(page.url)
-        elsif path = transitions.key(page)
-          fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
-          raw_session.visit("#{current_url}#{path}")
-        else
-          fail InvalidURLException, URL_MISSING_MSG
-        end
-        @current_page = page.new self
+    def visit(page = nil, url: nil)
+      if url
+        raw_session.visit(url)
+      elsif path = transitions.key(page)
+        fail InvalidURLException, REGEXP_MAPPING_MSG if path.is_a?(Regexp)
+        raw_session.visit(url(current_url, path))
+      else
+        fail InvalidURLException, URL_MISSING_MSG
       end
+      @current_page = page.new(self) if page
       self
+    end
+
+    def url(base_url, path)
+      path = path.sub(%r{^/}, '')
+      base_url = base_url.sub(%r{/$}, '')
+      "#{base_url}/#{path}"
     end
 
     def current_path

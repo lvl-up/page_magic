@@ -24,7 +24,7 @@ module PageMagic
     end
 
     def ==(other)
-      other.is_a?(Drivers) && self.all == other.all
+      other.is_a?(Drivers) && all == other.all
     end
   end
 end

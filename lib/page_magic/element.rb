@@ -1,56 +1,38 @@
+require 'page_magic/method_observer'
+require 'page_magic/selector'
 module PageMagic
-  module MethodObserver
-    def singleton_method_added(arg)
-      @singleton_methods_added = true unless arg == :singleton_method_added
-    end
-
-    def singleton_methods_added?
-      @singleton_methods_added == true
-    end
-  end
-
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
-    attr_reader :type, :name, :selector, :parent_page_element, :browser_element
+    DEFAULT_HOOK = proc {}.freeze
+    attr_reader :type, :name, :parent_page_element, :browser_element
 
-    include Elements
+    include Elements, MethodObserver, Selector
+    extend Selector
 
     class << self
       def inherited(clazz)
         clazz.extend(Elements)
-
-        def clazz.selector(selector = nil)
-          return @selector unless selector
-          @selector = selector
-        end
       end
     end
 
-    DEFAULT_HOOK = proc {}.freeze
-
-    def initialize(name, parent_page_element, options, &block)
-      options = { type: :element, selector: {}, browser_element: nil }.merge(options)
-      @browser_element = options[:browser_element]
-      @selector = options[:selector]
+    def initialize(name,
+                   parent_page_element,
+                   type: :element,
+                   selector: {},
+                   browser_element: nil,
+                   &block)
+      @browser_element = browser_element
+      @selector = selector
 
       @before_hook = DEFAULT_HOOK
       @after_hook = DEFAULT_HOOK
       @parent_page_element = parent_page_element
-      @type = options[:type]
+      @type = type
       @name = name.to_s.downcase.to_sym
-
-      extend MethodObserver
       expand(&block) if block
     end
 
-    def expand(*args, &block)
-      instance_exec(*args, &block)
-    end
-
-    def selector(selector = nil)
-      return @selector unless selector
-      @selector = selector
-    end
+    alias expand instance_exec
 
     def section?
       !element_definitions.empty? || singleton_methods_added?
@@ -74,12 +56,9 @@ module PageMagic
       ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
     rescue ElementMissingException
       begin
-        if browser_element.respond_to?(method)
-          browser_element.send(method, *args, &block)
-        else
-          parent_page_element.send(method, *args, &block)
-        end
-      rescue Exception
+        return browser_element.send(method, *args, &block) if browser_element.respond_to?(method)
+        return parent_page_element.send(method, *args, &block)
+      rescue NoMethodError, ElementMissingException
         super
       end
     end
@@ -96,38 +75,53 @@ module PageMagic
       selector_copy = selector.dup
       method = selector_copy.keys.first
       selector = selector_copy.delete(method)
-      options = selector_copy
-
       finder_method, selector_type, selector_arg = case method
-                                                   when :id
-                                                     [:find, "##{selector}"]
-                                                   when :xpath
-                                                     [:find, :xpath, selector]
-                                                   when :name
-                                                     [:find, "*[name='#{selector}']"]
-                                                   when :css
-                                                     [:find, :css, selector]
-                                                   when :label
-                                                     [:find_field, selector]
-                                                   when :text
-                                                     if @type == :link
-                                                       [:find_link, selector]
-                                                     elsif @type == :button
-                                                       [:find_button, selector]
+                                                     when :id
+                                                       [:find, "##{selector}"]
+                                                     when :xpath
+                                                       [:find, :xpath, selector]
+                                                     when :name
+                                                       [:find, "*[name='#{selector}']"]
+                                                     when :css
+                                                       [:find, :css, selector]
+                                                     when :label
+                                                       [:find_field, selector]
+                                                     when :text
+                                                       if @type == :link
+                                                         [:find_link, selector]
+                                                       elsif @type == :button
+                                                         [:find_button, selector]
+                                                       else
+                                                         fail UnsupportedSelectorException
+                                                       end
                                                      else
                                                        fail UnsupportedSelectorException
-                                                     end
-
-                                                   else
-                                                     fail UnsupportedSelectorException
                                                    end
 
       finder_args = [selector_type, selector_arg].compact
-      finder_args << options unless options.empty?
+      finder_args << selector_copy unless selector_copy.empty?
 
-      @browser_element = parent_browser_element.send(finder_method, *finder_args).tap do |browser_element|
-        EVENT_TYPES.each do |action_method|
-          apply_hooks(page_element: browser_element,
+      @browser_element = parent_browser_element.send(finder_method, *finder_args).tap do |raw_element|
+        wrap_events(raw_element)
+      end
+    end
+
+    def ==(other)
+      return false unless other.is_a?(Element)
+      this = [type, name, selector, before, after]
+      this == [other.type, other.name, other.selector, other.before, other.after]
+    end
+
+    private
+
+    def element_context(*args)
+      ElementContext.new(self, @browser_element, self, *args)
+    end
+
+    def wrap_events(raw_element)
+      EVENT_TYPES.each do |action_method|
+        if raw_element.respond_to?(action_method)
+          apply_hooks(raw_element: raw_element,
                       capybara_method: action_method,
                       before_hook: before,
                       after_hook: after)
@@ -139,39 +133,15 @@ module PageMagic
       parent_page_element.browser_element
     end
 
-    def apply_hooks(page_element:, capybara_method:, before_hook:, after_hook:)
-      if page_element.respond_to?(capybara_method)
-        original_method = page_element.method(capybara_method)
-        this = self
+    def apply_hooks(raw_element:, capybara_method:, before_hook:, after_hook:)
+      original_method = raw_element.method(capybara_method)
+      this = self
 
-        page_element.define_singleton_method(capybara_method) do |*arguments, &block|
-          this.call_hook(&before_hook)
-          original_method.call(*arguments, &block)
-          this.call_hook(&after_hook)
-        end
+      raw_element.define_singleton_method(capybara_method) do |*arguments, &block|
+        this.instance_exec(&before_hook)
+        original_method.call(*arguments, &block)
+        this.instance_exec(&after_hook)
       end
-    end
-
-    def call_hook(&block)
-      @executing_hooks = true
-      result = instance_exec(&block)
-      @executing_hooks = false
-      result
-    end
-
-    def ==(other)
-      other.is_a?(Element) &&
-        type == other.type &&
-        name == other.name &&
-        selector == other.selector &&
-        before == other.before &&
-        after == other.after
-    end
-
-    private
-
-    def element_context(*args)
-      ElementContext.new(self, @browser_element, self, *args)
     end
   end
 end

@@ -3,13 +3,13 @@ module PageMagic
     let(:page) do
       Class.new do
         include PageMagic
-        url '/page1'
       end
     end
 
     subject { described_class.new(browser) }
 
-    let(:browser) { double('browser', current_url: 'url', visit: nil, current_path: :current_path) }
+    let(:url) { 'http://url.com' }
+    let(:browser) { double('browser', current_url: url, visit: nil, current_path: :current_path) }
 
     describe '#current_url' do
       it "returns the browser's current url" do
@@ -33,7 +33,7 @@ module PageMagic
 
       before do
         subject.define_page_mappings another_page_class.url => another_page_class
-        subject.visit(page)
+        subject.visit(page, url: url)
       end
 
       context 'page url has not changed' do
@@ -78,59 +78,82 @@ module PageMagic
 
     describe '#visit' do
       let(:session) do
-        PageMagic::Session.new(browser)
+        allow(browser).to receive(:visit)
+        PageMagic::Session.new(browser, url)
       end
 
-      context 'page supplied' do
-        context 'url supplied' do
-          it 'uses this url instead of the one defined on the page class' do
-            expect(browser).to receive(:visit).with(:custom_url)
-            session.visit(page, url: :custom_url)
-            expect(session.current_page).to be_a(page)
+      it 'sets the current page' do
+        session.define_page_mappings '/page' => page
+        session.visit(page)
+        expect(session.current_page).to be_a(page)
+      end
+
+      it 'uses the current url and the path in the page mappings' do
+        session.define_page_mappings '/page' => page
+        expect(browser).to receive(:visit).with("#{browser.current_url}/page")
+        session.visit(page)
+      end
+
+      context 'no mappings found' do
+        it 'raises an error' do
+          expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::URL_MISSING_MSG
+        end
+      end
+
+      context 'mapping is a regular expression' do
+        it 'raises an error' do
+          session.define_page_mappings(/mapping/ => page)
+          expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
+        end
+      end
+
+      context 'url supplied' do
+        it 'visits that url' do
+          expected_url = 'http://url.com/page'
+          expect(browser).to receive(:visit).with(expected_url)
+          session.visit(url: expected_url)
+        end
+      end
+    end
+
+    describe '#url' do
+
+      let!(:base_url){'http://example.com'}
+      let!(:path){'home'}
+      let!(:expected_url){"#{base_url}/#{path}"}
+
+      context 'base_url has a / on the end' do
+        before do
+          base_url << '/'
+        end
+
+        context 'path has / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, path)).to eq(expected_url)
           end
         end
 
-        context 'url defined on page_class' do
-          it 'visits the url on defined on the page class' do
-            browser.should_receive(:visit).with(page.url)
-            session.visit(page)
-            expect(session.current_page).to be_a(page)
+        context 'path does not have / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, "/#{path}")).to eq(expected_url)
           end
         end
 
-        context 'url not specified' do
-          context 'url not specified on page class' do
-            before do
-              page.instance_variable_set(:@url, nil)
-            end
-            it 'uses the current url and the path in the page mappings' do
-              session.define_page_mappings '/page' => page
-              expect(browser).to receive(:visit).with("#{browser.current_url}/page")
-              session.visit(page)
-            end
+      end
 
-            context 'no mappings found' do
-              it 'raises an error' do
-                expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::URL_MISSING_MSG
-              end
-            end
-
-            context 'mapping is a regular expression' do
-              it 'raises an error' do
-                session.define_page_mappings(/mapping/ => page)
-                expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
-              end
-            end
+      context 'current_url does not have a / on the end' do
+        context 'path has / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, "/#{path}")).to eq(expected_url)
           end
         end
 
-        context 'url supplied' do
-          it 'visits that url' do
-            expected_url = 'http://url.com'
-            expect(browser).to receive(:visit).with(expected_url)
-            session.visit(expected_url)
+        context 'path does not have / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.url(base_url, path)).to eq(expected_url)
           end
         end
+
       end
     end
 
@@ -142,7 +165,7 @@ module PageMagic
           end
         end
 
-        session = PageMagic::Session.new(browser).visit(page)
+        session = PageMagic::Session.new(browser).visit(page, url: url)
         session.my_method.should be(:called)
       end
     end
