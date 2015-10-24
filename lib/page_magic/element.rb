@@ -1,6 +1,68 @@
 require 'page_magic/method_observer'
 require 'page_magic/selector'
 module PageMagic
+
+  class Selectors
+
+    class << self
+      def all
+        @all ||= {}
+      end
+
+      def []= type, selector
+        all[type] = selector
+      end
+
+      def [] type
+        all[type]
+      end
+    end
+
+    attr_reader :type
+
+    def initialize type=nil, &block
+      @type = type
+      @formatter = block
+      self.class[type] = self
+    end
+
+    XPath = Selectors.new(:xpath)
+    ID = Selectors.new(:id)
+    LABEL = Selectors.new(:field)
+    CSS = Selectors.new(:css)
+    TEXT = Selectors.new do |selector, type|
+      if type == :link
+        [:link, selector]
+      elsif type == :button
+        [:button, selector]
+      else
+        fail UnsupportedSelectorException
+      end
+    end
+
+    Name = Selectors.new do |arg|
+      "*[name='#{arg}']"
+    end
+
+
+    def args(selector, supplied_args, type)
+      args = [type()]
+      args << if @formatter
+                @formatter.call(selector, type)
+              else
+                selector
+              end
+      args << supplied_args unless supplied_args.empty?
+      args.compact.flatten
+    end
+
+    def self.find type
+      constant = self.constants.find { |constant| constant.to_s.downcase == type.to_s.downcase }
+      fail UnsupportedSelectorException unless constant
+      self.const_get(constant)
+    end
+
+  end
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
@@ -75,33 +137,9 @@ module PageMagic
       selector_copy = selector.dup
       method = selector_copy.keys.first
       selector = selector_copy.delete(method)
-      selector_type, selector_arg = case method
-                                      when :id
-                                        [:id, selector]
-                                      when :xpath
-                                        [:xpath, selector]
-                                      when :name
-                                        ["*[name='#{selector}']"]
-                                      when :css
-                                        [:css, selector]
-                                      when :label
-                                        [:field, selector]
-                                      when :text
-                                        if @type == :link
-                                          [:link, selector]
-                                        elsif @type == :button
-                                          [:button, selector]
-                                        else
-                                          fail UnsupportedSelectorException
-                                        end
-                                      else
-                                        fail UnsupportedSelectorException
-                                    end
+      new_selector = Selectors.find(method)
 
-      finder_args = [selector_type, selector_arg].compact
-      finder_args << selector_copy unless selector_copy.empty?
-
-      @browser_element = parent_browser_element.send(:find, *finder_args).tap do |raw_element|
+      @browser_element = parent_browser_element.send(:find, *new_selector.args(selector, selector_copy, type)).tap do |raw_element|
         wrap_events(raw_element)
       end
     end
