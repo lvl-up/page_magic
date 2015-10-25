@@ -1,6 +1,7 @@
-# class Selector - models the selection criteria understood by Capybara
 module PageMagic
   class Element
+
+    # class Selector - models the selection criteria understood by Capybara
     class Selector
       class << self
         def find(name)
