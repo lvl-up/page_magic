@@ -55,7 +55,7 @@ module PageMagic
 
           context 'with no name supplied' do
             it 'should default to the name of the class if one is not supplied' do
-              section_class.stub(:name).and_return('PageSection')
+              allow(section_class).to receive(:name).and_return('PageSection')
               page_elements.section section_class, selector
               page_elements.elements(parent_page_element).first.name.should == :page_section
             end
@@ -69,7 +69,7 @@ module PageMagic
             @browser = double('browser')
             @element = double('element')
             @parent_page_element = double('parent_page_element')
-            @parent_page_element.stub(:browser_element).and_return(@browser)
+            allow(@parent_page_element).to receive(:browser_element).and_return(@browser)
             @browser.should_receive(:find).with(:selector).and_return(@element)
           end
 
