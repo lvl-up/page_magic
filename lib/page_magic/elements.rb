@@ -28,18 +28,17 @@ module PageMagic
     end
 
     def element(*args, &block)
-      type = __callee__
+      block = block || proc {}
 
       section_class = remove_argument(args, Class) || Element
-      selector = generate_selector(args, section_class)
-      name = generate_name(args, section_class)
+      selector = compute_selector(args, section_class)
+      name = compute_name(args, section_class)
 
-      options = selector ? { selector: selector } : { browser_element: args.delete_at(0) }
+      options = {type: __callee__}
+      selector ? options[:selector] = selector : options[:browser_element] = args.delete_at(0)
 
       add_element_definition(name) do |parent_browser_element, *e_args|
-        section_class.new(name, parent_browser_element, options.merge(type: type)).tap do |section|
-          section.expand(*e_args, &(block || proc {}))
-        end
+        section_class.new(name, parent_browser_element, options).expand(*e_args, &block)
       end
     end
 
@@ -67,12 +66,12 @@ module PageMagic
       args.delete(argument)
     end
 
-    def generate_name(args, section_class)
+    def compute_name(args, section_class)
       name = remove_argument(args, Symbol)
       name || section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
     end
 
-    def generate_selector(args, section_class)
+    def compute_selector(args, section_class)
       selector = remove_argument(args, Hash)
       selector || section_class.selector if section_class.respond_to?(:selector)
     end

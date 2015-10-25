@@ -34,7 +34,10 @@ module PageMagic
       expand(&block) if block
     end
 
-    alias_method :expand, :instance_exec
+    def expand *args, &block
+      instance_exec(*args, &block)
+      self
+    end
 
     def section?
       !element_definitions.empty? || singleton_methods_added?
