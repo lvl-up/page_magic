@@ -12,4 +12,8 @@ module PageMagic
 
   class InvalidMethodNameException < Exception
   end
+  
+  class UnsupportedCriteriaException < Exception
+  end
+
 end

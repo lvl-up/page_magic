@@ -1,7 +1,7 @@
-require 'page_magic/method_observer'
-require 'page_magic/selector_methods'
-require 'page_magic/selector'
-require 'page_magic/query'
+require 'page_magic/element/method_observer'
+require 'page_magic/element/selector_methods'
+require 'page_magic/element/selector'
+require 'page_magic/element/query'
 module PageMagic
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
