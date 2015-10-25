@@ -1,12 +1,6 @@
 require 'active_support/inflector'
 module PageMagic
   module Elements
-    class InvalidElementNameException < Exception
-    end
-
-    class InvalidMethodNameException < Exception
-    end
-
     def self.extended(clazz)
       clazz.class_eval do
         unless instance_methods.include?(:browser_element)
@@ -28,13 +22,13 @@ module PageMagic
     end
 
     def element(*args, &block)
-      block = block || proc {}
+      block ||= proc {}
 
       section_class = remove_argument(args, Class) || Element
       selector = compute_selector(args, section_class)
       name = compute_name(args, section_class)
 
-      options = {type: __callee__}
+      options = { type: __callee__ }
       selector ? options[:selector] = selector : options[:browser_element] = args.delete_at(0)
 
       add_element_definition(name) do |parent_browser_element, *e_args|

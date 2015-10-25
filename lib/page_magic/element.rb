@@ -34,7 +34,7 @@ module PageMagic
       expand(&block) if block
     end
 
-    def expand *args, &block
+    def expand(*args, &block)
       instance_exec(*args, &block)
       self
     end
