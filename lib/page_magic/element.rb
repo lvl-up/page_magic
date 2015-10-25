@@ -74,13 +74,9 @@ module PageMagic
 
       fail UndefinedSelectorException, 'Pass a locator/define one on the class' if selector.empty?
 
-      selector_copy = selector.dup
-      method = selector_copy.keys.first
-      selector = selector_copy.delete(method)
-      selector = { method => selector }
-      new_selector = Query.find(type)
+      query = Query.find(type).build(query_selector, query_options)
 
-      @browser_element = parent_browser_element.send(:find, *new_selector.build(selector, selector_copy)).tap do |raw_element|
+      @browser_element = parent_browser_element.send(:find, *query).tap do |raw_element|
         wrap_events(raw_element)
       end
     end
@@ -92,6 +88,14 @@ module PageMagic
     end
 
     private
+
+    def query_selector
+      Hash[*selector.first]
+    end
+
+    def query_options
+      selector.dup.delete_if { |key, _value| key == selector.keys.first }
+    end
 
     def element_context(*args)
       ElementContext.new(self, @browser_element, self, *args)
