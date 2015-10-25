@@ -12,10 +12,10 @@ module PageMagic
     end
 
     def build(value)
-      args = []
-      args << name if name
-      args << formatter.call(value)
-      args
+      [].tap do |array|
+        array << name if name
+        array << formatter.call(value)
+      end
     end
 
     attr_reader :name, :formatter
