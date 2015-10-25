@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Elements do
     let(:page_elements) do

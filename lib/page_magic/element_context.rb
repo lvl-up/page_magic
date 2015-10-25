@@ -19,11 +19,7 @@ module PageMagic
 
       fail ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
-      if args.empty?
-        element_locator = element_locator_factory.call(page_element, nil)
-      else
-        element_locator = element_locator_factory.call(page_element, *args)
-      end
+      element_locator = element_locator_factory.call(page_element, *args)
 
       element_locator.section? ? element_locator : element_locator.browser_element
     end

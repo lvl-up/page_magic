@@ -21,7 +21,7 @@ module PageMagic
 
       context 'neither a method or page element are defined' do
         it 'raises an error' do
-          expect { described_class.new(page, page.browser, self).missing_thing }.to raise_error PageMagic::ElementMissingException
+          expect { described_class.new(page, page.browser, self).missing_thing }.to raise_error ElementMissingException
         end
       end
 

@@ -17,12 +17,7 @@ module PageMagic
       end
     end
 
-    def initialize(name,
-                   parent_page_element,
-                   type: :element,
-                   selector: {},
-                   browser_element: nil,
-                   &block)
+    def initialize(name, parent_page_element, type: :element, selector: {}, browser_element: nil, &block)
       @browser_element = browser_element
       @selector = selector
 

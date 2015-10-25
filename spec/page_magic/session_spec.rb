@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Session do
     let(:page) do

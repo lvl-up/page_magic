@@ -25,13 +25,6 @@ module PageMagic
       @current_page
     end
 
-    def find_mapped_page(path)
-      mapping = transitions.keys.find do |key|
-        string_matches?(path, key)
-      end
-      transitions[mapping]
-    end
-
     def visit(page = nil, url: nil)
       if url
         raw_session.visit(url)
@@ -82,6 +75,13 @@ module PageMagic
       else
         false
       end
+    end
+
+    def find_mapped_page(path)
+      mapping = transitions.keys.find do |key|
+        string_matches?(path, key)
+      end
+      transitions[mapping]
     end
   end
 end

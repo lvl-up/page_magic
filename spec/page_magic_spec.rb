@@ -92,7 +92,8 @@ describe PageMagic do
 
     context 'driver for browser not found' do
       it 'raises an error' do
-        expect { described_class.session(browser: :invalid, url: url) }.to raise_exception described_class::UnspportedBrowserException
+        expected_exception = described_class::UnspportedBrowserException
+        expect { described_class.session(browser: :invalid, url: url) }.to raise_exception expected_exception
       end
     end
   end

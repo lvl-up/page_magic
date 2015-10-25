@@ -1,5 +1,5 @@
 module PageMagic
-  attr_reader :browser, :session
+  attr_reader :browser, :session, :browser_element
 
   def initialize(session = Session.new(Capybara.current_session), &block)
     @browser = session.raw_session

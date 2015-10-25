@@ -1,15 +1,17 @@
 require 'active_support/inflector'
 module PageMagic
   module Elements
+    INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
+
+    module InstanceOnlyMethods
+      def element_definitions
+        self.class.element_definitions
+      end
+    end
+
     def self.extended(clazz)
       clazz.class_eval do
-        unless instance_methods.include?(:browser_element)
-          attr_reader :browser_element
-        end
-
-        def element_definitions
-          self.class.element_definitions
-        end
+        include InstanceOnlyMethods
       end
     end
 
@@ -44,7 +46,7 @@ module PageMagic
       fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
       methods = respond_to?(:instance_methods) ? instance_methods : methods()
-      fail InvalidElementNameException, 'a method already exists with this method name' if methods.find { |method| method == name }
+      fail InvalidElementNameException, INVALID_METHOD_NAME_MSG if methods.find { |method| method == name }
 
       element_definitions[name] = block
     end
