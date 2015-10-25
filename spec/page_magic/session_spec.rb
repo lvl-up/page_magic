@@ -171,7 +171,7 @@ module PageMagic
     context '#respond_to?' do
       subject do
         PageMagic::Session.new(browser).tap do |s|
-          s.current_page = page.new
+          allow(s).to receive(:current_page).and_return(page.new)
         end
       end
       it 'checks self' do

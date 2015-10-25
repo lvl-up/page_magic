@@ -7,7 +7,7 @@ module PageMagic
     URL_MISSING_MSG = 'a path must be mapped or a url supplied'
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping is a Regexp'
 
-    attr_accessor :current_page, :raw_session, :transitions
+    attr_reader :raw_session, :transitions
 
     def initialize(browser, url = nil)
       @raw_session = browser
@@ -65,6 +65,13 @@ module PageMagic
       super || current_page.respond_to?(*args)
     end
 
+    def find_mapped_page(path)
+      mapping = transitions.keys.find do |key|
+        string_matches?(path, key)
+      end
+      transitions[mapping]
+    end
+
     private
 
     def string_matches?(string, matcher)
@@ -77,11 +84,6 @@ module PageMagic
       end
     end
 
-    def find_mapped_page(path)
-      mapping = transitions.keys.find do |key|
-        string_matches?(path, key)
-      end
-      transitions[mapping]
-    end
+
   end
 end
