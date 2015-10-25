@@ -2,6 +2,45 @@ require 'page_magic/method_observer'
 require 'page_magic/selector'
 module PageMagic
 
+  class UnsupportedCriteriaException < Exception
+
+  end
+
+  class Criteria
+
+    class << self
+      def find(name)
+        constant = self.constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
+        fail UnsupportedCriteriaException unless constant
+        self.const_get(constant)
+      end
+    end
+
+    def args value
+      args = []
+      args << name if name
+      args << formatter.call(value)
+      args
+    end
+
+    attr_reader :name, :formatter
+    def initialize selector=nil, &formatter
+      @name = selector
+      @formatter = formatter || proc{|arg| arg}
+    end
+
+    XPath = Criteria.new(:xpath)
+    ID = Criteria.new(:id)
+    LABEL = Criteria.new(:field)
+
+    CSS = Criteria.new
+    TEXT = Criteria.new
+    Name = Criteria.new do |arg|
+      "*[name='#{arg}']"
+    end
+  end
+
+
   class Selectors
 
     class << self
@@ -22,43 +61,26 @@ module PageMagic
 
     def initialize type=nil, &block
       @type = type
-      @formatter = block
+      @formatter = block || proc { |locator| locator.to_a }
       self.class[type] = self
     end
 
-    XPath = Selectors.new(:xpath)
-    ID = Selectors.new(:id)
-    LABEL = Selectors.new(:field)
-    CSS = Selectors.new(:css)
-    TEXT = Selectors.new do |selector, type|
-      if type == :link
-        [:link, selector]
-      elsif type == :button
-        [:button, selector]
-      else
-        fail UnsupportedSelectorException
-      end
-    end
-
-    Name = Selectors.new do |arg|
-      "*[name='#{arg}']"
-    end
+    Element = Selectors.new
+    Link = Selectors.new(:link)
+    Button = Selectors.new(:button)
 
 
-    def args(selector, supplied_args, type)
-      args = [type()]
-      args << if @formatter
-                @formatter.call(selector, type)
-              else
-                selector
-              end
-      args << supplied_args unless supplied_args.empty?
-      args.compact.flatten
+    def args(locator, supplied_args)
+      selection_criteria = []
+      selection_criteria << type() if type()
+      selection_criteria << Criteria.find(locator.keys.first).args(locator.values.first)
+      selection_criteria << supplied_args unless supplied_args.empty?
+      selection_criteria.flatten
     end
 
     def self.find type
       constant = self.constants.find { |constant| constant.to_s.downcase == type.to_s.downcase }
-      fail UnsupportedSelectorException unless constant
+      return Element unless constant
       self.const_get(constant)
     end
 
@@ -132,14 +154,15 @@ module PageMagic
     def browser_element(*_args)
       return @browser_element if @browser_element
 
-      fail UndefinedSelectorException, 'Pass a selector/define one on the class' if selector.empty?
+      fail UndefinedSelectorException, 'Pass a locator/define one on the class' if selector.empty?
 
       selector_copy = selector.dup
       method = selector_copy.keys.first
       selector = selector_copy.delete(method)
-      new_selector = Selectors.find(method)
+      selector = {method => selector}
+      new_selector = Selectors.find(type)
 
-      @browser_element = parent_browser_element.send(:find, *new_selector.args(selector, selector_copy, type)).tap do |raw_element|
+      @browser_element = parent_browser_element.send(:find, *new_selector.args(selector, selector_copy)).tap do |raw_element|
         wrap_events(raw_element)
       end
     end

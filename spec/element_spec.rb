@@ -82,16 +82,12 @@ module PageMagic
       end
 
       it 'should locate an element using its label' do
-        element = described_class.new(:my_link, page, type: :link, selector: { label: 'enter text' }).browser_element
+        element = described_class.new(:my_input, page, type: :text_field, selector: { label: 'enter text' }).browser_element
         expect(element[:id]).to eq('field_id')
       end
 
-      it 'should raise an exception when finding another element using its text' do
-        expect { described_class.new(:my_link, page, type: :text_field, selector: { text: 'my link' }).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
-      end
-
       it 'should locate an element using css' do
-        element = described_class.new(:my_link, page, type: :link, selector: { css: "input[name='field_name']" }).browser_element
+        element = described_class.new(:my_input, page, type: :text_field, selector: { css: "input[name='field_name']" }).browser_element
         expect(element[:id]).to eq('field_id')
       end
 
@@ -99,8 +95,8 @@ module PageMagic
         described_class.new(:help, page, type: :link, browser_element: :prefetched_object).browser_element.should == :prefetched_object
       end
 
-      it 'should raise errors for unsupported selectors' do
-        expect { described_class.new(:my_link, page, type: :link, selector: { unsupported: '' }).browser_element }.to raise_error(PageMagic::UnsupportedSelectorException)
+      it 'should raise errors for unsupported criteria' do
+        expect { described_class.new(:my_link, page, type: :link, selector: { unsupported: '' }).browser_element }.to raise_error(PageMagic::UnsupportedCriteriaException)
       end
 
       context 'text selector' do

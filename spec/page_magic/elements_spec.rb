@@ -68,7 +68,7 @@ describe PageMagic::Elements do
           @element = double('element')
           @parent_page_element = double('parent_page_element')
           @parent_page_element.stub(:browser_element).and_return(@browser)
-          @browser.should_receive(:find).with(:css, :selector).and_return(@element)
+          @browser.should_receive(:find).with(:selector).and_return(@element)
         end
 
         it 'should be assigned when selector is passed to section method' do
