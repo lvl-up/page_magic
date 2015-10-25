@@ -5,13 +5,13 @@ module PageMagic
   class Selector
     class << self
       def find(name)
-        constant = constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
-        fail UnsupportedCriteriaException unless constant
-        const_get(constant)
+        selector = constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
+        fail UnsupportedCriteriaException unless selector
+        const_get(selector)
       end
     end
 
-    def args(value)
+    def build(value)
       args = []
       args << name if name
       args << formatter.call(value)
@@ -24,13 +24,13 @@ module PageMagic
       @formatter = formatter || proc { |arg| arg }
     end
 
-    XPath = Selector.new(:xpath)
+    XPATH = Selector.new(:xpath)
     ID = Selector.new(:id)
     LABEL = Selector.new(:field)
 
     CSS = Selector.new
     TEXT = Selector.new
-    Name = Selector.new do |arg|
+    NAME = Selector.new do |arg|
       "*[name='#{arg}']"
     end
   end

@@ -80,7 +80,7 @@ module PageMagic
       selector = { method => selector }
       new_selector = Query.find(type)
 
-      @browser_element = parent_browser_element.send(:find, *new_selector.args(selector, selector_copy)).tap do |raw_element|
+      @browser_element = parent_browser_element.send(:find, *new_selector.build(selector, selector_copy)).tap do |raw_element|
         wrap_events(raw_element)
       end
     end
