@@ -3,16 +3,15 @@ module PageMagic
   end
 
   class Selector
-
     class << self
       def find(name)
-        constant = self.constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
+        constant = constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
         fail UnsupportedCriteriaException unless constant
-        self.const_get(constant)
+        const_get(constant)
       end
     end
 
-    def args value
+    def args(value)
       args = []
       args << name if name
       args << formatter.call(value)
@@ -20,9 +19,9 @@ module PageMagic
     end
 
     attr_reader :name, :formatter
-    def initialize selector=nil, &formatter
+    def initialize(selector = nil, &formatter)
       @name = selector
-      @formatter = formatter || proc{|arg| arg}
+      @formatter = formatter || proc { |arg| arg }
     end
 
     XPath = Selector.new(:xpath)
@@ -35,5 +34,4 @@ module PageMagic
       "*[name='#{arg}']"
     end
   end
-
 end

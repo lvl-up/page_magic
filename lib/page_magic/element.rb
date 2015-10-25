@@ -3,7 +3,6 @@ require 'page_magic/selector_methods'
 require 'page_magic/selector'
 require 'page_magic/query'
 module PageMagic
-
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
@@ -35,7 +34,7 @@ module PageMagic
       expand(&block) if block
     end
 
-    alias expand instance_exec
+    alias_method :expand, :instance_exec
 
     def section?
       !element_definitions.empty? || singleton_methods_added?
@@ -78,7 +77,7 @@ module PageMagic
       selector_copy = selector.dup
       method = selector_copy.keys.first
       selector = selector_copy.delete(method)
-      selector = {method => selector}
+      selector = { method => selector }
       new_selector = Query.find(type)
 
       @browser_element = parent_browser_element.send(:find, *new_selector.args(selector, selector_copy)).tap do |raw_element|
