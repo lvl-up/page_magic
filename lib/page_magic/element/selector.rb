@@ -1,3 +1,4 @@
+# class Selector - models the selection criteria understood by Capybara
 module PageMagic
   class Element
     class Selector
