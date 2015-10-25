@@ -2,15 +2,15 @@ module PageMagic
   class Query
     class << self
       def find(type)
-        constant = constants.find { |constant| constant.to_s.downcase == type.to_s.downcase }
-        return ELEMENT unless constant
-        const_get(constant)
+        query = constants.find { |constant| constant.to_s.downcase == type.to_s.downcase }
+        return ELEMENT unless query
+        const_get(query)
       end
     end
 
     attr_reader :type
 
-    def initialize(type = nil, &_block)
+    def initialize(type = nil)
       @type = type
     end
 

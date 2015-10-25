@@ -103,12 +103,11 @@ module PageMagic
 
     def wrap_events(raw_element)
       EVENT_TYPES.each do |action_method|
-        if raw_element.respond_to?(action_method)
-          apply_hooks(raw_element: raw_element,
-                      capybara_method: action_method,
-                      before_hook: before,
-                      after_hook: after)
-        end
+        next unless raw_element.respond_to?(action_method)
+        apply_hooks(raw_element: raw_element,
+                    capybara_method: action_method,
+                    before_hook: before,
+                    after_hook: after)
       end
     end
 

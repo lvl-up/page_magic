@@ -29,13 +29,10 @@ module PageMagic
 
     def element(*args, &block)
       type = __callee__
+
       section_class = remove_argument(args, Class) || Element
-
-      selector = remove_argument(args, Hash)
-      selector ||= section_class.selector if section_class.respond_to?(:selector)
-
-      name = remove_argument(args, Symbol)
-      name ||= section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
+      selector = generate_selector(args, section_class)
+      name = generate_name(args, section_class)
 
       options = selector ? { selector: selector } : { browser_element: args.delete_at(0) }
 
@@ -68,6 +65,16 @@ module PageMagic
     def remove_argument(args, clazz)
       argument = args.find { |arg| arg.is_a?(clazz) }
       args.delete(argument)
+    end
+
+    def generate_name(args, section_class)
+      name = remove_argument(args, Symbol)
+      name || section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
+    end
+
+    def generate_selector(args, section_class)
+      selector = remove_argument(args, Hash)
+      selector || section_class.selector if section_class.respond_to?(:selector)
     end
   end
 end
