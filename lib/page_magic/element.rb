@@ -1,97 +1,16 @@
 require 'page_magic/method_observer'
+require 'page_magic/selector_methods'
 require 'page_magic/selector'
+require 'page_magic/query'
 module PageMagic
 
-  class UnsupportedCriteriaException < Exception
-
-  end
-
-  class Criteria
-
-    class << self
-      def find(name)
-        constant = self.constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
-        fail UnsupportedCriteriaException unless constant
-        self.const_get(constant)
-      end
-    end
-
-    def args value
-      args = []
-      args << name if name
-      args << formatter.call(value)
-      args
-    end
-
-    attr_reader :name, :formatter
-    def initialize selector=nil, &formatter
-      @name = selector
-      @formatter = formatter || proc{|arg| arg}
-    end
-
-    XPath = Criteria.new(:xpath)
-    ID = Criteria.new(:id)
-    LABEL = Criteria.new(:field)
-
-    CSS = Criteria.new
-    TEXT = Criteria.new
-    Name = Criteria.new do |arg|
-      "*[name='#{arg}']"
-    end
-  end
-
-
-  class Selectors
-
-    class << self
-      def all
-        @all ||= {}
-      end
-
-      def []= type, selector
-        all[type] = selector
-      end
-
-      def [] type
-        all[type]
-      end
-    end
-
-    attr_reader :type
-
-    def initialize type=nil, &block
-      @type = type
-      @formatter = block || proc { |locator| locator.to_a }
-      self.class[type] = self
-    end
-
-    Element = Selectors.new
-    Link = Selectors.new(:link)
-    Button = Selectors.new(:button)
-
-
-    def args(locator, supplied_args)
-      selection_criteria = []
-      selection_criteria << type() if type()
-      selection_criteria << Criteria.find(locator.keys.first).args(locator.values.first)
-      selection_criteria << supplied_args unless supplied_args.empty?
-      selection_criteria.flatten
-    end
-
-    def self.find type
-      constant = self.constants.find { |constant| constant.to_s.downcase == type.to_s.downcase }
-      return Element unless constant
-      self.const_get(constant)
-    end
-
-  end
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
     attr_reader :type, :name, :parent_page_element, :browser_element
 
-    include Elements, MethodObserver, Selector
-    extend Selector
+    include Elements, MethodObserver, SelectorMethods
+    extend SelectorMethods
 
     class << self
       def inherited(clazz)
@@ -160,7 +79,7 @@ module PageMagic
       method = selector_copy.keys.first
       selector = selector_copy.delete(method)
       selector = {method => selector}
-      new_selector = Selectors.find(type)
+      new_selector = Query.find(type)
 
       @browser_element = parent_browser_element.send(:find, *new_selector.args(selector, selector_copy)).tap do |raw_element|
         wrap_events(raw_element)
