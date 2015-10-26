@@ -83,7 +83,5 @@ module PageMagic
         false
       end
     end
-
-
   end
 end

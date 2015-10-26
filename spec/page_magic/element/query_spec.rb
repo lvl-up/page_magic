@@ -2,11 +2,11 @@ module PageMagic
   class Element
     describe Query do
       describe '#build' do
-        let(:selector){Selector.new}
+        let(:selector) { Selector.new }
         before do
           expect(Selector).to receive(:find).with(:css).and_return(selector)
         end
-        let(:locator){{css: '.css'}}
+        let(:locator) { { css: '.css' } }
 
         it 'uses the locator to find the correct selector builder' do
           expect(subject.build(locator)).to eq(locator.values)

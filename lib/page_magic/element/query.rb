@@ -1,6 +1,5 @@
 module PageMagic
   class Element
-
     # class Query - models overall queries for Capybara, queries can include:
     #  - requirements on element type
     #  - selection criteria, modeled through the Selector class
@@ -22,7 +21,7 @@ module PageMagic
         @type = type
       end
 
-      def build(locator, options={})
+      def build(locator, options = {})
         [].tap do |array|
           selector = Selector.find(locator.keys.first)
           array << selector.build(type, locator.values.first)

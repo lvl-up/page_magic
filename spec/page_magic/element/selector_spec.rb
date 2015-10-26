@@ -1,7 +1,6 @@
 module PageMagic
   class Element
     describe Selector do
-
       describe '#build' do
         it 'puts the locator and element type in to the result' do
           expect(subject.build(:field, :locator)).to eq([:locator])
