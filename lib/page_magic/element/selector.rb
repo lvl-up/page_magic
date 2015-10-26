@@ -11,6 +11,10 @@ module PageMagic
         end
       end
 
+      def supports_type?
+        @supports_type
+      end
+
       def build(value)
         [].tap do |array|
           array << name if name
@@ -20,18 +24,19 @@ module PageMagic
 
       attr_reader :name, :formatter
 
-      def initialize(selector = nil, &formatter)
+      def initialize(selector = nil, supports_type: false, &formatter)
         @name = selector
         @formatter = formatter || proc { |arg| arg }
+        @supports_type = supports_type
       end
 
-      XPATH = Selector.new(:xpath)
-      ID = Selector.new(:id)
-      LABEL = Selector.new(:field)
+      XPATH = Selector.new(:xpath, supports_type: false)
+      ID = Selector.new(:id, supports_type: false)
+      LABEL = Selector.new(:field, supports_type: false)
 
-      CSS = Selector.new
-      TEXT = Selector.new
-      NAME = Selector.new do |arg|
+      CSS = Selector.new(supports_type: false)
+      TEXT = Selector.new(supports_type: true)
+      NAME = Selector.new(supports_type: false) do |arg|
         "*[name='#{arg}']"
       end
     end

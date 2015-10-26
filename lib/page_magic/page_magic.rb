@@ -14,7 +14,7 @@ module PageMagic
   end
 
   def text_on_page?(string)
-    string.downcase.include?(text.downcase)
+    text.downcase.include?(string.downcase)
   end
 
   def visit

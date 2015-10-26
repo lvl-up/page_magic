@@ -1,5 +1,11 @@
 module PageMagic
   class Element
+
+    # class Query - models overall queries for Capybara, queries can include:
+    #  - requirements on element type
+    #  - selection criteria, modeled through the Selector class
+    #  - options
+
     class Query
       class << self
         def find(type)
@@ -11,19 +17,22 @@ module PageMagic
 
       attr_reader :type
 
+      # @param type -
       def initialize(type = nil)
         @type = type
       end
 
       def build(locator, options)
         [].tap do |array|
-          array << type if type
-          array << Selector.find(locator.keys.first).build(locator.values.first)
+          selector = Selector.find(locator.keys.first)
+          array << type if (type && selector.supports_type?)
+          array << selector.build(locator.values.first)
           array << options unless options.empty?
         end.flatten
       end
 
       ELEMENT = Query.new
+      TEXT_FIELD = CHECKBOX = SELECT_LIST = RADIOS = TEXTAREA = Query.new(:field)
       LINK = Query.new(:link)
       BUTTON = Query.new(:button)
     end
