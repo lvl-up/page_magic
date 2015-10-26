@@ -18,7 +18,7 @@ module PageMagic
         it 'should add an element' do
           expected_element = Element.new(:name, parent_page_element, type: :text_field, selector: selector)
           page_elements.text_field :name, selector
-          page_elements.element_definitions[:name].call(parent_page_element).should == expected_element
+          expect(page_elements.element_definitions[:name].call(parent_page_element)).to eq(expected_element)
         end
       end
 
@@ -42,7 +42,7 @@ module PageMagic
             expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: selector)
 
             page_elements.section section_class, :page_section, selector
-            page_elements.elements(parent_page_element).first.should == expected_section
+            expect(page_elements.elements(parent_page_element).first).to eq(expected_section)
           end
 
           context 'with no selector supplied' do
@@ -57,7 +57,7 @@ module PageMagic
             it 'should default to the name of the class if one is not supplied' do
               allow(section_class).to receive(:name).and_return('PageSection')
               page_elements.section section_class, selector
-              page_elements.elements(parent_page_element).first.name.should == :page_section
+              expect(page_elements.elements(parent_page_element).first.name).to eq(:page_section)
             end
           end
         end
@@ -70,14 +70,15 @@ module PageMagic
             @element = double('element')
             @parent_page_element = double('parent_page_element')
             allow(@parent_page_element).to receive(:browser_element).and_return(@browser)
-            @browser.should_receive(:find).with(:selector).and_return(@element)
+            expect(@browser).to receive(:find).with(:selector).and_return(@element)
           end
 
           it 'should be assigned when selector is passed to section method' do
             element = @element
 
             page_elements.section :page_section, css: :selector do
-              browser_element.should == element
+              extend RSpec::Matchers
+              expect(browser_element).to eq(element)
             end
 
             page_elements.element_definitions[:page_section].call(@parent_page_element)
@@ -88,7 +89,8 @@ module PageMagic
 
             page_elements.section :page_section do
               selector css: :selector
-              browser_element.should == element
+              extend RSpec::Matchers
+              expect(browser_element).to eq(element)
             end
 
             page_elements.elements(@parent_page_element, nil)
@@ -104,14 +106,14 @@ module PageMagic
           browser = double('browser', find: :browser_element)
           parent_page_element = double('parent_browser_element', browser_element: browser)
           page_elements.elements(parent_page_element, arg)
-          arg[:passed_through].should be_true
+          expect(arg[:passed_through]).to eq(true)
         end
 
         it 'should return your a copy of the core definition' do
           page_elements.element :page_section, selector
           first = page_elements.element_definitions[:page_section].call(parent_page_element)
           second = page_elements.element_definitions[:page_section].call(parent_page_element)
-          first.should_not equal(second)
+          expect(first).to_not equal(second)
         end
       end
 
@@ -120,7 +122,7 @@ module PageMagic
           it 'should add a section' do
             expected_section = Element.new(:page_section, parent_page_element, type: :element, browser_element: :object)
             page_elements.element :page_section, :object
-            expected_section.should == page_elements.elements(parent_page_element).first
+            expect(expected_section).to eq(page_elements.elements(parent_page_element).first)
           end
         end
       end
@@ -133,19 +135,19 @@ module PageMagic
 
           section = page_elements.element_definitions[:page_section].call(parent)
 
-          section.session.should == :current_session
+          expect(section.session).to eq(:current_session)
         end
 
         it 'should be on instances created dynamically using the section method' do
           browser_element = double('browser_element')
-          browser_element.stub(:find)
+          allow(browser_element).to receive(:find)
           parent = double('parent', session: :current_session, browser_element: browser_element)
 
           page_elements.section :page_section, css: :selector do
           end
 
           section = page_elements.element_definitions[:page_section].call(parent)
-          section.session.should == :current_session
+          expect(section.session).to eq(:current_session)
         end
       end
     end
@@ -155,7 +157,7 @@ module PageMagic
         page_elements.text_field :name, selector
         first = page_elements.element_definitions[:name].call(parent_page_element)
         second = page_elements.element_definitions[:name].call(parent_page_element)
-        first.should_not equal(second)
+        expect(first).to_not equal(second)
       end
     end
 

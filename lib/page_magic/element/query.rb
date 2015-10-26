@@ -22,11 +22,10 @@ module PageMagic
         @type = type
       end
 
-      def build(locator, options)
+      def build(locator, options={})
         [].tap do |array|
           selector = Selector.find(locator.keys.first)
-          array << type if (type && selector.supports_type?)
-          array << selector.build(locator.values.first)
+          array << selector.build(type, locator.values.first)
           array << options unless options.empty?
         end.flatten
       end

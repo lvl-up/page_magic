@@ -164,7 +164,7 @@ module PageMagic
         end
 
         session = PageMagic::Session.new(browser).visit(page, url: url)
-        session.my_method.should be(:called)
+        expect(session.my_method).to be(:called)
       end
     end
 

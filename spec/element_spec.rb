@@ -136,7 +136,7 @@ module PageMagic
 
         it 'should locate a button' do
           element = described_class.new(:my_button, page, type: :button, selector: { text: 'a button' }).browser_element
-          element[:id].should == 'form_button'
+          expect(element[:id]).to eq('form_button')
         end
       end
     end
