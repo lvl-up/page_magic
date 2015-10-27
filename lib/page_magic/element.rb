@@ -74,7 +74,7 @@ module PageMagic
 
       query = Query.find(type).build(query_selector, query_options)
 
-      @browser_element = parent_browser_element.send(:find, *query).tap do |raw_element|
+      @browser_element = parent_browser_element.find(*query).tap do |raw_element|
         wrap_events(raw_element)
       end
     end

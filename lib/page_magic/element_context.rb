@@ -3,8 +3,6 @@ module PageMagic
   end
 
   class ElementContext
-    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
-
     attr_reader :caller, :page_element
 
     def initialize(page_element, caller, *_args)
