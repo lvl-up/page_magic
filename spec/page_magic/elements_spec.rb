@@ -41,14 +41,14 @@ module PageMagic
           it 'should add an element using that class section' do
             expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: selector)
 
-            page_elements.section section_class, :page_section, selector
+            page_elements.element section_class, :page_section, selector
             expect(page_elements.elements(parent_page_element).first).to eq(expected_section)
           end
 
           context 'with no selector supplied' do
             it 'defaults the selector to the one on the class' do
               section_class.selector selector
-              page_elements.section section_class, :alias
+              page_elements.element section_class, :alias
               expect(page_elements.elements(parent_page_element).first.selector).to eq(selector)
             end
           end
@@ -56,7 +56,7 @@ module PageMagic
           context 'with no name supplied' do
             it 'should default to the name of the class if one is not supplied' do
               allow(section_class).to receive(:name).and_return('PageSection')
-              page_elements.section section_class, selector
+              page_elements.element section_class, selector
               expect(page_elements.elements(parent_page_element).first.name).to eq(:page_section)
             end
           end
@@ -76,7 +76,7 @@ module PageMagic
           it 'should be assigned when selector is passed to section method' do
             element = @element
 
-            page_elements.section :page_section, css: :selector do
+            page_elements.element :page_section, css: :selector do
               extend RSpec::Matchers
               expect(browser_element).to eq(element)
             end
@@ -87,7 +87,7 @@ module PageMagic
           it 'should be assigned when selector is defined in the block passed to the section method' do
             element = @element
 
-            page_elements.section :page_section do
+            page_elements.element :page_section do
               selector css: :selector
               extend RSpec::Matchers
               expect(browser_element).to eq(element)
@@ -98,7 +98,7 @@ module PageMagic
         end
 
         it 'should pass args through to the block' do
-          page_elements.section :page_section, css: '.blah' do |arg|
+          page_elements.element :page_section, css: '.blah' do |arg|
             arg[:passed_through] = true
           end
 
@@ -143,7 +143,7 @@ module PageMagic
           allow(browser_element).to receive(:find)
           parent = double('parent', session: :current_session, browser_element: browser_element)
 
-          page_elements.section :page_section, css: :selector do
+          page_elements.element :page_section, css: :selector do
           end
 
           section = page_elements.element_definitions[:page_section].call(parent)

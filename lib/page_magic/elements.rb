@@ -38,7 +38,7 @@ module PageMagic
       end
     end
 
-    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea, :section]
+    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
 
     TYPES.each { |type| alias_method type, :element }
 

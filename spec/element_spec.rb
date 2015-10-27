@@ -25,7 +25,7 @@ module PageMagic
         end
 
         page_class.class_eval do
-          section custom_element, css: '.form'
+          element custom_element, css: '.form'
         end
 
         expect(page.form.form_field).to be_visible
@@ -217,7 +217,7 @@ module PageMagic
     describe '#method_missing' do
       before do
         page_class.class_eval do
-          section :form_by_css, css: '.form' do
+          element :form_by_css, css: '.form' do
             link(:link_in_form, text: 'a in a form')
           end
         end
