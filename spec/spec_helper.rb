@@ -6,7 +6,7 @@ require 'support/shared_contexts'
 if ENV['coverage']
   # require "codeclimate-test-reporter"
   require 'simplecov'
-  CodeClimate::TestReporter.start
+  # CodeClimate::TestReporter.start
 end
 
 require 'page_magic'
