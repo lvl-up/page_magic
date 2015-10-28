@@ -1,7 +1,12 @@
 Bundler.require
-$LOAD_PATH.unshift(__dir__, "#{__dir__}/../lib")
+$LOAD_PATH.unshift("#{File.dirname(__FILE__)}/lib")
 
 require 'support/shared_contexts'
-require 'simplecov' if ENV['coverage']
+
+if ENV['coverage']
+  require "codeclimate-test-reporter"
+  require 'simplecov'
+  CodeClimate::TestReporter.start
+end
 
 require 'page_magic'
