@@ -1,3 +1,4 @@
+[![Code Climate](https://codeclimate.com/github/Ladtech/page_magic/badges/gpa.svg)](https://codeclimate.com/github/Ladtech/page_magic) [![Test Coverage](https://codeclimate.com/github/Ladtech/page_magic/badges/coverage.svg)](https://codeclimate.com/github/Ladtech/page_magic/coverage) [![PullReview stats](https://www.pullreview.com/github/Ladtech/page_magic/badges/master.svg?)](https://www.pullreview.com/github/Ladtech/page_magic/reviews/master)
 #PageMagic
 PageMagic is an API for testing web applications. 
 
