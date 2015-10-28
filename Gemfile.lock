@@ -18,12 +18,14 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
+    certifi (2015.08.10)
     childprocess (0.3.9)
       ffi (~> 1.0, >= 1.0.11)
     cliver (0.2.2)
     codeclimate-test-reporter (0.4.8)
       simplecov (>= 0.7.1, < 1.0.0)
     diff-lcs (1.2.4)
+    docile (1.1.5)
     faraday (0.8.9)
       multipart-post (~> 1.2.0)
     ffi (1.9.3)
@@ -53,7 +55,7 @@ GEM
     mime-types (1.25)
     mini_portile (0.5.1)
     minitest (5.7.0)
-    multi_json (1.7.3)
+    multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (1.2.0)
     nokogiri (1.6.0)
@@ -72,6 +74,9 @@ GEM
       multi_json (~> 1.0)
       websocket-driver (>= 0.2.0)
     powerpack (0.1.1)
+    pullreview-coverage (0.0.5)
+      certifi
+      simplecov (>= 0.7.1, < 1.0.0)
     rack (1.5.2)
     rack-protection (1.5.0)
       rack
@@ -102,10 +107,11 @@ GEM
       multi_json (~> 1.0)
       rubyzip (< 1.0.0)
       websocket (~> 1.0.4)
-    simplecov (0.7.1)
-      multi_json (~> 1.0)
-      simplecov-html (~> 0.7.1)
-    simplecov-html (0.7.1)
+    simplecov (0.10.0)
+      docile (~> 1.1.0)
+      json (~> 1.8)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.0)
     sinatra (1.4.3)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -131,6 +137,7 @@ DEPENDENCIES
   codeclimate-test-reporter
   jeweler
   poltergeist
+  pullreview-coverage
   rspec
   rubocop
   simplecov
