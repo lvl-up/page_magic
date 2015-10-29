@@ -11,6 +11,7 @@ group :test do
   gem 'simplecov', require: false
   gem 'poltergeist'
   gem "codeclimate-test-reporter", group: :test, require: nil
+  gem 'pullreview-coverage', require: false
 end
 
 group :development do
