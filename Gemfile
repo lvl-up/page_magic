@@ -12,7 +12,6 @@ group :test do
   gem 'poltergeist'
   gem "codeclimate-test-reporter", group: :test, require: nil
   gem 'pullreview-coverage', require: false
-  gem 'rspec_junit_formatter', '0.2.2'
 end
 
 group :development do
