@@ -34,7 +34,7 @@ What we really want to write is something like
 ```ruby
 test_subject = send_test_mail('test@21st-century-mail.com')
 #Visit your site using a PageMagic session we prepared earlier
-session.visit(LoginPage, url: 'https://21st-century-mail.com')
+session.visit(LoginPage)
 
 #Login using some handy helper method on our page object
 session.login('username', 'password')
@@ -52,7 +52,7 @@ fail "message is still there!" if session.message(subject: test_subject).exists?
 ## Starting a session
 To start a PageMagic session simply decide what browser you want to use and pass it to PageMagic's `.session` method
 ```ruby
-session = PageMagic.session(browser: :chrome)
+session = PageMagic.session(browser: :chrome, url: 'https://21st-century-mail.com')
 ```
 Out of the box, PageMagic knows how to work with:
 - Chrome and Firefox
@@ -197,7 +197,7 @@ end
 PageMagic.drivers.register Webkit
 
 #3. Use registered driver
-session = PageMagic.session(browser: webkit)
+session = PageMagic.session(browser: webkit, url: 'https://21st-century-mail.com')
 ```
 ##What else can you do with PageMagic?
 PageMagic has lots of other useful features. I'm writing up the documentation so check back here soon!

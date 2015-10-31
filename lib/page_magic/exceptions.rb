@@ -6,4 +6,13 @@ module PageMagic
 
   class MissingLocatorOrSelector < Exception
   end
+
+  class InvalidElementNameException < Exception
+  end
+
+  class InvalidMethodNameException < Exception
+  end
+
+  class UnsupportedCriteriaException < Exception
+  end
 end

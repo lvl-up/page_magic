@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Session do
     let(:page) do
@@ -117,10 +118,9 @@ module PageMagic
     end
 
     describe '#url' do
-
-      let!(:base_url){'http://example.com'}
-      let!(:path){'home'}
-      let!(:expected_url){"#{base_url}/#{path}"}
+      let!(:base_url) { 'http://example.com' }
+      let!(:path) { 'home' }
+      let!(:expected_url) { "#{base_url}/#{path}" }
 
       context 'base_url has a / on the end' do
         before do
@@ -138,7 +138,6 @@ module PageMagic
             expect(subject.url(base_url, "/#{path}")).to eq(expected_url)
           end
         end
-
       end
 
       context 'current_url does not have a / on the end' do
@@ -153,7 +152,6 @@ module PageMagic
             expect(subject.url(base_url, path)).to eq(expected_url)
           end
         end
-
       end
     end
 
@@ -166,14 +164,14 @@ module PageMagic
         end
 
         session = PageMagic::Session.new(browser).visit(page, url: url)
-        session.my_method.should be(:called)
+        expect(session.my_method).to be(:called)
       end
     end
 
     context '#respond_to?' do
       subject do
         PageMagic::Session.new(browser).tap do |s|
-          s.current_page = page.new
+          allow(s).to receive(:current_page).and_return(page.new)
         end
       end
       it 'checks self' do

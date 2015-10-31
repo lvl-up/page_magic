@@ -30,12 +30,12 @@ describe PageMagic do
 
     context 'children' do
       it 'should inherit elements defined on the parent class' do
-        child_page.element_definitions.should include(:next)
+        expect(child_page.element_definitions).to include(:next)
       end
 
       it 'should pass on element definitions to their children' do
         grand_child_class = Class.new(child_page)
-        grand_child_class.element_definitions.should include(:next)
+        expect(grand_child_class.element_definitions).to include(:next)
       end
     end
   end
@@ -58,13 +58,13 @@ describe PageMagic do
 
     it "defaults to capybara's default session " do
       Capybara.default_driver = :rack_test
-      subject.new.browser.mode.should == :rack_test
+      expect(subject.new.browser.mode).to eq(:rack_test)
     end
 
     context 'specifying the browser' do
       it 'loads the correct driver' do
         session = described_class.session(application: rack_application.new, browser: :firefox, url: :url)
-        session.raw_session.driver.is_a?(Capybara::Selenium::Driver).should be_true
+        expect(session.raw_session.driver).to be_a(Capybara::Selenium::Driver)
       end
     end
 
@@ -92,7 +92,8 @@ describe PageMagic do
 
     context 'driver for browser not found' do
       it 'raises an error' do
-        expect { described_class.session(browser: :invalid, url: url) }.to raise_exception described_class::UnspportedBrowserException
+        expected_exception = described_class::UnspportedBrowserException
+        expect { described_class.session(browser: :invalid, url: url) }.to raise_exception expected_exception
       end
     end
   end

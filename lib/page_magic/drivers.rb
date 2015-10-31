@@ -19,7 +19,7 @@ module PageMagic
       Dir["#{path}/*.rb"].each do |driver_file|
         require driver_file
         driver_name = File.basename(driver_file)[/(.*)\.rb$/, 1]
-        register eval(driver_name.classify)
+        register self.class.const_get(driver_name.classify)
       end
     end
 

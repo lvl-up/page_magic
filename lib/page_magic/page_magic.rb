@@ -1,5 +1,5 @@
 module PageMagic
-  attr_reader :browser, :session
+  attr_reader :browser, :session, :browser_element
 
   def initialize(session = Session.new(Capybara.current_session), &block)
     @browser = session.raw_session
@@ -14,7 +14,7 @@ module PageMagic
   end
 
   def text_on_page?(string)
-    string.downcase.include?(text.downcase)
+    text.downcase.include?(string.downcase)
   end
 
   def visit

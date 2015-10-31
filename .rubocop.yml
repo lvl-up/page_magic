@@ -10,3 +10,6 @@ AllCops:
     - 'vendor/**/*'
     - 'coverage/**/*'
     - '.idea/**/*'
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false

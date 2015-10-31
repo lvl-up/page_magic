@@ -1,13 +1,15 @@
-require 'page_magic/method_observer'
-require 'page_magic/selector'
+require 'page_magic/element/method_observer'
+require 'page_magic/element/selector_methods'
+require 'page_magic/element/selector'
+require 'page_magic/element/query'
 module PageMagic
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
     attr_reader :type, :name, :parent_page_element, :browser_element
 
-    include Elements, MethodObserver, Selector
-    extend Selector
+    include Elements, MethodObserver, SelectorMethods
+    extend SelectorMethods
 
     class << self
       def inherited(clazz)
@@ -15,12 +17,7 @@ module PageMagic
       end
     end
 
-    def initialize(name,
-                   parent_page_element,
-                   type: :element,
-                   selector: {},
-                   browser_element: nil,
-                   &block)
+    def initialize(name, parent_page_element, type: :element, selector: {}, browser_element: nil, &block)
       @browser_element = browser_element
       @selector = selector
 
@@ -32,7 +29,10 @@ module PageMagic
       expand(&block) if block
     end
 
-    alias expand instance_exec
+    def expand(*args, &block)
+      instance_exec(*args, &block)
+      self
+    end
 
     def section?
       !element_definitions.empty? || singleton_methods_added?
@@ -70,38 +70,11 @@ module PageMagic
     def browser_element(*_args)
       return @browser_element if @browser_element
 
-      fail UndefinedSelectorException, 'Pass a selector/define one on the class' if selector.empty?
+      fail UndefinedSelectorException, 'Pass a locator/define one on the class' if selector.empty?
 
-      selector_copy = selector.dup
-      method = selector_copy.keys.first
-      selector = selector_copy.delete(method)
-      finder_method, selector_type, selector_arg = case method
-                                                     when :id
-                                                       [:find, "##{selector}"]
-                                                     when :xpath
-                                                       [:find, :xpath, selector]
-                                                     when :name
-                                                       [:find, "*[name='#{selector}']"]
-                                                     when :css
-                                                       [:find, :css, selector]
-                                                     when :label
-                                                       [:find_field, selector]
-                                                     when :text
-                                                       if @type == :link
-                                                         [:find_link, selector]
-                                                       elsif @type == :button
-                                                         [:find_button, selector]
-                                                       else
-                                                         fail UnsupportedSelectorException
-                                                       end
-                                                     else
-                                                       fail UnsupportedSelectorException
-                                                   end
+      query = Query.find(type).build(query_selector, query_options)
 
-      finder_args = [selector_type, selector_arg].compact
-      finder_args << selector_copy unless selector_copy.empty?
-
-      @browser_element = parent_browser_element.send(finder_method, *finder_args).tap do |raw_element|
+      @browser_element = parent_browser_element.find(*query).tap do |raw_element|
         wrap_events(raw_element)
       end
     end
@@ -114,18 +87,25 @@ module PageMagic
 
     private
 
+    def query_selector
+      Hash[*selector.first]
+    end
+
+    def query_options
+      selector.dup.delete_if { |key, _value| key == selector.keys.first }
+    end
+
     def element_context(*args)
       ElementContext.new(self, @browser_element, self, *args)
     end
 
     def wrap_events(raw_element)
       EVENT_TYPES.each do |action_method|
-        if raw_element.respond_to?(action_method)
-          apply_hooks(raw_element: raw_element,
-                      capybara_method: action_method,
-                      before_hook: before,
-                      after_hook: after)
-        end
+        next unless raw_element.respond_to?(action_method)
+        apply_hooks(raw_element: raw_element,
+                    capybara_method: action_method,
+                    before_hook: before,
+                    after_hook: after)
       end
     end
 
