@@ -4,7 +4,6 @@ module PageMagic
     #  - requirements on element type
     #  - selection criteria, modeled through the Selector class
     #  - options
-
     class Query
       class << self
         def find(type)

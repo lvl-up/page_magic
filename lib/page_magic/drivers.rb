@@ -1,5 +1,7 @@
 require 'page_magic/driver'
 module PageMagic
+  # class Drivers - creates an object that can be used to hold driver definitions
+  # These PageMagic gets the user's chosen driver from this object.
   class Drivers
     def all
       @all ||= []

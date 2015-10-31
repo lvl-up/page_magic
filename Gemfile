@@ -10,7 +10,7 @@ group :test do
   gem 'rspec', require: 'rspec/core/rake_task'
   gem 'simplecov', require: false
   gem 'poltergeist'
-  gem "codeclimate-test-reporter", group: :test, require: nil
+  gem 'codeclimate-test-reporter', group: :test, require: nil
   gem 'pullreview-coverage', require: false
 end
 

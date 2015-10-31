@@ -1,7 +1,4 @@
 module PageMagic
-  class ElementMissingException < Exception
-  end
-
   class ElementContext
     attr_reader :caller, :page_element
 

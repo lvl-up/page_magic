@@ -1,8 +1,6 @@
 require 'wait'
 module PageMagic
-  class InvalidURLException < Exception
-  end
-
+  # class Session - coordinates access to the browser though page objects.
   class Session
     URL_MISSING_MSG = 'a path must be mapped or a url supplied'
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping is a Regexp'
