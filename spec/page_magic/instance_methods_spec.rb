@@ -3,12 +3,10 @@ module PageMagic
     include_context :webapp_fixture
     subject do
       clazz = Class.new do
-        extend Elements, ClassMethods
+        include PageMagic
         url '/page1'
         link(:next_page, text: 'next page')
       end
-
-      clazz.send(:include, described_class)
       clazz.new.tap(&:visit)
     end
 

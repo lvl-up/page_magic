@@ -1,9 +1,6 @@
 module PageMagic
   module ClassMethods
-    def url(url = nil)
-      @url = url if url
-      @url
-    end
+    include Elements
 
     def inherited(clazz)
       clazz.element_definitions.merge!(element_definitions)

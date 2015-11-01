@@ -17,4 +17,5 @@ end
 group :development do
   gem 'jeweler'
   gem 'rubocop', require: 'rubocop/rake_task'
+  gem 'pry-byebug'
 end

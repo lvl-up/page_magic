@@ -36,6 +36,10 @@ module PageMagic
       super || element_context.respond_to?(*args)
     end
 
+    def element_definitions
+      self.class.element_definitions
+    end
+
     def element_context
       ElementContext.new(self)
     end

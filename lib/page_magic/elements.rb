@@ -3,18 +3,6 @@ module PageMagic
   module Elements
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
 
-    module InstanceOnlyMethods
-      def element_definitions
-        self.class.element_definitions
-      end
-    end
-
-    def self.extended(clazz)
-      clazz.class_eval do
-        include InstanceOnlyMethods
-      end
-    end
-
     def method_added(method)
       fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
     end

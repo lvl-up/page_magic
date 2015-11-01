@@ -3,7 +3,7 @@ module PageMagic
   describe Elements do
     let(:page_elements) do
       Class.new.tap do |clazz|
-        clazz.extend(described_class)
+        clazz.extend(ClassMethods, described_class)
       end
     end
 

@@ -2,11 +2,12 @@ $LOAD_PATH.unshift("#{File.dirname(__FILE__)}")
 require 'capybara'
 require 'page_magic/exceptions'
 require 'page_magic/session'
+require 'page_magic/instance_methods'
 require 'page_magic/elements'
+require 'page_magic/class_methods'
 require 'page_magic/element_context'
 require 'page_magic/element'
-require 'page_magic/instance_methods'
-require 'page_magic/class_methods'
+
 require 'page_magic/drivers'
 
 module PageMagic
@@ -28,8 +29,13 @@ module PageMagic
 
     def included(clazz)
       clazz.class_eval do
-        include InstanceMethods
-        extend(Elements, ClassMethods)
+        def self.url(url = nil)
+          @url = url if url
+          @url
+        end
+
+        include(InstanceMethods)
+        extend(ClassMethods)
       end
     end
   end

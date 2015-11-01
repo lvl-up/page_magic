@@ -6,16 +6,11 @@ module PageMagic
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
+
     attr_reader :type, :name, :parent_page_element, :browser_element
 
     include Elements, MethodObserver, SelectorMethods
-    extend SelectorMethods
-
-    class << self
-      def inherited(clazz)
-        clazz.extend(Elements)
-      end
-    end
+    extend Elements, ClassMethods, SelectorMethods
 
     def initialize(name, parent_page_element, type: :element, selector: {}, browser_element: nil, &block)
       @browser_element = browser_element
@@ -26,6 +21,7 @@ module PageMagic
       @parent_page_element = parent_page_element
       @type = type
       @name = name.to_s.downcase.to_sym
+      @element_definitions = self.class.element_definitions.dup
       expand(&block) if block
     end
 
@@ -95,7 +91,7 @@ module PageMagic
       selector.dup.delete_if { |key, _value| key == selector.keys.first }
     end
 
-    def element_context(*args)
+    def element_context
       ElementContext.new(self)
     end
 
