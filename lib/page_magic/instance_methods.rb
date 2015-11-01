@@ -37,7 +37,7 @@ module PageMagic
     end
 
     def element_context
-      ElementContext.new(self, self)
+      ElementContext.new(self)
     end
   end
 end

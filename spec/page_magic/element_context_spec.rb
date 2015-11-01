@@ -21,13 +21,13 @@ module PageMagic
 
       context 'neither a method or page element are defined' do
         it 'raises an error' do
-          expect { described_class.new(page, page.browser, self).missing_thing }.to raise_error ElementMissingException
+          expect { described_class.new(page).missing_thing }.to raise_error ElementMissingException
         end
       end
 
       context 'method is a element defintion' do
         it 'returns the sub page element' do
-          element = described_class.new(page, page.browser, self).a_link
+          element = described_class.new(page).a_link
           # TODO: - returns the capybara object. maybe we should think about wrapping this.
           expect(element.text).to eq('a link')
         end
@@ -39,7 +39,7 @@ module PageMagic
             end
           end
 
-          described_class.new(page, page.browser, self).a_link
+          described_class.new(page).a_link
         end
       end
 
@@ -51,14 +51,14 @@ module PageMagic
             end
           end
 
-          expect(described_class.new(page, :browser, self).page_method).to eq(:called)
+          expect(described_class.new(page).page_method).to eq(:called)
         end
       end
     end
 
     describe '#respond_to?' do
       subject do
-        described_class.new(elements_page.new(session), session, self)
+        described_class.new(elements_page.new(session))
       end
       it 'checks against the names of the elements passed in' do
         expect(subject.respond_to?(:a_link)).to eq(true)

@@ -53,7 +53,7 @@ module PageMagic
     end
 
     def method_missing(method, *args, &block)
-      ElementContext.new(self, browser_element, self, *args).send(method, args.first, &block)
+      ElementContext.new(self).send(method, args.first, &block)
     rescue ElementMissingException
       begin
         return browser_element.send(method, *args, &block) if browser_element.respond_to?(method)
@@ -96,7 +96,7 @@ module PageMagic
     end
 
     def element_context(*args)
-      ElementContext.new(self, @browser_element, self, *args)
+      ElementContext.new(self)
     end
 
     def wrap_events(raw_element)

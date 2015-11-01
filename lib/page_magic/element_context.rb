@@ -1,10 +1,9 @@
 module PageMagic
   class ElementContext
-    attr_reader :caller, :page_element
+    attr_reader :page_element
 
-    def initialize(page_element, caller, *_args)
+    def initialize(page_element)
       @page_element = page_element
-      @caller = caller
     end
 
     def method_missing(method, *args, &block)
