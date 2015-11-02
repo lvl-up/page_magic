@@ -2,7 +2,8 @@
 rules:
   missing_class_documentation:
     except:
-      - exceptions.rb
+      - lib/page_magic/exceptions.rb
   test_infection:
     except:
-      - exceptions.rb
+      - lib/page_magic/exceptions.rb
+      - **/exceptions.rb
