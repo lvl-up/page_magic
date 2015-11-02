@@ -1,0 +1,4 @@
+---
+rules:
+  ignore:
+  - missing_class_documentation
