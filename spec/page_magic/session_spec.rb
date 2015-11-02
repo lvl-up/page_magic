@@ -78,7 +78,7 @@ module PageMagic
     end
 
     describe '#wait' do
-      it 'passed the supplied block to the wait api' do
+      it 'passes the supplied block to the wait api' do
         block = proc{:executed}
         allow_any_instance_of(Wait).to receive(:until).and_call_original
         expect(subject.wait_until(&block)).to eq(:executed)
