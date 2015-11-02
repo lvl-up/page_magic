@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'capybara'
-gem 'activesupport'
-gem 'wait'
+gem 'capybara', '~> 2'
+gem 'activesupport', '~> 4'
+gem 'wait', '~> 0'
 
 group :test do
   gem 'watir-webdriver'
@@ -15,10 +15,9 @@ group :test do
 end
 
 group :development do
-  gem 'jeweler'
-  gem 'rubocop', require: 'rubocop/rake_task'
-  gem 'pry-byebug'
-  gem 'yard'
-  gem 'redcarpet'
-  gem 'github-markup'
+  gem 'jeweler', '~> 2.0'
+  gem 'rubocop', '~> 0.34', require: 'rubocop/rake_task'
+  gem 'yard', '~> 0.8'
+  gem 'redcarpet', '~> 3.3'
+  gem 'github-markup', '~> 1.4'
 end
