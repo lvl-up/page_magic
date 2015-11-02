@@ -3,6 +3,6 @@ rules:
   missing_class_documentation:
     except:
       - exceptions.rb
-  improve_coverage_of_class:
+  test_infection:
     except:
       - exceptions.rb
