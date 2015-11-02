@@ -4,4 +4,4 @@ languages:
 rules:
   test_infection:
     except:
-      - exceptions.rb
+      - '**/exceptions.rb'
