@@ -4,7 +4,7 @@ module PageMagic
     module MethodObserver
       # Hook called by ruby when a singleton method is added.
       #
-      # @param [String, #arg] name of the method added
+      # @param [String] arg name of the method added
       def singleton_method_added(arg)
         @singleton_methods_added = true unless arg == :singleton_method_added
       end

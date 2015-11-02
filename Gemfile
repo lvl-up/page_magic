@@ -18,4 +18,7 @@ group :development do
   gem 'jeweler'
   gem 'rubocop', require: 'rubocop/rake_task'
   gem 'pry-byebug'
+  gem 'yard'
+  gem 'redcarpet'
+  gem 'github-markup'
 end

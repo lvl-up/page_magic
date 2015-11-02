@@ -48,7 +48,7 @@ module PageMagic
     #  @param [Object] page the supplied page class will be instantiated to be used against the given url.
     # @raise [InvalidURLException] if a page is supplied and there isn't a mapped path for it
     # @raise [InvalidURLException] if neither a page or url are supplied
-    # @raise [InvalidURLException] if the mapped path for a page is a {Regexp}
+    # @raise [InvalidURLException] if the mapped path for a page is a Regexp
     def visit(page = nil, url: nil)
       if url
         raw_session.visit(url)
