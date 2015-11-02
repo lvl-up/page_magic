@@ -15,6 +15,8 @@ module PageMagic
       all.find { |driver| driver.support?(browser) }
     end
 
+    # Loads drivers defined in files at the given path
+    # @param [String] path where the drivers are located
     def load(path = "#{__dir__}/drivers")
       require 'active_support/inflector'
 

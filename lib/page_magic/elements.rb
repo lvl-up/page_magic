@@ -14,10 +14,6 @@ module PageMagic
       alias_method :extended, :included
     end
 
-    def method_added(method)
-      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
-    end
-
     def elements(browser_element, *args)
       element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
     end
@@ -67,6 +63,11 @@ module PageMagic
 
     TYPES.each { |type| alias_method type, :element }
 
+    def element_definitions
+      @element_definitions ||= {}
+    end
+
+    protected
     def add_element_definition(name, &block)
       fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
@@ -76,8 +77,8 @@ module PageMagic
       element_definitions[name] = block
     end
 
-    def element_definitions
-      @element_definitions ||= {}
+    def method_added(method)
+      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
     end
 
     private

@@ -20,6 +20,10 @@ module PageMagic
         @type = type
       end
 
+      # build query parameters for Capybara's find method
+      # @param [Hash] locator the location method e.g. text: 'button text'
+      # @param [Hash] options additional options to be provided to Capybara. e.g. count: 3
+      # @return [Array] list of compatible capybara query parameters.
       def build(locator, options = {})
         [].tap do |array|
           selector = Selector.find(locator.keys.first)

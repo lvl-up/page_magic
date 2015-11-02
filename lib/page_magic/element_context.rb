@@ -7,6 +7,7 @@ module PageMagic
       @page_element = page_element
     end
 
+    # acts as proxy to element defintions defined on @page_element
     def method_missing(method, *args, &block)
       return page_element.send(method, *args, &block) if page_element.methods.include?(method)
 
