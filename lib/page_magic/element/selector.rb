@@ -3,6 +3,10 @@ module PageMagic
     # class Selector - models the selection criteria understood by Capybara
     class Selector
       class << self
+        # Find a Selecor using it's name
+        # @param [Symbol] name the name of the required Selector in snakecase format. See class constants for available
+        #  selectors
+        # @return [Selector] returns the predefined selector with the given name
         def find(name)
           selector = constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
           fail UnsupportedCriteriaException unless selector
@@ -10,6 +14,9 @@ module PageMagic
         end
       end
 
+      # Build selector query parameters for Capybara's find method
+      # @param [Symbol] element_type the type of browser element being found. e.g :link
+      # @param [Hash] locator the selection method and its parameter. E.g. text: 'click me'
       def build(element_type, locator)
         [].tap do |array|
           array << element_type if supports_type
