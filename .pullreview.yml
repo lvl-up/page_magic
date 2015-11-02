@@ -4,4 +4,7 @@ languages:
 rules:
   test_infection:
     except:
-      - 'lib/**'
+      - 'lib/page_magic/exceptions.rb'
+  missing_class_documentation:
+    except:
+      - 'lib/page_magic/element/query.rb
