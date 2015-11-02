@@ -4,12 +4,11 @@ require 'page_magic/exceptions'
 require 'page_magic/session'
 require 'page_magic/instance_methods'
 require 'page_magic/elements'
-require 'page_magic/class_methods'
 require 'page_magic/element_context'
 require 'page_magic/element'
-
 require 'page_magic/drivers'
 
+# module PageMagic - PageMagic is an api for modelling pages in a website.
 module PageMagic
   class << self
     def drivers
@@ -35,7 +34,7 @@ module PageMagic
         end
 
         include(InstanceMethods)
-        extend(ClassMethods)
+        extend(Elements)
       end
     end
   end

@@ -1,5 +1,4 @@
 require 'page_magic/drivers'
-
 module PageMagic
   describe Drivers do
     subject { described_class.new }

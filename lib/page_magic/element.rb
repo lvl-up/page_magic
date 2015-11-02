@@ -3,6 +3,7 @@ require 'page_magic/element/selector_methods'
 require 'page_magic/element/selector'
 require 'page_magic/element/query'
 module PageMagic
+  # class Element - represents an element in a html page.
   class Element
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
@@ -10,7 +11,7 @@ module PageMagic
     attr_reader :type, :name, :parent_page_element, :browser_element
 
     include Elements, MethodObserver, SelectorMethods
-    extend Elements, ClassMethods, SelectorMethods
+    extend Elements, SelectorMethods
 
     def initialize(name, parent_page_element, type: :element, selector: {}, browser_element: nil, &block)
       @browser_element = browser_element

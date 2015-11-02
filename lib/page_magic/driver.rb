@@ -1,4 +1,5 @@
 module PageMagic
+  # class Driver - instances are factories for drivers used by PageMagic
   class Driver
     attr_reader :supported_browsers, :handler
     def initialize(*supported_browsers, &block)

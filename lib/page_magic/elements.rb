@@ -1,7 +1,17 @@
 require 'active_support/inflector'
 module PageMagic
+  # module Elements - contains methods that add element definitions to the objects it is mixed in to
   module Elements
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
+
+    class << self
+      def included(clazz)
+        def clazz.inherited(clazz)
+          clazz.element_definitions.merge!(element_definitions)
+        end
+      end
+      alias_method :extended, :included
+    end
 
     def method_added(method)
       fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]

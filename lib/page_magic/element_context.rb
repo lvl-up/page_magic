@@ -1,4 +1,5 @@
 module PageMagic
+  # class ElementContext - resolves which element definition to use when accessing the browser.
   class ElementContext
     attr_reader :page_element
 
