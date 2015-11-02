@@ -6,7 +6,6 @@ module PageMagic
     #  - options
     class Query
       class << self
-
         # Find a query using it's name
         # @param [Symbol] type the name of the required query in snakecase format
         # @return [Query] returns the predefined query with the given name

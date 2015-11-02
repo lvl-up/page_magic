@@ -16,7 +16,8 @@ module PageMagic
       @transitions = {}
     end
 
-    # Map paths to Page classes. The sesion will auto load page objects from these mapping when the {Session#current_path}
+    # Map paths to Page classes. The session will auto load page objects from these mapping when
+    # the {Session#current_path}
     # is matched.
     # @example
     #   self.define_page_mappings '/' => HomePage, %r{/messages/d+}
@@ -35,7 +36,8 @@ module PageMagic
       @current_page
     end
 
-    # Direct the browser to the given page or url. {Session#current_page} will be set be an instance of the given/mapped page class
+    # Direct the browser to the given page or url. {Session#current_page} will be set be an instance of the given/mapped
+    # page class
     # @overload visit(page: page_object)
     #  @param [Object] page page class. The required url will be generated using the session's base url and the mapped
     #   path
@@ -93,6 +95,7 @@ module PageMagic
     end
 
     private
+
     def url(base_url, path)
       path = path.sub(%r{^/}, '')
       base_url = base_url.sub(%r{/$}, '')
@@ -105,7 +108,6 @@ module PageMagic
       end
       transitions[mapping]
     end
-
 
     def string_matches?(string, matcher)
       if matcher.is_a?(Regexp)
