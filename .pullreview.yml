@@ -4,7 +4,7 @@ languages:
 rules:
   test_infection:
     except:
-      - '**/exceptions.rb'
+      - 'lib/**/exceptions.rb'
   missing_class_documentation:
     except:
-      - '**/query.rb
+      - 'lib/**/query.rb
