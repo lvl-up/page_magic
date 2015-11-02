@@ -1,4 +1,5 @@
 ---
 rules:
-  ignore:
-  - missing_class_documentation
+  missing_class_documentation:
+    except:
+      - exceptions.rb
