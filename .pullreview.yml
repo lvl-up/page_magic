@@ -11,5 +11,3 @@ rules:
       - 'lib/page_magic/element/selector.rb'
       - 'lib/page_magic/element/method_observer.rb'
       - 'lib/page_magic/element.rb'
-
-      5f2144bcdae8bcf43b25d663643560baac5f8f8f
