@@ -2,14 +2,21 @@ require 'active_support/inflector'
 module PageMagic
   # module Elements - contains methods that add element definitions to the objects it is mixed in to
   module Elements
+    # hooks for objects that inherit classes that include the Elements module
+    module InheritanceHooks
+      # Copies parent element definitions on to subclass
+      # @param [Class] clazz - inheritting class
+      def inherited(clazz)
+        clazz.element_definitions.merge!(element_definitions)
+      end
+    end
+
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
     TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
 
     class << self
       def included(clazz)
-        def clazz.inherited(clazz)
-          clazz.element_definitions.merge!(element_definitions)
-        end
+        clazz.extend(InheritanceHooks)
       end
       alias_method :extended, :included
     end
