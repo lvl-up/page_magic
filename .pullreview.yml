@@ -4,4 +4,4 @@ languages:
 rules:
   test_infection:
     except:
-      - '*/lib/page_magic/exceptions.rb'
+      - 'lib/**'
