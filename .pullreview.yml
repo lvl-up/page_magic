@@ -1,8 +1,7 @@
 ---
+languages:
+ - ruby
 rules:
-  missing_class_documentation:
-    except:
-      - lib/page_magic/exceptions.rb
   test_infection:
     except:
       - lib/page_magic/exceptions.rb
