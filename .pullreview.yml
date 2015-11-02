@@ -8,3 +8,4 @@ rules:
   missing_class_documentation:
     except:
       - 'lib/page_magic/element/query.rb'
+      - 'lib/page_magic/element/element.rb'
