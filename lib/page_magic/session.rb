@@ -7,22 +7,46 @@ module PageMagic
 
     attr_reader :raw_session, :transitions
 
-    def initialize(browser, url = nil)
-      @raw_session = browser
-      raw_session.visit(url) if url
+    # Create a new session instance
+    # @param [Object] capybara_session an instance of a capybara session
+    # @param [String] url url to start the session at.
+    def initialize(capybara_session, url = nil)
+      @raw_session = capybara_session
+      visit(url: url) if url
       @transitions = {}
     end
 
+    # Map paths to Page classes. The sesion will auto load page objects from these mapping when the {Session#current_path}
+    # is matched.
+    # @example
+    #   self.define_page_mappings '/' => HomePage, %r{/messages/d+}
+    # @param [Hash] transitions - paths mapped to page classes
+    # @option transitions [String] path as literal
+    # @option transitions [Regexp] path as a regexp for dynamic matching.
     def define_page_mappings(transitions)
       @transitions = transitions
     end
 
+    # @return [Object] returns page object representing the currently loaded page on the browser. If no mapping
+    # is found then nil returned
     def current_page
       mapping = find_mapped_page(current_path)
       @current_page = mapping.new(self) if mapping
       @current_page
     end
 
+    # Direct the browser to the given page or url. {Session#current_page} will be set be an instance of the given/mapped page class
+    # @overload visit(page: page_object)
+    #  @param [Object] page page class. The required url will be generated using the session's base url and the mapped
+    #   path
+    # @overload visit(url: url)
+    #  @param [String] url url to be visited.
+    # @overload visit(page: page_class, url: url)
+    #  @param [String] url url to be visited.
+    #  @param [Object] page the supplied page class will be instantiated to be used against the given url.
+    # @raise [InvalidURLException] if a page is supplied and there isn't a mapped path for it
+    # @raise [InvalidURLException] if neither a page or url are supplied
+    # @raise [InvalidURLException] if the mapped path for a page is a {Regexp}
     def visit(page = nil, url: nil)
       if url
         raw_session.visit(url)
@@ -36,31 +60,43 @@ module PageMagic
       self
     end
 
-    def url(base_url, path)
-      path = path.sub(%r{^/}, '')
-      base_url = base_url.sub(%r{/$}, '')
-      "#{base_url}/#{path}"
-    end
-
+    # @return [String] path in the browser
     def current_path
       raw_session.current_path
     end
 
+    # @return [String] full url in the browser
     def current_url
       raw_session.current_url
     end
 
+    # Wait until a the supplied block returns true
+    # @example
+    #   wait_until do
+    #     (rand % 2) == 0
+    #   end
     def wait_until(&block)
       @wait ||= Wait.new
       @wait.until(&block)
     end
 
+    # proxies unknown method calls to the currently loaded page object
+    # @return [Object] returned object from the page object method call
     def method_missing(name, *args, &block)
       current_page.send(name, *args, &block)
     end
 
+    # @param args see {::Object#respond_to?}
+    # @return [Boolean] true if self or the current page object responds to the give method name
     def respond_to?(*args)
       super || current_page.respond_to?(*args)
+    end
+
+    private
+    def url(base_url, path)
+      path = path.sub(%r{^/}, '')
+      base_url = base_url.sub(%r{/$}, '')
+      "#{base_url}/#{path}"
     end
 
     def find_mapped_page(path)
@@ -70,7 +106,6 @@ module PageMagic
       transitions[mapping]
     end
 
-    private
 
     def string_matches?(string, matcher)
       if matcher.is_a?(Regexp)

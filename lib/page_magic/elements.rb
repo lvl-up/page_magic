@@ -67,7 +67,8 @@ module PageMagic
       @element_definitions ||= {}
     end
 
-    protected
+    private
+
     def add_element_definition(name, &block)
       fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
@@ -80,8 +81,6 @@ module PageMagic
     def method_added(method)
       fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
     end
-
-    private
 
     def remove_argument(args, clazz)
       argument = args.find { |arg| arg.is_a?(clazz) }

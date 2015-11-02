@@ -6,6 +6,10 @@ module PageMagic
     #  - options
     class Query
       class << self
+
+        # Find a query using it's name
+        # @param [Symbol] type the name of the required query in snakecase format
+        # @return [Query] returns the predefined query with the given name
         def find(type)
           query = constants.find { |constant| constant.to_s.downcase == type.to_s.downcase }
           return ELEMENT unless query
@@ -20,7 +24,7 @@ module PageMagic
         @type = type
       end
 
-      # build query parameters for Capybara's find method
+      # Build query parameters for Capybara's find method
       # @param [Hash] locator the location method e.g. text: 'button text'
       # @param [Hash] options additional options to be provided to Capybara. e.g. count: 3
       # @return [Array] list of compatible capybara query parameters.

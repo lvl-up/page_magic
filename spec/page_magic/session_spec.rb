@@ -61,18 +61,18 @@ module PageMagic
 
       context 'mapping is string' do
         it 'returns the page class' do
-          expect(subject.find_mapped_page('/page')).to be(:mapped_page_using_string)
+          expect(subject.instance_eval{find_mapped_page('/page')}).to be(:mapped_page_using_string)
         end
       end
       context 'mapping is regex' do
         it 'returns the page class' do
-          expect(subject.find_mapped_page('/page2')).to be(:mapped_page_using_regex)
+          expect(subject.instance_eval{find_mapped_page('/page2')}).to be(:mapped_page_using_regex)
         end
       end
 
       context 'mapping is not found' do
         it 'returns nil' do
-          expect(subject.find_mapped_page('/fake_page')).to be(nil)
+          expect(subject.instance_eval{find_mapped_page('/fake_page')}).to be(nil)
         end
       end
     end
@@ -129,13 +129,13 @@ module PageMagic
 
         context 'path has / at the beginning' do
           it 'produces compound url' do
-            expect(subject.url(base_url, path)).to eq(expected_url)
+            expect(subject.send(:url, base_url, path)).to eq(expected_url)
           end
         end
 
         context 'path does not have / at the beginning' do
           it 'produces compound url' do
-            expect(subject.url(base_url, "/#{path}")).to eq(expected_url)
+            expect(subject.send(:url, base_url, "/#{path}")).to eq(expected_url)
           end
         end
       end
@@ -143,13 +143,13 @@ module PageMagic
       context 'current_url does not have a / on the end' do
         context 'path has / at the beginning' do
           it 'produces compound url' do
-            expect(subject.url(base_url, "/#{path}")).to eq(expected_url)
+            expect(subject.send(:url, base_url, "/#{path}")).to eq(expected_url)
           end
         end
 
         context 'path does not have / at the beginning' do
           it 'produces compound url' do
-            expect(subject.url(base_url, path)).to eq(expected_url)
+            expect(subject.send(:url, base_url, path)).to eq(expected_url)
           end
         end
       end
