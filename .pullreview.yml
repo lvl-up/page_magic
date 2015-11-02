@@ -7,4 +7,4 @@ rules:
       - 'lib/**'
   missing_class_documentation:
     except:
-      - 'query.rb
+      - query.rb
