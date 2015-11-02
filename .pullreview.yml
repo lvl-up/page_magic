@@ -11,3 +11,4 @@ rules:
       - 'lib/page_magic/element/selector.rb'
       - 'lib/page_magic/element/method_observer.rb'
       - 'lib/page_magic/element.rb'
+      - 'lib/page_magic/session.rb'
