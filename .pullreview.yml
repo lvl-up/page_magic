@@ -1,0 +1,7 @@
+---
+languages:
+ - ruby
+rules:
+  test_infection:
+    except:
+      - 'lib/**'
