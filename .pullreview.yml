@@ -7,4 +7,4 @@ rules:
       - 'lib/page_magic/exceptions'
   missing_class_documentation:
     except:
-      - query.rb
+      - 'lib/page_magic/element/query'
