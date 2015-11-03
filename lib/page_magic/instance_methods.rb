@@ -51,6 +51,7 @@ module PageMagic
     end
 
     private
+
     def element_context
       ElementContext.new(self)
     end

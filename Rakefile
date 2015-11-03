@@ -18,4 +18,4 @@ end
 
 Jeweler::RubygemsDotOrgTasks.new
 
-task default: :spec
+task default: [:spec, 'rubocop:auto_correct']
