@@ -12,23 +12,31 @@ module PageMagic
       @browser_element = browser
     end
 
+    # @return the current page title
     def title
       browser.title
     end
 
+    # check for the presense of specific text on the page
+    # @param [String] string the string to check for
+    # @return [Boolean]
     def text_on_page?(string)
       text.downcase.include?(string.downcase)
     end
 
+    # Visit this page based on the class level registered url
     def visit
       browser.visit self.class.url
       self
     end
 
+    # @return the page text
     def text
       browser.text
     end
 
+    # proxy to the defined page element definitions
+    # @return [Object] the result of accessing the requested page element through its definition
     def method_missing(method, *args)
       element_context.send(method, *args)
     end
@@ -37,10 +45,12 @@ module PageMagic
       super || element_context.respond_to?(*args)
     end
 
+    # @return [Array] class level defined element definitions
     def element_definitions
       self.class.element_definitions
     end
 
+    private
     def element_context
       ElementContext.new(self)
     end
