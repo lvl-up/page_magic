@@ -1,4 +1,4 @@
-[![Code Climate](https://codeclimate.com/github/Ladtech/page_magic/badges/gpa.svg)](https://codeclimate.com/github/Ladtech/page_magic) [![Test Coverage](https://codeclimate.com/github/Ladtech/page_magic/badges/coverage.svg)](https://codeclimate.com/github/Ladtech/page_magic/coverage) [![PullReview stats](https://www.pullreview.com/github/Ladtech/page_magic/badges/master.svg?)](https://www.pullreview.com/github/Ladtech/page_magic/reviews/master)
+[![Circle CI](https://circleci.com/gh/Ladtech/page_magic.svg?style=svg&circle-token=49c8f6869c1e0dc6f3b368e6e22a11fcea3aab8a)](https://circleci.com/gh/Ladtech/page_magic)[![Code Climate](https://codeclimate.com/github/Ladtech/page_magic/badges/gpa.svg)](https://codeclimate.com/github/Ladtech/page_magic) [![Test Coverage](https://codeclimate.com/github/Ladtech/page_magic/badges/coverage.svg)](https://codeclimate.com/github/Ladtech/page_magic/coverage) [![PullReview stats](https://www.pullreview.com/github/Ladtech/page_magic/badges/master.svg?)](https://www.pullreview.com/github/Ladtech/page_magic/reviews/master)
 #PageMagic
 PageMagic is an API for testing web applications. 
 
