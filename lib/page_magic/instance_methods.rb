@@ -27,7 +27,7 @@ module PageMagic
     # Visit this page based on the class level registered url
     def visit
       browser.visit self.class.url
-      self
+      execute_on_load
     end
 
     # @return the page text
@@ -48,6 +48,11 @@ module PageMagic
     # @return [Array] class level defined element definitions
     def element_definitions
       self.class.element_definitions
+    end
+
+    def execute_on_load
+      instance_eval(&self.class.on_load)
+      self
     end
 
     private
