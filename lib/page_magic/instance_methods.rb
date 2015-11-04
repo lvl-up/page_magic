@@ -50,6 +50,8 @@ module PageMagic
       self.class.element_definitions
     end
 
+    # executes block stored using {ClassMethods#on_load} against self
+    # @return [Element] self
     def execute_on_load
       instance_eval(&self.class.on_load)
       self
