@@ -39,12 +39,12 @@ module PageMagic
       @parent_page_element.session
     end
 
-    def before_event(&block)
+    def before_events(&block)
       return @before_hook unless block
       @before_hook = block
     end
 
-    def after_event(&block)
+    def after_events(&block)
       return @after_hook unless block
       @after_hook = block
     end
@@ -78,8 +78,8 @@ module PageMagic
 
     def ==(other)
       return false unless other.is_a?(Element)
-      this = [type, name, selector, before_event, after_event]
-      this == [other.type, other.name, other.selector, other.before_event, other.after_event]
+      this = [type, name, selector, before_events, after_events]
+      this == [other.type, other.name, other.selector, other.before_events, other.after_events]
     end
 
     private
@@ -101,8 +101,8 @@ module PageMagic
         next unless raw_element.respond_to?(action_method)
         apply_hooks(raw_element: raw_element,
                     capybara_method: action_method,
-                    before_hook: before_event,
-                    after_hook: after_event)
+                    before_hook: before_events,
+                    after_hook: after_events)
       end
     end
 

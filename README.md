@@ -169,15 +169,15 @@ Here we have defined the 'message' element using a block that takes subject argu
 session.message(subject: 'test message')
 ```
 ## Interaction hooks
-Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_event` and `after_event` hooks that you use to perform custom actions and wait for things to happen. In the case of our web based mail client, we could imagine that when deleting the email, a fancy spinner is displayed whilst the application sends an ajax request to have the message deleted. In this case we wouldn't want to proceed until this has disappeared.
+Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_events` and `after_events` hooks that you use to perform custom actions and wait for things to happen. In the case of our web based mail client, we could imagine that when deleting the email, a fancy spinner is displayed whilst the application sends an ajax request to have the message deleted. In this case we wouldn't want to proceed until this has disappeared.
 
 ```ruby
 class MessagePage
   include PageMagic
   ## code defining other elements, such as subject and body
   
-  link(:delete, id: 'delete-message') do
-    after_event do
+  link(:delete id: 'delete-message') do
+    after_events do
       wait_until{fancy_animation_has_disappeared?}
     end
   end
