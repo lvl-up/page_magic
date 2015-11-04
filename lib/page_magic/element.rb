@@ -13,8 +13,8 @@ module PageMagic
     include Elements, MethodObserver, SelectorMethods
     extend Elements, SelectorMethods
 
-    def initialize(name, parent_page_element, type: :element, selector: {}, browser_element: nil, &block)
-      @browser_element = browser_element
+    def initialize(name, parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)
+      @browser_element = prefetched_browser_element
       @selector = selector
 
       @before_hook = DEFAULT_HOOK
@@ -39,12 +39,12 @@ module PageMagic
       @parent_page_element.session
     end
 
-    def before(&block)
+    def before_event(&block)
       return @before_hook unless block
       @before_hook = block
     end
 
-    def after(&block)
+    def after_event(&block)
       return @after_hook unless block
       @after_hook = block
     end
@@ -78,8 +78,8 @@ module PageMagic
 
     def ==(other)
       return false unless other.is_a?(Element)
-      this = [type, name, selector, before, after]
-      this == [other.type, other.name, other.selector, other.before, other.after]
+      this = [type, name, selector, before_event, after_event]
+      this == [other.type, other.name, other.selector, other.before_event, other.after_event]
     end
 
     private
@@ -101,8 +101,8 @@ module PageMagic
         next unless raw_element.respond_to?(action_method)
         apply_hooks(raw_element: raw_element,
                     capybara_method: action_method,
-                    before_hook: before,
-                    after_hook: after)
+                    before_hook: before_event,
+                    after_hook: after_event)
       end
     end
 

@@ -39,7 +39,10 @@ module PageMagic
 
     describe '#respond_to?' do
       subject do
-        described_class.new(:name, Object.new, type: :element, browser_element: double(element_method: '')) do
+        described_class.new(:name,
+                            Object.new,
+                            type: :element,
+                            prefetched_browser_element: double(element_method: '')) do
           element :sub_element, css: '.sub-element'
         end
       end
@@ -58,6 +61,9 @@ module PageMagic
 
     describe '#browser_element' do
       let!(:browser) { double('browser') }
+
+      it 'calls the on_load hook' do
+      end
 
       context 'options supplied to selector' do
         it 'passes them on to the cappybara finder method' do
@@ -112,7 +118,7 @@ module PageMagic
       end
 
       it 'should return a prefetched value' do
-        element = described_class.new(:help, page, type: :link, browser_element: :prefetched_object)
+        element = described_class.new(:help, page, type: :link, prefetched_browser_element: :prefetched_object)
         expect(element.browser_element).to eq(:prefetched_object)
       end
 
@@ -185,7 +191,7 @@ module PageMagic
     describe 'hooks' do
       subject do
         described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
-          before do
+          before_event do
             call_in_before_hook
           end
         end
@@ -201,7 +207,7 @@ module PageMagic
       context 'method called in before hook' do
         subject do
           described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
-            after do
+            after_event do
               call_in_after_hook
             end
           end

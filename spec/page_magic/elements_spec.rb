@@ -120,7 +120,10 @@ module PageMagic
       describe 'location' do
         context 'a prefetched object' do
           it 'should add a section' do
-            expected_section = Element.new(:page_section, parent_page_element, type: :element, browser_element: :object)
+            expected_section = Element.new(:page_section,
+                                           parent_page_element,
+                                           type: :element,
+                                           prefetched_browser_element: :object)
             page_elements.element :page_section, :object
             expect(expected_section).to eq(page_elements.elements(parent_page_element).first)
           end
@@ -130,7 +133,7 @@ module PageMagic
       describe 'session handle' do
         it 'should be on instances created from a class' do
           browser_element = double(:browser_element, find: :browser_element)
-          parent = double('parent', session: :current_session, browser_element: browser_element)
+          parent = double('parent', session: :current_session, prefetched_browser_element: browser_element)
           page_elements.element :page_section, selector
 
           section = page_elements.element_definitions[:page_section].call(parent)
@@ -141,7 +144,7 @@ module PageMagic
         it 'should be on instances created dynamically using the section method' do
           browser_element = double('browser_element')
           allow(browser_element).to receive(:find)
-          parent = double('parent', session: :current_session, browser_element: browser_element)
+          parent = double('parent', session: :current_session, prefetched_browser_element: browser_element)
 
           page_elements.element :page_section, css: :selector do
           end
