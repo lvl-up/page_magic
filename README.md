@@ -7,7 +7,7 @@ It has a simple but powerful DSL which makes modelling and interacting with your
 Wouldn't it be great if there was a framework that could:
 - [Model your pages](#modelling-pages)
 - [Fluently define interaction hooks / waiters on page elements](#interaction-hooks)
-- [Map paths to pages so that the correct page object loaded as you navigate](#page-mapping)
+- [Map paths to pages so that the correct page object is loaded as you navigate](#page-mapping)
 - [Be super dynamic](#dynamic-selectors)
 
 Well PageMagic might just be the answer!
