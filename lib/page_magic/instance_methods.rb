@@ -24,12 +24,6 @@ module PageMagic
       text.downcase.include?(string.downcase)
     end
 
-    # Visit this page based on the class level registered url
-    def visit
-      browser.visit self.class.url
-      execute_on_load
-    end
-
     # @return the page text
     def text
       browser.text

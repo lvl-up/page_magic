@@ -10,9 +10,9 @@ module PageMagic
       end
     end
 
-    let(:page) do
-      page_class.new.tap(&:visit)
-    end
+    let(:session) { page_class.visit(application: rack_app) }
+
+    let(:page) { session.current_page }
 
     describe 'inheriting' do
       it 'lets you create custom elements' do
@@ -62,14 +62,11 @@ module PageMagic
     describe '#browser_element' do
       let!(:browser) { double('browser') }
 
-      it 'calls the on_load hook' do
-      end
-
       context 'options supplied to selector' do
         it 'passes them on to the cappybara finder method' do
           options = { count: 1 }
           xpath_selector = '//div/input'
-          expect(Capybara.current_session).to receive(:find).with(:xpath, xpath_selector, options)
+          expect(page.session.raw_session).to receive(:find).with(:xpath, xpath_selector, options)
           described_class.new(:my_input,
                               page,
                               type: :text_field,

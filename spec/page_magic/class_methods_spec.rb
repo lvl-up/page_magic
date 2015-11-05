@@ -1,7 +1,10 @@
 module PageMagic
   describe ClassMethods do
     subject do
-      Object.new.tap { |o| o.extend(described_class) }
+      Class.new.tap do |clazz|
+        clazz.extend(described_class)
+        clazz.include(InstanceMethods)
+      end
     end
     describe '#url' do
       it 'get/sets a value' do
@@ -23,6 +26,21 @@ module PageMagic
           subject.on_load(&expected_block)
           expect(subject.on_load).to be(expected_block)
         end
+      end
+    end
+
+    describe '#visit' do
+      include_context :webapp_fixture
+      it 'passes all options to create an active session on the registered url' do
+        subject.url '/page1'
+        expect(PageMagic).to receive(:session).with(application: rack_app,
+                                                    options: {},
+                                                    browser: :rack_test,
+                                                    url: subject.url).and_call_original
+
+        session = subject.visit(application: rack_app, options: {}, browser: :rack_test)
+
+        expect(session.title).to eq('page1')
       end
     end
   end

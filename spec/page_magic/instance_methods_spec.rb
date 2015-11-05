@@ -11,12 +11,12 @@ module PageMagic
     end
 
     subject do
-      page_class.new.tap(&:visit)
+      page_class.visit(application: rack_app)
     end
 
     describe 'execute_on_load' do
       it 'runs the on_load_hook in the context of self' do
-        instance = subject
+        instance = subject.current_page
         page_class.on_load do
           extend RSpec::Matchers
           expect(self).to be(instance)
@@ -26,7 +26,7 @@ module PageMagic
       end
 
       it 'returns self' do
-        expect(subject.execute_on_load).to be(subject)
+        expect(subject.execute_on_load).to be(subject.current_page)
       end
     end
 
@@ -44,16 +44,11 @@ module PageMagic
       it 'goes to the class define url' do
         expect(subject.session.current_path).to eq('/page1')
       end
-
-      it 'runs the on load handler' do
-        expect(subject).to receive(:execute_on_load).and_call_original
-        subject.visit
-      end
     end
 
     describe 'session' do
       it 'gives access to the page magic object wrapping the user session' do
-        expect(subject.session.raw_session).to be(Capybara.current_session)
+        expect(subject.session.raw_session).to be_a(Capybara::Session)
       end
     end
 
