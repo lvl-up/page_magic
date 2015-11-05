@@ -1,6 +1,7 @@
 module PageMagic
   # module ClassMethods - contains class level methods for PageObjects
   module ClassMethods
+    # Default block to be run when a page is loaded. This is used if a specific handler is not registered
     DEFAULT_ON_LOAD = proc {}
 
     # getter setter for storing the page url
