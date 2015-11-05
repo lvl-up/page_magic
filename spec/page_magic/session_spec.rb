@@ -91,28 +91,40 @@ module PageMagic
         PageMagic::Session.new(browser, url)
       end
 
-      it 'sets the current page' do
-        session.define_page_mappings '/page' => page
-        session.visit(page)
-        expect(session.current_page).to be_a(page)
-      end
-
-      it 'uses the current url and the path in the page mappings' do
-        session.define_page_mappings '/page' => page
-        expect(browser).to receive(:visit).with("#{browser.current_url}/page")
-        session.visit(page)
-      end
-
-      context 'no mappings found' do
-        it 'raises an error' do
-          expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::URL_MISSING_MSG
+      context 'page supplied' do
+        it 'sets the current page' do
+          session.define_page_mappings '/page' => page
+          session.visit(page)
+          expect(session.current_page).to be_a(page)
         end
-      end
 
-      context 'mapping is a regular expression' do
-        it 'raises an error' do
-          session.define_page_mappings(/mapping/ => page)
-          expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
+        it 'uses the current url and the path in the page mappings' do
+          session.define_page_mappings '/page' => page
+          expect(browser).to receive(:visit).with("#{browser.current_url}/page")
+          session.visit(page)
+        end
+
+        context 'no mappings found' do
+          it 'raises an error' do
+            expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::URL_MISSING_MSG
+          end
+        end
+
+        context 'mapping is a regular expression' do
+          it 'raises an error' do
+            session.define_page_mappings(/mapping/ => page)
+            expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
+          end
+        end
+
+        it 'calls the onload hook' do
+          on_load_hook_called = false
+          page.on_load do
+            on_load_hook_called = true
+          end
+          session.define_page_mappings('/page' => page)
+          session.visit(page)
+          expect(on_load_hook_called).to eq(true)
         end
       end
 

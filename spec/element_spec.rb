@@ -10,9 +10,9 @@ module PageMagic
       end
     end
 
-    let(:page) do
-      page_class.new.tap(&:visit)
-    end
+    let(:session) { page_class.visit(application: rack_app) }
+
+    let(:page) { session.current_page }
 
     describe 'inheriting' do
       it 'lets you create custom elements' do
@@ -39,7 +39,10 @@ module PageMagic
 
     describe '#respond_to?' do
       subject do
-        described_class.new(:name, Object.new, type: :element, browser_element: double(element_method: '')) do
+        described_class.new(:name,
+                            Object.new,
+                            type: :element,
+                            prefetched_browser_element: double(element_method: '')) do
           element :sub_element, css: '.sub-element'
         end
       end
@@ -63,7 +66,7 @@ module PageMagic
         it 'passes them on to the cappybara finder method' do
           options = { count: 1 }
           xpath_selector = '//div/input'
-          expect(Capybara.current_session).to receive(:find).with(:xpath, xpath_selector, options)
+          expect(page.session.raw_session).to receive(:find).with(:xpath, xpath_selector, options)
           described_class.new(:my_input,
                               page,
                               type: :text_field,
@@ -112,7 +115,7 @@ module PageMagic
       end
 
       it 'should return a prefetched value' do
-        element = described_class.new(:help, page, type: :link, browser_element: :prefetched_object)
+        element = described_class.new(:help, page, type: :link, prefetched_browser_element: :prefetched_object)
         expect(element.browser_element).to eq(:prefetched_object)
       end
 
@@ -185,7 +188,7 @@ module PageMagic
     describe 'hooks' do
       subject do
         described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
-          before do
+          before_events do
             call_in_before_hook
           end
         end
@@ -201,7 +204,7 @@ module PageMagic
       context 'method called in before hook' do
         subject do
           described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
-            after do
+            after_events do
               call_in_after_hook
             end
           end

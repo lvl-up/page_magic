@@ -21,6 +21,10 @@ module PageMagic
       alias_method :extended, :included
     end
 
+    # Get all {Element} definitions
+    # @param [Object] browser_element capybara browser element from which the definitions can be sourced
+    # @param [*Object] args argument to be passed to block used to expand the {Element} definitions
+    # @return [Array] list of {Element} defintions
     def elements(browser_element, *args)
       element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
     end
@@ -61,7 +65,7 @@ module PageMagic
       name = compute_name(args, section_class)
 
       options = { type: __callee__ }
-      selector ? options[:selector] = selector : options[:browser_element] = args.delete_at(0)
+      selector ? options[:selector] = selector : options[:prefetched_browser_element] = args.delete_at(0)
 
       add_element_definition(name) do |parent_browser_element, *e_args|
         section_class.new(name, parent_browser_element, options).expand(*e_args, &block)
@@ -70,6 +74,8 @@ module PageMagic
 
     TYPES.each { |type| alias_method type, :element }
 
+    # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
+    #  and {Element} definitions
     def element_definitions
       @element_definitions ||= {}
     end

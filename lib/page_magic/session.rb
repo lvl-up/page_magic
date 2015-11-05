@@ -59,7 +59,7 @@ module PageMagic
       else
         fail InvalidURLException, URL_MISSING_MSG
       end
-      @current_page = page.new(self) if page
+      @current_page = page.new(self).execute_on_load if page
       self
     end
 

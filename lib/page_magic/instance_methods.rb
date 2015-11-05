@@ -24,12 +24,6 @@ module PageMagic
       text.downcase.include?(string.downcase)
     end
 
-    # Visit this page based on the class level registered url
-    def visit
-      browser.visit self.class.url
-      self
-    end
-
     # @return the page text
     def text
       browser.text
@@ -48,6 +42,13 @@ module PageMagic
     # @return [Array] class level defined element definitions
     def element_definitions
       self.class.element_definitions
+    end
+
+    # executes block stored using {ClassMethods#on_load} against self
+    # @return [Element] self
+    def execute_on_load
+      instance_eval(&self.class.on_load)
+      self
     end
 
     private

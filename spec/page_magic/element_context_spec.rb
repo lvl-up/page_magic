@@ -16,7 +16,7 @@ module PageMagic
 
     describe '#method_missing' do
       let(:page) do
-        elements_page.new.tap(&:visit)
+        elements_page.visit(application: rack_app).current_page
       end
 
       context 'neither a method or page element are defined' do

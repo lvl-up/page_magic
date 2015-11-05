@@ -7,10 +7,14 @@ module PageMagic
       @all ||= []
     end
 
+    # Make a driver available for selection when creating calling {PageMagic.session}
+    # @param [Driver] driver driver definition
     def register(driver)
       all << driver
     end
 
+    # Find a driver definition based on its registered name
+    # @param [Symbol] browser registered name of the required browser
     def find(browser)
       all.find { |driver| driver.support?(browser) }
     end
@@ -27,6 +31,9 @@ module PageMagic
       end
     end
 
+    # returns true if this driver instance is equal to the supplied object
+    # @param [Object] other subject of equality check
+    # @return [Boolean] true if the object is a match
     def ==(other)
       other.is_a?(Drivers) && all == other.all
     end

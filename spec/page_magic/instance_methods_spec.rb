@@ -1,13 +1,33 @@
 module PageMagic
   describe InstanceMethods do
     include_context :webapp_fixture
-    subject do
-      clazz = Class.new do
+
+    let(:page_class) do
+      Class.new do
         include PageMagic
         url '/page1'
         link(:next_page, text: 'next page')
       end
-      clazz.new.tap(&:visit)
+    end
+
+    subject do
+      page_class.visit(application: rack_app)
+    end
+
+    describe 'execute_on_load' do
+      it 'runs the on_load_hook in the context of self' do
+        instance = subject.current_page
+        page_class.on_load do
+          extend RSpec::Matchers
+          expect(self).to be(instance)
+        end
+
+        subject.execute_on_load
+      end
+
+      it 'returns self' do
+        expect(subject.execute_on_load).to be(subject.current_page)
+      end
     end
 
     context '#respond_to?' do
@@ -20,7 +40,7 @@ module PageMagic
       end
     end
 
-    describe 'visit' do
+    describe '#visit' do
       it 'goes to the class define url' do
         expect(subject.session.current_path).to eq('/page1')
       end
@@ -28,7 +48,7 @@ module PageMagic
 
     describe 'session' do
       it 'gives access to the page magic object wrapping the user session' do
-        expect(subject.session.raw_session).to be(Capybara.current_session)
+        expect(subject.session.raw_session).to be_a(Capybara::Session)
       end
     end
 

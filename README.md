@@ -7,7 +7,7 @@ It has a simple but powerful DSL which makes modelling and interacting with your
 Wouldn't it be great if there was a framework that could:
 - [Model your pages](#modelling-pages)
 - [Fluently define interaction hooks / waiters on page elements](#interaction-hooks)
-- [Map paths to pages so that the correct page object loaded as you navigate](#page-mapping)
+- [Map paths to pages so that the correct page object is loaded as you navigate](#page-mapping)
 - [Be super dynamic](#dynamic-selectors)
 
 Well PageMagic might just be the answer!
@@ -101,8 +101,20 @@ class MessageView
   include PageMagic
 end
 ```
+### Hooks
+PageMagic lets you define an on_load hook for your pages. This lets you right any custom wait logic you might need 
+before letting execution continue.
+```ruby
+class LoginPage
+  # ... code defining elements as shown above
+  
+  on_load do
+    # wait code here
+  end
+end
+```
 
-## Helper methods
+### Helper methods
 Using elements that are defined on a page is great, but if you are enacting a procedure through interacting with a few of them then your code could end up with some pretty repetitive code. In this case you can define helper methods instead. 
 
 In the above [example](#an example) we used a helper called `login`.
@@ -157,15 +169,15 @@ Here we have defined the 'message' element using a block that takes subject argu
 session.message(subject: 'test message')
 ```
 ## Interaction hooks
-Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before` and `after` hooks that you use to perform custom actions and wait for things to happen. In the case of our web based mail client, we could imagine that when deleting the email, a fancy spinner is displayed whilst the application sends an ajax request to have the message deleted. In this case we wouldn't want to proceed until this has disappeared.
+Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_events` and `after_events` hooks that you use to perform custom actions and wait for things to happen. In the case of our web based mail client, we could imagine that when deleting the email, a fancy spinner is displayed whilst the application sends an ajax request to have the message deleted. In this case we wouldn't want to proceed until this has disappeared.
 
 ```ruby
 class MessagePage
   include PageMagic
   ## code defining other elements, such as subject and body
   
-  link(:delete, id: 'delete-message') do
-    after do
+  link(:delete id: 'delete-message') do
+    after_events do
       wait_until{fancy_animation_has_disappeared?}
     end
   end

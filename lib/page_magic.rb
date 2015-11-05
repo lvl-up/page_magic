@@ -4,6 +4,7 @@ require 'page_magic/exceptions'
 require 'page_magic/session'
 require 'page_magic/instance_methods'
 require 'page_magic/elements'
+require 'page_magic/class_methods'
 require 'page_magic/element_context'
 require 'page_magic/element'
 require 'page_magic/drivers'
@@ -15,6 +16,12 @@ module PageMagic
       @drivers ||= Drivers.new.tap(&:load)
     end
 
+    # Visit this page based on the class level registered url
+    # @param [Object] application rack application (optional)
+    # @param [Symbol] browser name of browser
+    # @param [String] url url to start the session on
+    # @param [Hash] options browser driver specific options
+    # @return [Session] configured sessoin
     def session(application: nil, browser: :rack_test, url:, options: {})
       driver = drivers.find(browser)
       fail UnspportedBrowserException unless driver
@@ -28,13 +35,8 @@ module PageMagic
 
     def included(clazz)
       clazz.class_eval do
-        def self.url(url = nil)
-          @url = url if url
-          @url
-        end
-
         include(InstanceMethods)
-        extend(Elements)
+        extend(Elements, ClassMethods)
       end
     end
   end
