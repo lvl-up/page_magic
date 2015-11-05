@@ -13,3 +13,5 @@ tags
 bin
 .rvmrc
 .vimrc
+.ruby-version
+.ruby-gemset
