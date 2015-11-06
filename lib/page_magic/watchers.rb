@@ -19,11 +19,7 @@ module PageMagic
     #   # more complicated code to get value
     # end
     def watch(name, method = nil, &block)
-      watched_element = if block
-                          Watcher.new(&block)
-                        else
-                          Watcher.new(method)
-                        end
+      watched_element = block ? Watcher.new(&block) : Watcher.new(method)
       watchers[name] = watched_element.check(send(name))
     end
 
