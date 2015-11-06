@@ -14,6 +14,10 @@ module PageMagic
       page_class.visit(application: rack_app)
     end
 
+    it 'includes watchers' do
+      expect(described_class.included_modules).to include(Watchers)
+    end
+
     describe 'execute_on_load' do
       it 'runs the on_load_hook in the context of self' do
         instance = subject.current_page

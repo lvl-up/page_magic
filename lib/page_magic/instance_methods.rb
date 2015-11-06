@@ -3,6 +3,8 @@ module PageMagic
   module InstanceMethods
     attr_reader :browser, :session, :browser_element
 
+    include Watchers
+
     # Creates a new instance
     # @param [Session] session session that provides gateway to the browser throw the users chosen browser
     def initialize(session = Session.new(Capybara.current_session))

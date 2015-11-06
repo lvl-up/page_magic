@@ -10,7 +10,7 @@ module PageMagic
 
     attr_reader :type, :name, :parent_page_element
 
-    include Elements, MethodObserver, SelectorMethods
+    include Elements, MethodObserver, SelectorMethods, Watchers
     extend Elements, SelectorMethods
 
     def initialize(name, parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)

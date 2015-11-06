@@ -32,6 +32,10 @@ module PageMagic
       end
     end
 
+    it 'includes watchers' do
+      expect(described_class.included_modules).to include(Watchers)
+    end
+
     it 'should raise an error if a selector has not been specified' do
       page_element = described_class.new(:name, Object.new, type: :element)
       expect { page_element.browser_element }.to raise_error(PageMagic::UndefinedSelectorException)
