@@ -49,7 +49,7 @@ fail "message is still there!" if session.message(subject: test_subject).exists?
 
 # Sweet :)
 ```
-## Starting a session
+# Starting a session
 To start a PageMagic session simply decide what browser you want to use and pass it to PageMagic's `.session` method
 ```ruby
 session = PageMagic.session(browser: :chrome, url: 'https://21st-century-mail.com')
@@ -63,7 +63,7 @@ Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capyba
 
 **Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
 
-## Modeling pages
+# Modeling pages
 To define something that PageMagic can work with, simply include PageMagic in to a class. Your you will also want to model the elements on your page so that you can interact with them. Here are we are modelling the login page we would need for the example above
 
 ```ruby
@@ -76,7 +76,7 @@ end
 ```
 In the case of the Login page, it's easy to imagine that it will have text fields for a username and password and a button to login in with.
 
-##Interacting with elements
+#Interacting with elements
 Elements are defined with a id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
 
 After visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
@@ -86,7 +86,7 @@ session.password.set 'passw0rd'
 session.login_button.click
 ```
 
-## Defining Pages
+# Defining Pages
 To define something that PageMagic can work with, simply include PageMagic in to a class. Here are the classes we would need for the example above.
 ```ruby
 class LoginPage
@@ -114,7 +114,7 @@ class LoginPage
 end
 ```
 
-### Helper methods
+## Helper methods
 Using elements that are defined on a page is great, but if you are enacting a procedure through interacting with a few of them then your code could end up with some pretty repetitive code. In this case you can define helper methods instead. 
 
 In the above [example](#an example) we used a helper called `login`.
@@ -183,7 +183,42 @@ class MessagePage
   end
 end
 ```
-## Page Mapping
+## Watchers
+PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
+things have changed.
+
+### Simple watchers
+Simple watchers use the `watch` method passing two parameters, the first is the name of the element you want to keep an 
+eye and the second is the method that needs to be called to get the value that should be observed.
+```ruby
+element :product_row, css '.cta' do
+  before_events do
+    element(:total, css: '.total')
+  end
+  
+  after_events do
+    wait_until{changed?(:total)}
+  end
+end
+```
+### Custom watchers
+Custom watchers are defined by passing a name and block parameter to the `watch` method. The block returns the value 
+that needs to be observed. Use watch in this way if you need to do something non standard to obtain a value or to 
+access an element not located within the current element but elsewhere within the page.
+```ruby
+element :product_row, css '.cta' do
+  before_events do
+    element(:total) do
+      session.nav.total.text
+    end
+  end
+  
+  after_events do
+    wait_until{changed?(:total)}
+  end
+end
+```
+# Page Mapping
 You will have noticed that, that we have been performing actions that would move us from page to page but have not done anything to tell PageMagic to use the `MailBox` or `MessagePage`. With PageMagic you can map which pages should be used to handle which URL paths. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
 ```ruby
 # define what pages map to what
@@ -193,6 +228,7 @@ browser.define_page_mappings %r{/messages/\d+} => MessagePage,
 ```
 You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping paths that that starts with '/messages/' and are followed by one ore more digits to the `MessagePage` class.
 
+# Drivers
 ## Registering a custom driver
 You can register any Capybara compliant driver as follows
 
@@ -211,6 +247,6 @@ PageMagic.drivers.register Webkit
 #3. Use registered driver
 session = PageMagic.session(browser: webkit, url: 'https://21st-century-mail.com')
 ```
-##What else can you do with PageMagic?
+#What else can you do with PageMagic?
 PageMagic has lots of other useful features. I'm writing up the documentation so check back here soon!
 
