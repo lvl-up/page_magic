@@ -171,17 +171,6 @@ module PageMagic
         expect(page.form_by_css).to be_visible
       end
 
-      context 'method not on capybara browser element' do
-        it 'uses the parent page element' do
-          page_class.class_eval do
-            def parent_method
-              :called
-            end
-          end
-          expect(page.form_by_css.parent_method).to eq(:called)
-        end
-      end
-
       context 'no element definition and not a capybara method' do
         it 'throws and exception' do
           expect { page.form_by_css.bobbins }.to raise_exception NoMethodError

@@ -63,12 +63,8 @@ module PageMagic
     def method_missing(method, *args, &block)
       ElementContext.new(self).send(method, args.first, &block)
     rescue ElementMissingException
-      begin
-        return browser_element.send(method, *args, &block) if browser_element.respond_to?(method)
-        return parent_page_element.send(method, *args, &block)
-      rescue NoMethodError, ElementMissingException
-        super
-      end
+      return super unless browser_element.respond_to?(method)
+      browser_element.send(method, *args, &block)
     end
 
     def respond_to?(*args)
