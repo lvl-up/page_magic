@@ -48,6 +48,13 @@ module PageMagic
           expect(subject.watcher(:my_watcher)).to eq(Watcher.new(:my_watcher, &block))
         end
       end
+
+      context 'watcher defined on element that does not exist' do
+        it 'raises an error' do
+          expect{subject.watch(:missing, :text)}.
+              to raise_exception(ElementMissingException,described_class::ELEMENT_MISSING_MSG)
+        end
+      end
     end
 
     describe '#watcher' do

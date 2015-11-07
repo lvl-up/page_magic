@@ -3,6 +3,9 @@ require 'page_magic/watcher'
 module PageMagic
   # module Watchers - contains methods for adding watchers and checking them
   module Watchers
+
+    ELEMENT_MISSING_MSG = "No element or method with that name defined"
+
     # @param [Symbol] name - the name of the watcher
     # @return [Boolean] true if a change is detected
     def changed?(name)
@@ -21,6 +24,7 @@ module PageMagic
     #   # more complicated code to get value
     # end
     def watch(name, method = nil, &block)
+      raise ElementMissingException, ELEMENT_MISSING_MSG unless block || respond_to?(name)
       watched_element = block ? Watcher.new(name, &block) : Watcher.new(name, method)
       watchers << watched_element.check(self)
     end
