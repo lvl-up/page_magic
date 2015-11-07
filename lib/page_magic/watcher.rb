@@ -26,6 +26,8 @@ module PageMagic
       self
     end
 
+    # @param [Object] other candidate for equality check
+    # @return [Boolen] true of the candiate is equal ot this one.
     def ==(other)
       other.is_a?(Watcher) &&
         name == other.name &&

@@ -17,6 +17,13 @@ module PageMagic
       @drivers ||= Drivers.new.tap(&:load)
     end
 
+    def included(clazz)
+      clazz.class_eval do
+        include(InstanceMethods)
+        extend(Elements, ClassMethods)
+      end
+    end
+
     # Visit this page based on the class level registered url
     # @param [Object] application rack application (optional)
     # @param [Symbol] browser name of browser
@@ -32,13 +39,6 @@ module PageMagic
       end
 
       Session.new(Capybara::Session.new(browser, application), url)
-    end
-
-    def included(clazz)
-      clazz.class_eval do
-        include(InstanceMethods)
-        extend(Elements, ClassMethods)
-      end
     end
   end
 end

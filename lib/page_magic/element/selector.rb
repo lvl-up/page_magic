@@ -14,6 +14,14 @@ module PageMagic
         end
       end
 
+      attr_reader :name, :formatter, :supports_type
+
+      def initialize(selector = nil, supports_type: false, &formatter)
+        @name = selector
+        @formatter = formatter || proc { |arg| arg }
+        @supports_type = supports_type
+      end
+
       # Build selector query parameters for Capybara's find method
       # @param [Symbol] element_type the type of browser element being found. e.g :link
       # @param [Hash] locator the selection method and its parameter. E.g. text: 'click me'
@@ -23,14 +31,6 @@ module PageMagic
           array << name if name
           array << formatter.call(locator)
         end
-      end
-
-      attr_reader :name, :formatter, :supports_type
-
-      def initialize(selector = nil, supports_type: false, &formatter)
-        @name = selector
-        @formatter = formatter || proc { |arg| arg }
-        @supports_type = supports_type
       end
 
       XPATH = Selector.new(:xpath, supports_type: false)

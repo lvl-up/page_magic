@@ -17,6 +17,24 @@ module PageMagic
       @transitions = {}
     end
 
+    # @return [Object] returns page object representing the currently loaded page on the browser. If no mapping
+    # is found then nil returned
+    def current_page
+      mapping = find_mapped_page(current_path)
+      @current_page = mapping.new(self) if mapping
+      @current_page
+    end
+
+    # @return [String] path in the browser
+    def current_path
+      raw_session.current_path
+    end
+
+    # @return [String] full url in the browser
+    def current_url
+      raw_session.current_url
+    end
+
     # Map paths to Page classes. The session will auto load page objects from these mapping when
     # the {Session#current_path}
     # is matched.
@@ -29,12 +47,16 @@ module PageMagic
       @transitions = transitions
     end
 
-    # @return [Object] returns page object representing the currently loaded page on the browser. If no mapping
-    # is found then nil returned
-    def current_page
-      mapping = find_mapped_page(current_path)
-      @current_page = mapping.new(self) if mapping
-      @current_page
+    # proxies unknown method calls to the currently loaded page object
+    # @return [Object] returned object from the page object method call
+    def method_missing(name, *args, &block)
+      current_page.send(name, *args, &block)
+    end
+
+    # @param args see {::Object#respond_to?}
+    # @return [Boolean] true if self or the current page object responds to the give method name
+    def respond_to?(*args)
+      super || current_page.respond_to?(*args)
     end
 
     # Direct the browser to the given page or url. {Session#current_page} will be set be an instance of the given/mapped
@@ -63,16 +85,6 @@ module PageMagic
       self
     end
 
-    # @return [String] path in the browser
-    def current_path
-      raw_session.current_path
-    end
-
-    # @return [String] full url in the browser
-    def current_url
-      raw_session.current_url
-    end
-
     # Wait until a the supplied block returns true
     # @example
     #   wait_until do
@@ -83,25 +95,7 @@ module PageMagic
       @wait.until(&block)
     end
 
-    # proxies unknown method calls to the currently loaded page object
-    # @return [Object] returned object from the page object method call
-    def method_missing(name, *args, &block)
-      current_page.send(name, *args, &block)
-    end
-
-    # @param args see {::Object#respond_to?}
-    # @return [Boolean] true if self or the current page object responds to the give method name
-    def respond_to?(*args)
-      super || current_page.respond_to?(*args)
-    end
-
     private
-
-    def url(base_url, path)
-      path = path.sub(%r{^/}, '')
-      base_url = base_url.sub(%r{/$}, '')
-      "#{base_url}/#{path}"
-    end
 
     def find_mapped_page(path)
       mapping = transitions.keys.find do |key|
@@ -116,6 +110,12 @@ module PageMagic
       else
         string == matcher
       end
+    end
+
+    def url(base_url, path)
+      path = path.sub(%r{^/}, '')
+      base_url = base_url.sub(%r{/$}, '')
+      "#{base_url}/#{path}"
     end
   end
 end

@@ -21,14 +21,6 @@ module PageMagic
       alias_method :extended, :included
     end
 
-    # Get all {Element} definitions
-    # @param [Object] browser_element capybara browser element from which the definitions can be sourced
-    # @param [*Object] args argument to be passed to block used to expand the {Element} definitions
-    # @return [Array] list of {Element} defintions
-    def elements(browser_element, *args)
-      element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
-    end
-
     # Creates an element defintion.
     # Element defintions contain specifications for locating them and other sub elements.
     # if a block is specified then it will be executed against the element defintion.
@@ -74,6 +66,14 @@ module PageMagic
 
     TYPES.each { |type| alias_method type, :element }
 
+    # Get all {Element} definitions
+    # @param [Object] browser_element capybara browser element from which the definitions can be sourced
+    # @param [*Object] args argument to be passed to block used to expand the {Element} definitions
+    # @return [Array] list of {Element} defintions
+    def elements(browser_element, *args)
+      element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
+    end
+
     # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
     #  and {Element} definitions
     def element_definitions
@@ -91,15 +91,6 @@ module PageMagic
       element_definitions[name] = block
     end
 
-    def method_added(method)
-      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
-    end
-
-    def remove_argument(args, clazz)
-      argument = args.find { |arg| arg.is_a?(clazz) }
-      args.delete(argument)
-    end
-
     def compute_name(args, section_class)
       name = remove_argument(args, Symbol)
       name || section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
@@ -108,6 +99,15 @@ module PageMagic
     def compute_selector(args, section_class)
       selector = remove_argument(args, Hash)
       selector || section_class.selector if section_class.respond_to?(:selector)
+    end
+
+    def method_added(method)
+      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
+    end
+
+    def remove_argument(args, clazz)
+      argument = args.find { |arg| arg.is_a?(clazz) }
+      args.delete(argument)
     end
   end
 end

@@ -20,13 +20,6 @@ module PageMagic
       @supported_browsers = supported_browsers
     end
 
-    # Determines if the given browser name is supported by this driver definition
-    # @param [Symbol] browser name of browser
-    # @return [Boolean] true if definition supports the given driver name
-    def support?(browser)
-      supported_browsers.include?(browser)
-    end
-
     # Build a new driver instance based on this definition
     # @param [Object] app - rack compatible application
     # @param [Symbol] browser name of required browser
@@ -34,6 +27,13 @@ module PageMagic
     # @return [Object] Capybara compliant driver instance
     def build(app, browser:, options:{})
       handler.call(app, options, browser)
+    end
+
+    # Determines if the given browser name is supported by this driver definition
+    # @param [Symbol] browser name of browser
+    # @return [Boolean] true if definition supports the given driver name
+    def support?(browser)
+      supported_browsers.include?(browser)
     end
   end
 end

@@ -3,9 +3,11 @@ require 'page_magic/watcher'
 module PageMagic
   # module Watchers - contains methods for adding watchers and checking them
   module Watchers
-    # @return [Hash] registered watchers
-    def watchers
-      @watchers ||= {}
+    # @param [Symbol] name - the name of the watcher
+    # @return [Boolean] true if a change is detected
+    def changed?(name)
+      watched_element = watchers[name]
+      watched_element.last != watched_element.check(send(name)).last
     end
 
     # register a new watcher
@@ -23,11 +25,9 @@ module PageMagic
       watchers[name] = watched_element.check(send(name))
     end
 
-    # @param [Symbol] name - the name of the watcher
-    # @return [Boolean] true if a change is detected
-    def changed?(name)
-      watched_element = watchers[name]
-      watched_element.last != watched_element.check(send(name)).last
+    # @return [Hash] registered watchers
+    def watchers
+      @watchers ||= {}
     end
   end
 end

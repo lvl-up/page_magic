@@ -14,21 +14,16 @@ module PageMagic
       @browser_element = browser
     end
 
-    # @return the current page title
-    def title
-      browser.title
+    # @return [Array] class level defined element definitions
+    def element_definitions
+      self.class.element_definitions
     end
 
-    # check for the presense of specific text on the page
-    # @param [String] string the string to check for
-    # @return [Boolean]
-    def text_on_page?(string)
-      text.downcase.include?(string.downcase)
-    end
-
-    # @return the page text
-    def text
-      browser.text
+    # executes block stored using {ClassMethods#on_load} against self
+    # @return [Element] self
+    def execute_on_load
+      instance_eval(&self.class.on_load)
+      self
     end
 
     # proxy to the defined page element definitions
@@ -41,16 +36,21 @@ module PageMagic
       super || element_context.respond_to?(*args)
     end
 
-    # @return [Array] class level defined element definitions
-    def element_definitions
-      self.class.element_definitions
+    # @return the current page title
+    def title
+      browser.title
     end
 
-    # executes block stored using {ClassMethods#on_load} against self
-    # @return [Element] self
-    def execute_on_load
-      instance_eval(&self.class.on_load)
-      self
+    # @return the page text
+    def text
+      browser.text
+    end
+
+    # check for the presense of specific text on the page
+    # @param [String] string the string to check for
+    # @return [Boolean]
+    def text_on_page?(string)
+      text.downcase.include?(string.downcase)
     end
 
     private
