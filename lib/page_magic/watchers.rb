@@ -6,8 +6,8 @@ module PageMagic
     # @param [Symbol] name - the name of the watcher
     # @return [Boolean] true if a change is detected
     def changed?(name)
-      watched_element = watchers[name]
-      watched_element.last != watched_element.check(send(name)).last
+      watched_element = watcher(name)
+      watched_element.last != watched_element.check(self).last
     end
 
     # register a new watcher
@@ -21,13 +21,18 @@ module PageMagic
     #   # more complicated code to get value
     # end
     def watch(name, method = nil, &block)
-      watched_element = block ? Watcher.new(&block) : Watcher.new(method)
-      watchers[name] = watched_element.check(send(name))
+      watched_element = block ? Watcher.new(name, &block) : Watcher.new(name, method)
+      watchers << watched_element.check(self)
     end
 
-    # @return [Hash] registered watchers
+    # @return [Watcher] watcher with the given name
+    def watcher name
+      watchers.find{|watcher| watcher.name == name}
+    end
+
+    # @return [Array] registered watchers
     def watchers
-      @watchers ||= {}
+      @watchers ||= []
     end
   end
 end
