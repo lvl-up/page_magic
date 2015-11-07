@@ -13,7 +13,7 @@ module PageMagic
       double('parent_page_element', browser_element: browser_element)
     end
 
-    describe 'adding elements' do
+    describe '#element' do
       context 'using a selector' do
         it 'should add an element' do
           expected_element = Element.new(:name, parent_page_element, type: :text_field, selector: selector)
@@ -153,56 +153,56 @@ module PageMagic
           expect(section.session).to eq(:current_session)
         end
       end
+
+      describe 'restrictions' do
+        it 'should not allow method names that match element names' do
+          expect do
+            page_elements.class_eval do
+              link(:hello, text: 'world')
+
+              def hello
+              end
+            end
+          end.to raise_error(InvalidMethodNameException)
+        end
+
+        it 'should not allow element names that match method names' do
+          expect do
+            page_elements.class_eval do
+              def hello
+              end
+
+              link(:hello, text: 'world')
+            end
+          end.to raise_error(InvalidElementNameException)
+        end
+
+        it 'should not allow duplicate element names' do
+          expect do
+            page_elements.class_eval do
+              link(:hello, text: 'world')
+              link(:hello, text: 'world')
+            end
+          end.to raise_error(InvalidElementNameException)
+        end
+
+        it 'should not evaluate the elements when applying naming checks' do
+          page_elements.class_eval do
+            link(:link1, :selector) do
+              fail('should not have been evaluated')
+            end
+            link(:link2, :selector)
+          end
+        end
+      end
     end
 
-    describe 'retrieving element definitions' do
+    describe '#element_definitions' do
       it 'should return your a copy of the core definition' do
         page_elements.text_field :name, selector
         first = page_elements.element_definitions[:name].call(parent_page_element)
         second = page_elements.element_definitions[:name].call(parent_page_element)
         expect(first).to_not equal(second)
-      end
-    end
-
-    describe 'restrictions' do
-      it 'should not allow method names that match element names' do
-        expect do
-          page_elements.class_eval do
-            link(:hello, text: 'world')
-
-            def hello
-            end
-          end
-        end.to raise_error(InvalidMethodNameException)
-      end
-
-      it 'should not allow element names that match method names' do
-        expect do
-          page_elements.class_eval do
-            def hello
-            end
-
-            link(:hello, text: 'world')
-          end
-        end.to raise_error(InvalidElementNameException)
-      end
-
-      it 'should not allow duplicate element names' do
-        expect do
-          page_elements.class_eval do
-            link(:hello, text: 'world')
-            link(:hello, text: 'world')
-          end
-        end.to raise_error(InvalidElementNameException)
-      end
-
-      it 'should not evaluate the elements when applying naming checks' do
-        page_elements.class_eval do
-          link(:link1, :selector) do
-            fail('should not have been evaluated')
-          end
-          link(:link2, :selector)
-        end
       end
     end
   end

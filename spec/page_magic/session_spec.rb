@@ -12,18 +12,6 @@ module PageMagic
     let(:url) { 'http://url.com' }
     let(:browser) { double('browser', current_url: url, visit: nil, current_path: :current_path) }
 
-    describe '#current_url' do
-      it "returns the browser's current url" do
-        expect(subject.current_url).to eq(browser.current_url)
-      end
-    end
-
-    describe '#current_path' do
-      it "returns the browser's current path" do
-        expect(subject.current_path).to eq(browser.current_path)
-      end
-    end
-
     describe '#current_page' do
       let(:another_page_class) do
         Class.new do
@@ -52,6 +40,18 @@ module PageMagic
       end
     end
 
+    describe '#current_path' do
+      it "returns the browser's current path" do
+        expect(subject.current_path).to eq(browser.current_path)
+      end
+    end
+
+    describe '#current_url' do
+      it "returns the browser's current url" do
+        expect(subject.current_url).to eq(browser.current_url)
+      end
+    end
+
     describe '#find_mapped_page' do
       subject do
         described_class.new(nil).tap do |session|
@@ -77,11 +77,73 @@ module PageMagic
       end
     end
 
-    describe '#wait' do
-      it 'passes the supplied block to the wait api' do
-        block = proc { :executed }
-        allow_any_instance_of(Wait).to receive(:until).and_call_original
-        expect(subject.wait_until(&block)).to eq(:executed)
+    describe '#method_missing' do
+      it 'should delegate to current page' do
+        page.class_eval do
+          def my_method
+            :called
+          end
+        end
+
+        session = PageMagic::Session.new(browser).visit(page, url: url)
+        expect(session.my_method).to be(:called)
+      end
+    end
+
+    context '#respond_to?' do
+      subject do
+        PageMagic::Session.new(browser).tap do |s|
+          allow(s).to receive(:current_page).and_return(page.new)
+        end
+      end
+      it 'checks self' do
+        expect(subject.respond_to?(:current_url)).to eq(true)
+      end
+
+      it 'checks the current page' do
+        page.class_eval do
+          def my_method
+          end
+        end
+        expect(subject.respond_to?(:my_method)).to eq(true)
+      end
+    end
+
+    describe '#url' do
+      let!(:base_url) { 'http://example.com' }
+      let!(:path) { 'home' }
+      let!(:expected_url) { "#{base_url}/#{path}" }
+
+      context 'base_url has a / on the end' do
+        before do
+          base_url << '/'
+        end
+
+        context 'path has / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.send(:url, base_url, path)).to eq(expected_url)
+          end
+        end
+
+        context 'path does not have / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.send(:url, base_url, "/#{path}")).to eq(expected_url)
+          end
+        end
+      end
+
+      context 'current_url does not have a / on the end' do
+        context 'path has / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.send(:url, base_url, "/#{path}")).to eq(expected_url)
+          end
+        end
+
+        context 'path does not have / at the beginning' do
+          it 'produces compound url' do
+            expect(subject.send(:url, base_url, path)).to eq(expected_url)
+          end
+        end
       end
     end
 
@@ -137,73 +199,11 @@ module PageMagic
       end
     end
 
-    describe '#url' do
-      let!(:base_url) { 'http://example.com' }
-      let!(:path) { 'home' }
-      let!(:expected_url) { "#{base_url}/#{path}" }
-
-      context 'base_url has a / on the end' do
-        before do
-          base_url << '/'
-        end
-
-        context 'path has / at the beginning' do
-          it 'produces compound url' do
-            expect(subject.send(:url, base_url, path)).to eq(expected_url)
-          end
-        end
-
-        context 'path does not have / at the beginning' do
-          it 'produces compound url' do
-            expect(subject.send(:url, base_url, "/#{path}")).to eq(expected_url)
-          end
-        end
-      end
-
-      context 'current_url does not have a / on the end' do
-        context 'path has / at the beginning' do
-          it 'produces compound url' do
-            expect(subject.send(:url, base_url, "/#{path}")).to eq(expected_url)
-          end
-        end
-
-        context 'path does not have / at the beginning' do
-          it 'produces compound url' do
-            expect(subject.send(:url, base_url, path)).to eq(expected_url)
-          end
-        end
-      end
-    end
-
-    context '#method_missing' do
-      it 'should delegate to current page' do
-        page.class_eval do
-          def my_method
-            :called
-          end
-        end
-
-        session = PageMagic::Session.new(browser).visit(page, url: url)
-        expect(session.my_method).to be(:called)
-      end
-    end
-
-    context '#respond_to?' do
-      subject do
-        PageMagic::Session.new(browser).tap do |s|
-          allow(s).to receive(:current_page).and_return(page.new)
-        end
-      end
-      it 'checks self' do
-        expect(subject.respond_to?(:current_url)).to eq(true)
-      end
-
-      it 'checks the current page' do
-        page.class_eval do
-          def my_method
-          end
-        end
-        expect(subject.respond_to?(:my_method)).to eq(true)
+    describe '#wait' do
+      it 'passes the supplied block to the wait api' do
+        block = proc { :executed }
+        allow_any_instance_of(Wait).to receive(:until).and_call_original
+        expect(subject.wait_until(&block)).to eq(:executed)
       end
     end
   end

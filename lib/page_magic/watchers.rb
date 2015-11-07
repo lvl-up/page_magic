@@ -26,8 +26,8 @@ module PageMagic
     end
 
     # @return [Watcher] watcher with the given name
-    def watcher name
-      watchers.find{|watcher| watcher.name == name}
+    def watcher(name)
+      watchers.find { |watcher| watcher.name == name }
     end
 
     # @return [Array] registered watchers
