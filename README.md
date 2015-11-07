@@ -101,7 +101,7 @@ class MessageView
   include PageMagic
 end
 ```
-### Hooks
+## Hooks
 PageMagic lets you define an on_load hook for your pages. This lets you right any custom wait logic you might need 
 before letting execution continue.
 ```ruby
