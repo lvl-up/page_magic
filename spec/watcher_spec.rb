@@ -19,7 +19,7 @@ module PageMagic
 
         it 'assigns last to be the result of calling the method' do
           subject.check(self)
-          expect(subject.last).to eq(self.object_id)
+          expect(subject.last).to eq(object_id)
         end
       end
       context 'name and attribute supplied to constructor' do
