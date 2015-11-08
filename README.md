@@ -18,11 +18,12 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 - [Starting a session](#starting-a-session)
 - [Defining Pages](#defining-pages)
   - [Elements](#elements)
+  - [Sub elements](#sub-elements)
+  - [Custom elements](#custom-elements)
   - [Hooks](#hooks)
     - [Element event hooks](#element-event-hooks)
     - [On load hook](#on-load-hook)
   - [Helper Methods](#helper-methods)
-  - [Sub Elements](#sub-elements)
   - [Dynamic Selectors](#dynamic-selectors)
 - [Watchers](#watchers)
   - [Method watchers](#method-watchers)
@@ -78,6 +79,52 @@ session.password.set 'passw0rd'
 session.login_button.click
 ```
 
+### Sub Elements
+If your pages are complex you can use PageMagic to compose pages, their elements and subelements to as many levels as you need to.
+
+```ruby
+class MailBox
+  include PageMagic
+  
+  element :message, id: 'message_id' do
+    link(:read, text: 'read')
+  end
+end
+```
+Sub elements can be accessed through their parent elements e.g:
+```
+session.message.read.click
+```
+
+### Custom elements
+PageMagic allows you to define your own custom elements.
+```ruby
+class Nav < PageMagic::Element
+  selector css: '.nav
+  
+  element :options, css: '.options' do
+    link(:link1, id: 'link1')
+    link(:link2, id: 'link2')
+    link(:link3, id: 'link3')
+  end
+end
+
+class MyPage 
+  include PageMagic
+  element Nav
+end
+```
+If an id is not specified then the name of the element class will be used. The selector for the element can be specified on the class itself or overiden when defining the element on the page. The custom element can also be extended as with other elements.
+```ruby
+class MyPage
+  include PageMagic
+  element Nav, :navigation, selector: '.custom' do
+    link(:extr_link, id: 'extra-link')
+  do
+end
+
+
+
 ## Hooks
 PageMagic provides hooks to allow you to interact at the right moments with your pages
 
@@ -130,22 +177,6 @@ We can interact with helper in the same way as we did page elements.
 session.login('joe', 'blogs')
 ```
 
-##Sub Elements
-If your pages are complex you can use PageMagic to compose pages, their elements and subelements to as many levels as you need to.
-
-```ruby
-class MailBox
-  include PageMagic
-  
-  element :message, id: 'message_id' do
-    link(:read, text: 'read')
-  end
-end
-```
-Sub elements can be accessed through their parent elements e.g:
-```
-session.message.read.click
-```
 ## Dynamic Selectors
 In some cases you will able to specify the selector for an element until runtime. PageMagic allows you to handle such situations with support for dynamic selectors.
 
