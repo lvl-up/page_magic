@@ -6,7 +6,7 @@ It has a simple but powerful DSL which makes modelling and interacting with your
 
 Wouldn't it be great if there was a framework that could:
 - [Model your pages](#defining-pages)
-- [Fluently define interaction hooks / waiters on page elements](#event-hooks)
+- [Fluently define event hooks / waiters on page elements](#hooks)
 - [Map paths to pages so that the correct page object is loaded as you navigate](#page-mapping)
 - [Be super dynamic](#dynamic-selectors)
 
