@@ -9,7 +9,7 @@ module PageMagic
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
 
-    include Elements, MethodObserver, SelectorMethods, Watchers
+    include Elements, MethodObserver, SelectorMethods, Watchers, SessionMethods
     extend Elements, SelectorMethods, Forwardable
 
     attr_reader :type, :name, :parent_page_element
@@ -72,16 +72,6 @@ module PageMagic
       super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
     end
 
-    # @!method page
-    #  returns the currently active page object
-    #  @see Session#current_page
-    def_delegator :session, :current_page, :page
-
-    # @!method path
-    #  returns the current path
-    #  @see Session#current_path
-    def_delegator :session, :current_path, :path
-
     # use to find out if this element is a section
     # @return [Boolean] true if this element contains helper methods or sub element definitions
     def section?
@@ -93,11 +83,6 @@ module PageMagic
     # @return [Session] returns the session of the parent page element.
     #  Capybara session
     def_delegator :parent_page_element, :session
-
-    # @!method url
-    #  returns the current url
-    #  @see Session#current_url
-    def_delegator :session, :current_url, :url
 
     def ==(other)
       return false unless other.is_a?(Element)

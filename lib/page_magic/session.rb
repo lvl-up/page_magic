@@ -1,10 +1,13 @@
 require 'wait'
+require 'forwardable'
 module PageMagic
   # class Session - coordinates access to the browser though page objects.
   class Session
     URL_MISSING_MSG = 'a path must be mapped or a url supplied'
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping is a Regexp'
     INVALID_MAPPING_MSG = 'mapping must be a string or regexp'
+
+    extend Forwardable
 
     attr_reader :raw_session, :transitions
 
@@ -46,6 +49,12 @@ module PageMagic
     def define_page_mappings(transitions)
       @transitions = transitions
     end
+
+    # @!method execute_script
+    #  execute javascript on the browser
+    #  @param [String] script the script to be executed
+    #  @return [Object] object returned by the capybara execute_script method
+    def_delegator :raw_session, :execute_script
 
     # proxies unknown method calls to the currently loaded page object
     # @return [Object] returned object from the page object method call
