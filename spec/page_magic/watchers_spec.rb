@@ -34,6 +34,13 @@ module PageMagic
         expect(subject.watcher(:my_watcher).last).to eq(:current_value)
       end
 
+      context 'element name/ method name supplied' do
+        it 'stores the watch instruction' do
+          subject.watch(:object_id)
+          expect(subject.watcher(:object_id)).to eq(Watcher.new(:object_id))
+        end
+      end
+
       context 'element name and attribute supplied' do
         it 'stores the watch instruction' do
           subject.watch(:my_watcher, :text)

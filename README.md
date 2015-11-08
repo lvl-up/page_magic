@@ -187,6 +187,20 @@ end
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
 things have changed.
 
+### Method watchers
+Method watchers watch the output of the given method name.
+```ruby
+button :javascript_button, css: '.fancy_button' do
+  before_events do
+    watch(:url)
+  end
+  
+  after_events do
+    wait_until{changed?(:url)}
+  end
+end
+```
+
 ### Simple watchers
 Simple watchers use the `watch` method passing two parameters, the first is the name of the element you want to keep an 
 eye and the second is the method that needs to be called to get the value that should be observed.
