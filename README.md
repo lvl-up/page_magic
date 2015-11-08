@@ -76,7 +76,6 @@ end
 ## Helper methods
 Using elements that are defined on a page is great, but if you are enacting a procedure through interacting with a few of them then your code could end up with some pretty repetitive code. In this case you can define helper methods instead. 
 
-In the above [example](#an example) we used a helper called `login`.
 ```ruby
 class LoginPage
   # ... code defining elements as shown above
