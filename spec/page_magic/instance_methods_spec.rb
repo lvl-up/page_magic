@@ -16,6 +16,7 @@ module PageMagic
 
     it_behaves_like 'session accessor'
     it_behaves_like 'element watcher'
+    it_behaves_like 'waiter'
 
     describe 'execute_on_load' do
       it 'runs the on_load_hook in the context of self' do

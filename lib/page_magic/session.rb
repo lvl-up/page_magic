@@ -94,16 +94,6 @@ module PageMagic
       self
     end
 
-    # Wait until a the supplied block returns true
-    # @example
-    #   wait_until do
-    #     (rand % 2) == 0
-    #   end
-    def wait_until(&block)
-      @wait ||= Wait.new
-      @wait.until(&block)
-    end
-
     private
 
     def find_mapped_page(path)
