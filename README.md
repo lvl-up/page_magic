@@ -18,8 +18,8 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 - [Starting a session](#starting-a-session)
 - [Defining Pages](#defining-pages)
   - [Elements](#elements)
-  - [Sub elements](#sub-elements)
-  - [Custom elements](#custom-elements)
+    - [Sub elements](#sub-elements)
+    - [Custom elements](#custom-elements)
   - [Hooks](#hooks)
     - [Element event hooks](#element-event-hooks)
     - [On load hook](#on-load-hook)
@@ -122,8 +122,7 @@ class MyPage
     link(:extr_link, id: 'extra-link')
   do
 end
-
-
+```
 
 ## Hooks
 PageMagic provides hooks to allow you to interact at the right moments with your pages
