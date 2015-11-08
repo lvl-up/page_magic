@@ -10,4 +10,10 @@ module PageMagic
       expect(described_class.included_modules).to include(Watchers)
     end
   end
+
+  shared_examples 'waiter' do
+    it 'includes waiters' do
+      expect(described_class.included_modules).to include(Waiters)
+    end
+  end
 end
