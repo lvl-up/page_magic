@@ -13,7 +13,7 @@ Wouldn't it be great if there was a framework that could:
 Well PageMagic might just be the answer!
 
 Give it a try and let us know what you think! There will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
-# Contentes
+# Contents
 - [Installation](#installation)
 - [Starting a session](#starting-a-session)
 - [Defining Pages](#defining-pages)
