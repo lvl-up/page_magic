@@ -18,9 +18,8 @@ module PageMagic
       described_class.new(:help, page, type: :link, selector: :selector)
     end
 
-    it 'includes watchers' do
-      expect(described_class.included_modules).to include(Watchers)
-    end
+    it_behaves_like 'session accessor'
+    it_behaves_like 'element watcher'
 
     it 'raises an error if a selector has not been specified' do
       page_element = described_class.new(:name, Object.new, type: :element)
@@ -182,15 +181,6 @@ module PageMagic
       end
     end
 
-    describe '#page' do
-      subject do
-        described_class.new(:name, page)
-      end
-      it 'returns the parent page object' do
-        expect(subject.page).to eq(page)
-      end
-    end
-
     describe '#respond_to?' do
       subject do
         described_class.new(:name,
@@ -248,27 +238,9 @@ module PageMagic
       end
     end
 
-    describe '#page' do
-      it 'returns the current page of the session' do
-        expect(subject.page).to eq(session.current_page)
-      end
-    end
-
-    describe '#path' do
-      it 'returns the path of the session' do
-        expect(subject.path).to eq(session.current_path)
-      end
-    end
-
     describe '#session' do
       it 'should have a handle to the session' do
         expect(subject.session).to eq(page.session)
-      end
-    end
-
-    describe '#url' do
-      it 'returns the url of the session' do
-        expect(subject.url).to eq(session.current_url)
       end
     end
   end

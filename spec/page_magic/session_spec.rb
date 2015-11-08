@@ -77,6 +77,13 @@ module PageMagic
       end
     end
 
+    describe '#execute_script' do
+      it 'calls the execute script method on the capybara session' do
+        expect(browser).to receive(:execute_script).with(:script).and_return(:result)
+        expect(subject.execute_script(:script)).to be(:result)
+      end
+    end
+
     describe '#method_missing' do
       it 'should delegate to current page' do
         page.class_eval do
