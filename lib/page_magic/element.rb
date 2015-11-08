@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'page_magic/element/method_observer'
 require 'page_magic/element/selector_methods'
 require 'page_magic/element/selector'
@@ -8,10 +9,10 @@ module PageMagic
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
 
-    attr_reader :type, :name, :parent_page_element
-
     include Elements, MethodObserver, SelectorMethods, Watchers
-    extend Elements, SelectorMethods
+    extend Elements, SelectorMethods, Forwardable
+
+    attr_reader :type, :name, :parent_page_element
 
     def initialize(name, parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)
       @browser_element = prefetched_browser_element
@@ -71,16 +72,32 @@ module PageMagic
       super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
     end
 
-    # @return [Boolean] returns true if this element contains helper methods or sub element definitions
+    # @!method page
+    #  returns the currently active page object
+    #  @see Session#current_page
+    def_delegator :session, :current_page, :page
+
+    # @!method path
+    #  returns the current path
+    #  @see Session#current_path
+    def_delegator :session, :current_path, :path
+
+    # use to find out if this element is a section
+    # @return [Boolean] true if this element contains helper methods or sub element definitions
     def section?
       !element_definitions.empty? || singleton_methods_added?
     end
 
-    # @return [Object] returns the overall of the parent page element. this will ultimately be the {Session} wrapping
+    # @!method session
+    # get the current session
+    # @return [Session] returns the session of the parent page element.
     #  Capybara session
-    def session
-      @parent_page_element.session
-    end
+    def_delegator :parent_page_element, :session
+
+    # @!method url
+    #  returns the current url
+    #  @see Session#current_url
+    def_delegator :session, :current_url, :url
 
     def ==(other)
       return false unless other.is_a?(Element)

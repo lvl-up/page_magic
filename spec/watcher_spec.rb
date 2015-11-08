@@ -12,6 +12,16 @@ module PageMagic
     end
 
     describe '#check' do
+      context 'method supplied to constructor' do
+        subject do
+          described_class.new(:object_id)
+        end
+
+        it 'assigns last to be the result of calling the method' do
+          subject.check(self)
+          expect(subject.last).to eq(object_id)
+        end
+      end
       context 'name and attribute supplied to constructor' do
         subject do
           described_class.new(:my_button, :text)

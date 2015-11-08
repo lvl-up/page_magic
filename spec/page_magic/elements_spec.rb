@@ -14,17 +14,23 @@ module PageMagic
     end
 
     describe '#element' do
+      it 'uses the supplied name' do
+        page_elements.text_field :alias, selector
+        expect(page_elements.elements(parent_page_element).first.name).to eq(:alias)
+      end
+
+      it 'sets the parent element' do
+        page_elements.element :page_section, selector
+        section = page_elements.element_definitions[:page_section].call(:parent)
+        expect(section.parent_page_element).to eq(:parent)
+      end
+
       context 'using a selector' do
         it 'should add an element' do
           expected_element = Element.new(:name, parent_page_element, type: :text_field, selector: selector)
           page_elements.text_field :name, selector
           expect(page_elements.element_definitions[:name].call(parent_page_element)).to eq(expected_element)
         end
-      end
-
-      it 'uses the supplied name' do
-        page_elements.text_field :alias, selector
-        expect(page_elements.elements(parent_page_element).first.name).to eq(:alias)
       end
 
       context 'complex elements' do
@@ -127,30 +133,6 @@ module PageMagic
             page_elements.element :page_section, :object
             expect(expected_section).to eq(page_elements.elements(parent_page_element).first)
           end
-        end
-      end
-
-      describe 'session handle' do
-        it 'should be on instances created from a class' do
-          browser_element = double(:browser_element, find: :browser_element)
-          parent = double('parent', session: :current_session, prefetched_browser_element: browser_element)
-          page_elements.element :page_section, selector
-
-          section = page_elements.element_definitions[:page_section].call(parent)
-
-          expect(section.session).to eq(:current_session)
-        end
-
-        it 'should be on instances created dynamically using the section method' do
-          browser_element = double('browser_element')
-          allow(browser_element).to receive(:find)
-          parent = double('parent', session: :current_session, prefetched_browser_element: browser_element)
-
-          page_elements.element :page_section, css: :selector do
-          end
-
-          section = page_elements.element_definitions[:page_section].call(parent)
-          expect(section.session).to eq(:current_session)
         end
       end
 

@@ -23,7 +23,8 @@ module PageMagic
       @last = if block
                 block.call
               else
-                subject.send(name).send(attribute)
+                object = subject.send(name)
+                attribute ? object.send(attribute) : object
               end
       self
     end
