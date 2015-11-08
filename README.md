@@ -185,7 +185,9 @@ end
 ```
 ## Watchers
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
-things have changed.
+things have changed. 
+
+**Note**: Watchers are not inherited
 
 ### Method watchers
 Method watchers watch the output of the given method name.
