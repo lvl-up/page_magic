@@ -19,10 +19,11 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 - [Defining Pages](#defining-pages)
   - [Elements](#elements)
   - [Hooks](#hooks)
+    - [Element event hooks](#element-event-hooks)
+    - [On load hook](#on-load-hook)
   - [Helper Methods](#helper-methods)
   - [Sub Elements](#sub-elements)
   - [Dynamic Selectors](#dynamic-selectors)
-  - [Event Hooks](#event-hooks)
 - [Watchers](#watchers)
   - [Method watchers](#method-watchers)
   - [Simple watchers](#simple-watchers)
@@ -67,7 +68,7 @@ class LoginPage
 end
 ```
 
-#Interacting with elements
+### Interacting with elements
 Elements are defined with an id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
 
 After visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
@@ -78,7 +79,10 @@ session.login_button.click
 ```
 
 ## Hooks
-PageMagic lets you define an on_load hook for your pages. This lets you right any custom wait logic you might need 
+PageMagic provides hooks to allow you to interact at the right moments with your pages
+
+### On Load hook
+PageMagic lets you define an on_load hook for your pages. This lets you write any custom wait logic you might need 
 before letting execution continue.
 ```ruby
 class LoginPage
@@ -86,6 +90,22 @@ class LoginPage
   
   on_load do
     # wait code here
+  end
+end
+```
+
+### Element event hooks
+Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_events` and `after_events` hooks that you use to perform custom actions and wait for things to happen.
+
+```ruby
+class MessagePage
+  include PageMagic
+  ## code defining other elements, such as subject and body
+  
+  link(:delete id: 'delete-message') do
+    after_events do
+      wait_until{fancy_animation_has_disappeared?}
+    end
   end
 end
 ```
@@ -109,6 +129,7 @@ We can interact with helper in the same way as we did page elements.
 ```ruby
 session.login('joe', 'blogs')
 ```
+
 ##Sub Elements
 If your pages are complex you can use PageMagic to compose pages, their elements and subelements to as many levels as you need to.
 
@@ -142,21 +163,7 @@ Here we have defined the 'message' element using a block that takes subject argu
 ```ruby
 session.message(subject: 'test message')
 ```
-## Event hooks
-Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_events` and `after_events` hooks that you use to perform custom actions and wait for things to happen.
 
-```ruby
-class MessagePage
-  include PageMagic
-  ## code defining other elements, such as subject and body
-  
-  link(:delete id: 'delete-message') do
-    after_events do
-      wait_until{fancy_animation_has_disappeared?}
-    end
-  end
-end
-```
 # Watchers
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
 things have changed. 
