@@ -5,14 +5,31 @@ PageMagic is an API for testing web applications.
 It has a simple but powerful DSL which makes modelling and interacting with your pages easy.
 
 Wouldn't it be great if there was a framework that could:
-- [Model your pages](#modelling-pages)
-- [Fluently define interaction hooks / waiters on page elements](#interaction-hooks)
+- [Model your pages](#defining-pages)
+- [Fluently define interaction hooks / waiters on page elements](#event-hooks)
 - [Map paths to pages so that the correct page object is loaded as you navigate](#page-mapping)
 - [Be super dynamic](#dynamic-selectors)
 
 Well PageMagic might just be the answer!
 
 Give it a try and let us know what you think! There will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
+# Contentes
+- [Installation](#installation)
+- [Starting a session](#starting-a-session)
+- [Defining Pages](#defining-pages)
+  - [Elements](#elements)
+  - [Hooks](#hooks)
+  - [Helper Methods](#helper-methods)
+  - [Sub Elements](#sub-elements)
+  - [Dynamic Selectors](#dynamic-selectors)
+  - [Event Hooks](#event-hooks)
+- [Watchers](#watchers)
+  - [Method watchers](#method-watchers)
+  - [Simple watchers](#simple-watchers)
+  - [Custom watchers](#custom-watchers)
+- [Page mapping](#page-mapping)
+- [Drivers](#drivers)
+- [Pulling it all together](#pulling-it-all-together)
 
 # Installation
 `gem install page_magic --pre`
@@ -92,7 +109,7 @@ We can interact with helper in the same way as we did page elements.
 ```ruby
 session.login('joe', 'blogs')
 ```
-##Defining sub elements
+##Sub Elements
 If your pages are complex you can use PageMagic to compose pages, their elements and subelements to as many levels as you need to.
 
 ```ruby
@@ -125,7 +142,7 @@ Here we have defined the 'message' element using a block that takes subject argu
 ```ruby
 session.message(subject: 'test message')
 ```
-## Interaction hooks
+## Event hooks
 Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_events` and `after_events` hooks that you use to perform custom actions and wait for things to happen.
 
 ```ruby
@@ -140,13 +157,13 @@ class MessagePage
   end
 end
 ```
-## Watchers
+# Watchers
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
 things have changed. 
 
 **Note**: Watchers are not inherited
 
-### Method watchers
+## Method watchers
 Method watchers watch the output of the given method name.
 ```ruby
 button :javascript_button, css: '.fancy_button' do
@@ -160,7 +177,7 @@ button :javascript_button, css: '.fancy_button' do
 end
 ```
 
-### Simple watchers
+## Simple watchers
 Simple watchers use the `watch` method passing two parameters, the first is the name of the element you want to keep an 
 eye and the second is the method that needs to be called to get the value that should be observed.
 ```ruby
@@ -174,7 +191,7 @@ element :product_row, css '.cta' do
   end
 end
 ```
-### Custom watchers
+## Custom watchers
 Custom watchers are defined by passing a name and block parameter to the `watch` method. The block returns the value 
 that needs to be observed. Use watch in this way if you need to do something non standard to obtain a value or to 
 access an element not located within the current element but elsewhere within the page.
@@ -191,7 +208,7 @@ element :product_row, css '.cta' do
   end
 end
 ```
-# Page Mapping
+# Page mapping
 With PageMagic you can map which pages should be used to handle which URL paths. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
 ```ruby
 # define what pages map to what
@@ -220,8 +237,6 @@ PageMagic.drivers.register Webkit
 #3. Use registered driver
 session = PageMagic.session(browser: webkit, url: 'https://21st-century-mail.com')
 ```
-#What else can you do with PageMagic?
-PageMagic has lots of other useful features. I'm writing up the documentation so check back here soon!
 
 # Pulling it all together
 Imagine the scene. You've written a web based mail client and now you want to test it...
