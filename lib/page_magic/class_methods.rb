@@ -4,18 +4,18 @@ module PageMagic
     # Default block to be run when a page is loaded. This is used if a specific handler is not registered
     DEFAULT_ON_LOAD = proc {}
 
-    # getter setter for storing the page url
-    # @param [String] url the url of the page
-    def url(url = nil)
-      @url = url if url
-      @url
-    end
-
     # sets block to run when page has loaded
     # if one has not been set on the page object class it will return a default block that does nothing
     def on_load(&block)
       return @on_load || DEFAULT_ON_LOAD unless block
       @on_load = block
+    end
+
+    # getter setter for storing the page url
+    # @param [String] url the url of the page
+    def url(url = nil)
+      @url = url if url
+      @url
     end
 
     # Visit this page based on the class level registered url

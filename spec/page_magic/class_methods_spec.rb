@@ -6,12 +6,6 @@ module PageMagic
         clazz.include(InstanceMethods)
       end
     end
-    describe '#url' do
-      it 'get/sets a value' do
-        subject.url(:url)
-        expect(subject.url).to eq(:url)
-      end
-    end
 
     describe 'on_load' do
       context 'block not set' do
@@ -26,6 +20,13 @@ module PageMagic
           subject.on_load(&expected_block)
           expect(subject.on_load).to be(expected_block)
         end
+      end
+    end
+
+    describe '#url' do
+      it 'get/sets a value' do
+        subject.url(:url)
+        expect(subject.url).to eq(:url)
       end
     end
 

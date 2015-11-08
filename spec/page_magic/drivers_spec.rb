@@ -3,12 +3,6 @@ module PageMagic
   describe Drivers do
     subject { described_class.new }
     let(:expected_driver) { Driver.new(:browser_driver) }
-    describe '#register' do
-      it 'stores the driver' do
-        subject.register expected_driver
-        expect(subject.all).to eq([expected_driver])
-      end
-    end
 
     describe '#find' do
       it 'returns the registered driver' do
@@ -32,6 +26,13 @@ module PageMagic
 
         subject.load(scratch_dir)
         expect(subject.find(:custom_browser)).to be(::CustomDriver)
+      end
+    end
+
+    describe '#register' do
+      it 'stores the driver' do
+        subject.register expected_driver
+        expect(subject.all).to eq([expected_driver])
       end
     end
   end

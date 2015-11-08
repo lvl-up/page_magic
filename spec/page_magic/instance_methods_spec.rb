@@ -14,6 +14,10 @@ module PageMagic
       page_class.visit(application: rack_app)
     end
 
+    it 'includes watchers' do
+      expect(described_class.included_modules).to include(Watchers)
+    end
+
     describe 'execute_on_load' do
       it 'runs the on_load_hook in the context of self' do
         instance = subject.current_page
@@ -30,7 +34,7 @@ module PageMagic
       end
     end
 
-    context '#respond_to?' do
+    describe '#respond_to?' do
       it 'checks self' do
         expect(subject.respond_to?(:visit)).to eq(true)
       end
@@ -40,15 +44,15 @@ module PageMagic
       end
     end
 
-    describe '#visit' do
-      it 'goes to the class define url' do
-        expect(subject.session.current_path).to eq('/page1')
-      end
-    end
-
     describe 'session' do
       it 'gives access to the page magic object wrapping the user session' do
         expect(subject.session.raw_session).to be_a(Capybara::Session)
+      end
+    end
+
+    describe 'text' do
+      it 'returns the text on the page' do
+        expect(subject.text).to eq('next page')
       end
     end
 
@@ -68,9 +72,9 @@ module PageMagic
       end
     end
 
-    describe 'text' do
-      it 'returns the text on the page' do
-        expect(subject.text).to eq('next page')
+    describe '#visit' do
+      it 'goes to the class define url' do
+        expect(subject.session.current_path).to eq('/page1')
       end
     end
 
