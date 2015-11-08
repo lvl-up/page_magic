@@ -81,7 +81,7 @@ session.login_button.click
 ## Hooks
 PageMagic provides hooks to allow you to interact at the right moments with your pages
 
-### On Load hook
+### On load hook
 PageMagic lets you define an on_load hook for your pages. This lets you write any custom wait logic you might need 
 before letting execution continue.
 ```ruby
