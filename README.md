@@ -49,10 +49,9 @@ class LoginPage
   button(:login_button, text: 'login')
 end
 ```
-In the case of the Login page, it's easy to imagine that it will have text fields for a username and password and a button to login in with.
 
 #Interacting with elements
-Elements are defined with a id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
+Elements are defined with an id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
 
 After visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
 ```ruby
