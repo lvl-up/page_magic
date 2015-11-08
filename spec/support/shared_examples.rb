@@ -13,7 +13,7 @@ module PageMagic
 
   shared_examples 'waiter' do
     it 'includes waiters' do
-      expect(described_class.included_modules).to include(Waiters)
+      expect(described_class.included_modules).to include(WaitMethods)
     end
   end
 end

@@ -3,7 +3,7 @@ module PageMagic
   module InstanceMethods
     attr_reader :browser, :session, :browser_element
 
-    include Watchers, SessionMethods, Waiters
+    include Watchers, SessionMethods, WaitMethods
 
     # Creates a new instance
     # @param [Session] session session that provides gateway to the browser throw the users chosen browser

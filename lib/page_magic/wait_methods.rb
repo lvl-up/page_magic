@@ -1,6 +1,6 @@
 module PageMagic
-  # module Waiters - contains methods for waiting
-  module Waiters
+  # module WaitMethods - contains methods for waiting
+  module WaitMethods
     # Wait until a the supplied block returns true
     # @example
     #   wait_until do
