@@ -1,3 +1,4 @@
+require 'forwardable'
 require 'page_magic/element/method_observer'
 require 'page_magic/element/selector_methods'
 require 'page_magic/element/selector'
@@ -8,10 +9,14 @@ module PageMagic
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
 
+    include Elements, MethodObserver, SelectorMethods, Watchers
+    extend Elements, SelectorMethods, Forwardable
+
     attr_reader :type, :name, :parent_page_element
 
-    include Elements, MethodObserver, SelectorMethods, Watchers
-    extend Elements, SelectorMethods
+    def_delegator :session, :current_page, :page
+    def_delegator :session, :current_path, :path
+    def_delegator :session, :current_url, :url
 
     def initialize(name, parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)
       @browser_element = prefetched_browser_element
@@ -79,7 +84,7 @@ module PageMagic
     # @return [Object] returns the overall of the parent page element. this will ultimately be the {Session} wrapping
     #  Capybara session
     def session
-      @parent_page_element.session
+      parent_page_element.session
     end
 
     def ==(other)
