@@ -9,25 +9,26 @@ module PageMagic
 
     include_context :webapp_fixture
 
-    let(:child_selector) { { id: 'child' } }
-    let(:parent_selector) { { id: 'parent' } }
-    let(:browser_element) { double('browser_element', find: :browser_element) }
     let(:parent_page_element) do
-      Element.new(double(browser_element:nested_element), type: :element, selector: parent_selector) do
+      Element.new(double(browser_element: nested_element), type: :element, selector: { id: 'parent' }) do
         element :child, id: 'child'
       end
     end
+
+    let(:child_element){parent_page_element.child}
+    let(:child_selector) { child_element.selector }
+
 
     describe '#element' do
       it 'uses the supplied name' do
         expected_element = Element.new(parent_page_element, type: :text_field, selector: child_selector)
         page_elements.text_field :alias, child_selector
-        expect(page_elements.element_definitions[:alias].call(parent_page_element)).to eq(expected_element)
+        expect(page_elements.element_by_name(:alias, parent_page_element)).to eq(expected_element)
       end
 
       it 'sets the parent element' do
         page_elements.text_field :alias, child_selector
-        section = page_elements.element_definitions[:alias].call(parent_page_element)
+        section = page_elements.element_by_name(:alias, parent_page_element)
         expect(section.parent_page_element).to eq(parent_page_element)
       end
 
@@ -35,7 +36,7 @@ module PageMagic
         it 'should add an element' do
           expected_element = Element.new(parent_page_element, type: :text_field, selector: child_selector)
           page_elements.text_field :name, child_selector
-          expect(page_elements.element_definitions[:name].call(parent_page_element)).to eq(expected_element)
+          expect(page_elements.element_by_name(:name, parent_page_element)).to eq(expected_element)
         end
       end
 
@@ -65,7 +66,7 @@ module PageMagic
               expected_element = Element.new(parent_page_element, selector: child_selector)
               allow(section_class).to receive(:name).and_return('PageSection')
               page_elements.element section_class, child_selector
-              expect(page_elements.element_definitions[:page_section].call(parent_page_element)).to eq(expected_element)
+              expect(page_elements.element_by_name(:page_section, parent_page_element)).to eq(expected_element)
             end
           end
         end
@@ -73,35 +74,28 @@ module PageMagic
 
       context 'using a block' do
         context 'browser_element' do
-          before :each do
-            @browser = double('browser')
-            @element = double('element')
-            @parent_page_element = double('parent_page_element')
-            allow(@parent_page_element).to receive(:browser_element).and_return(@browser)
-            expect(@browser).to receive(:find).with(:selector).and_return(@element)
-          end
 
           it 'should be assigned when selector is passed to section method' do
-            element = @element
+            expected_element = child_element.browser_element.native
 
-            page_elements.element :page_section, css: :selector do
+            page_elements.element :page_section, child_selector do
               extend RSpec::Matchers
-              expect(browser_element).to eq(element)
+              expect(browser_element.native).to eq(expected_element)
             end
 
-            page_elements.element_definitions[:page_section].call(@parent_page_element)
+            page_elements.element_by_name(:page_section, parent_page_element)
           end
 
           it 'should be assigned when selector is defined in the block passed to the section method' do
-            element = @element
+            expected_element = child_element
 
             page_elements.element :page_section do
-              selector css: :selector
+              selector expected_element.selector
               extend RSpec::Matchers
-              expect(browser_element).to eq(element)
+              expect(browser_element.native).to eq(expected_element.browser_element.native)
             end
 
-            page_elements.elements(@parent_page_element, nil)
+            page_elements.elements(parent_page_element)
           end
         end
 
@@ -176,8 +170,8 @@ module PageMagic
     describe '#element_definitions' do
       it 'should return your a copy of the core definition' do
         page_elements.text_field :name, child_selector
-        first = page_elements.element_definitions[:name].call(parent_page_element)
-        second = page_elements.element_definitions[:name].call(parent_page_element)
+        first = page_elements.element_by_name(:name, parent_page_element)
+        second = page_elements.element_by_name(:name, parent_page_element)
         expect(first).to_not equal(second)
       end
     end

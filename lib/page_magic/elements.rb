@@ -80,6 +80,10 @@ module PageMagic
       @element_definitions ||= {}
     end
 
+    def element_by_name name, parent_page_element
+      element_definitions[name].call(parent_page_element)
+    end
+
     private
 
     def add_element_definition(name, &block)
