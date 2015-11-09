@@ -60,7 +60,7 @@ module PageMagic
       selector ? options[:selector] = selector : options[:prefetched_browser_element] = args.delete_at(0)
 
       add_element_definition(name) do |parent_browser_element, *e_args|
-        section_class.new(name, parent_browser_element, options).expand(*e_args, &block)
+        section_class.new(parent_browser_element, options).expand(*e_args, &block)
       end
     end
 

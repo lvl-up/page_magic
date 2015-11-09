@@ -15,7 +15,7 @@ module PageMagic
     let(:page) { session.current_page }
 
     subject do
-      described_class.new(:help, page, type: :link, selector: :selector)
+      described_class.new(page, type: :link, selector: :selector)
     end
 
     it_behaves_like 'session accessor'
@@ -23,7 +23,7 @@ module PageMagic
     it_behaves_like 'waiter'
 
     it 'raises an error if a selector has not been specified' do
-      page_element = described_class.new(:name, Object.new, type: :element)
+      page_element = described_class.new(Object.new, type: :element)
       expect { page_element.browser_element }.to raise_error(PageMagic::UndefinedSelectorException)
     end
 
@@ -53,61 +53,54 @@ module PageMagic
           options = { count: 1 }
           xpath_selector = '//div/input'
           expect(page.session.raw_session).to receive(:find).with(:xpath, xpath_selector, options)
-          described_class.new(:my_input,
-                              page,
+          described_class.new(page,
                               type: :text_field,
                               selector: { xpath: xpath_selector }.merge(options)).browser_element
         end
       end
 
       it 'should find by xpath' do
-        element = described_class.new(:my_input,
-                                      page,
+        element = described_class.new(page,
                                       type: :text_field,
                                       selector: { xpath: '//div/label/input' }).browser_element
         expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its id' do
-        element = described_class.new(:my_input,
-                                      page,
+        element = described_class.new(page,
                                       type: :text_field,
                                       selector: { id: 'field_id' }).browser_element
         expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its name' do
-        element = described_class.new(:my_input,
-                                      page,
+        element = described_class.new(page,
                                       type: :text_field,
                                       selector: { name: 'field_name' }).browser_element
         expect(element.value).to eq('filled in')
       end
 
       it 'should locate an element using its label' do
-        element = described_class.new(:my_input,
-                                      page,
+        element = described_class.new(page,
                                       type: :text_field,
                                       selector: { label: 'enter text' }).browser_element
         expect(element[:id]).to eq('field_id')
       end
 
       it 'should locate an element using css' do
-        element = described_class.new(:my_input,
-                                      page,
+        element = described_class.new(page,
                                       type: :text_field,
                                       selector: { css: "input[name='field_name']" }).browser_element
         expect(element[:id]).to eq('field_id')
       end
 
       it 'should return a prefetched value' do
-        element = described_class.new(:help, page, type: :link, prefetched_browser_element: :prefetched_object)
+        element = described_class.new(page, type: :link, prefetched_browser_element: :prefetched_object)
         expect(element.browser_element).to eq(:prefetched_object)
       end
 
       it 'should raise errors for unsupported criteria' do
-        element = described_class.new(:my_link,
-                                      page,
+        element = described_class.new(page,
                                       type: :link,
                                       selector: { unsupported: '' })
 
@@ -116,15 +109,14 @@ module PageMagic
 
       context 'text selector' do
         it 'should locate a link' do
-          element = described_class.new(:my_link,
-                                        page,
+          element = described_class.new(page,
                                         type: :link,
                                         selector: { text: 'link in a form' }).browser_element
           expect(element[:id]).to eq('form_link')
         end
 
         it 'should locate a button' do
-          element = described_class.new(:my_button, page, type: :button, selector: { text: 'a button' }).browser_element
+          element = described_class.new(page, type: :button, selector: { text: 'a button' }).browser_element
           expect(element[:id]).to eq('form_button')
         end
       end
@@ -132,7 +124,7 @@ module PageMagic
 
     describe 'hooks' do
       subject do
-        described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
+        described_class.new(page, type: :button, selector: { id: 'my_button' }) do
           before_events do
             call_in_before_hook
           end
@@ -148,7 +140,7 @@ module PageMagic
 
       context 'method called in before hook' do
         subject do
-          described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
+          described_class.new(page, type: :button, selector: { id: 'my_button' }) do
             after_events do
               call_in_after_hook
             end
@@ -184,8 +176,7 @@ module PageMagic
 
     describe '#respond_to?' do
       subject do
-        described_class.new(:name,
-                            Object.new,
+        described_class.new(Object.new,
                             type: :element,
                             prefetched_browser_element: double(element_method: '')) do
           element :sub_element, css: '.sub-element'

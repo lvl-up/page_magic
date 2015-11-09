@@ -13,7 +13,7 @@ module PageMagic
 
     attr_reader :type, :name, :parent_page_element
 
-    def initialize(name, parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)
+    def initialize(parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)
       @browser_element = prefetched_browser_element
       @selector = selector
 
@@ -21,7 +21,6 @@ module PageMagic
       @after_hook = DEFAULT_HOOK
       @parent_page_element = parent_page_element
       @type = type
-      @name = name.to_s.downcase.to_sym
       @element_definitions = self.class.element_definitions.dup
       expand(&block) if block
     end
@@ -79,8 +78,8 @@ module PageMagic
 
     def ==(other)
       return false unless other.is_a?(Element)
-      this = [type, name, selector, before_events, after_events]
-      this == [other.type, other.name, other.selector, other.before_events, other.after_events]
+      this = [type, selector, before_events, after_events]
+      this == [other.type, other.selector, other.before_events, other.after_events]
     end
 
     private

@@ -15,8 +15,9 @@ module PageMagic
 
     describe '#element' do
       it 'uses the supplied name' do
+        expected_element = Element.new(parent_page_element, type: :text_field, selector: selector)
         page_elements.text_field :alias, selector
-        expect(page_elements.elements(parent_page_element).first.name).to eq(:alias)
+        expect(page_elements.element_definitions[:alias].call(parent_page_element)).to eq(expected_element)
       end
 
       it 'sets the parent element' do
@@ -27,7 +28,7 @@ module PageMagic
 
       context 'using a selector' do
         it 'should add an element' do
-          expected_element = Element.new(:name, parent_page_element, type: :text_field, selector: selector)
+          expected_element = Element.new(parent_page_element, type: :text_field, selector: selector)
           page_elements.text_field :name, selector
           expect(page_elements.element_definitions[:name].call(parent_page_element)).to eq(expected_element)
         end
@@ -45,7 +46,7 @@ module PageMagic
 
         context 'using a predefined class' do
           it 'should add an element using that class section' do
-            expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: selector)
+            expected_section = section_class.new(parent_page_element, type: :section, selector: selector)
 
             page_elements.element section_class, :page_section, selector
             expect(page_elements.elements(parent_page_element).first).to eq(expected_section)
@@ -61,9 +62,10 @@ module PageMagic
 
           context 'with no name supplied' do
             it 'should default to the name of the class if one is not supplied' do
+              expected_element = Element.new(parent_page_element, selector: selector)
               allow(section_class).to receive(:name).and_return('PageSection')
               page_elements.element section_class, selector
-              expect(page_elements.elements(parent_page_element).first.name).to eq(:page_section)
+              expect(page_elements.element_definitions[:page_section].call(parent_page_element)).to eq(expected_element)
             end
           end
         end
@@ -126,8 +128,7 @@ module PageMagic
       describe 'location' do
         context 'a prefetched object' do
           it 'should add a section' do
-            expected_section = Element.new(:page_section,
-                                           parent_page_element,
+            expected_section = Element.new(parent_page_element,
                                            type: :element,
                                            prefetched_browser_element: :object)
             page_elements.element :page_section, :object
