@@ -15,9 +15,7 @@ module PageMagic
 
       fail ElementMissingException, "Could not find: #{method}" unless element_locator_factory
 
-      element_locator = element_locator_factory.call(page_element, *args)
-
-      element_locator.section? ? element_locator : element_locator.browser_element
+      element_locator_factory.call(page_element, *args)
     end
 
     def respond_to?(*args)
