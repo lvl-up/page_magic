@@ -2,7 +2,7 @@ shared_context :webapp_fixture do
   require 'sinatra/base'
 
   let(:nested_elements_html) do
-    html=<<-HTML
+    <<-HTML
       <div id="parent">
         <div id="child">
         </div>
