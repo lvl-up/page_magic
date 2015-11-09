@@ -1,5 +1,4 @@
 require 'forwardable'
-require 'page_magic/element/method_observer'
 require 'page_magic/element/selector_methods'
 require 'page_magic/element/selector'
 require 'page_magic/element/query'
@@ -9,7 +8,7 @@ module PageMagic
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
 
-    include Elements, MethodObserver, SelectorMethods, Watchers, SessionMethods, WaitMethods
+    include Elements, SelectorMethods, Watchers, SessionMethods, WaitMethods
     extend Elements, SelectorMethods, Forwardable
 
     attr_reader :type, :name, :parent_page_element
@@ -70,12 +69,6 @@ module PageMagic
 
     def respond_to?(*args)
       super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
-    end
-
-    # use to find out if this element is a section
-    # @return [Boolean] true if this element contains helper methods or sub element definitions
-    def section?
-      !element_definitions.empty? || singleton_methods_added?
     end
 
     # @!method session
