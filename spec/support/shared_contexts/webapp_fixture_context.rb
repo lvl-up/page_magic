@@ -1,6 +1,19 @@
 shared_context :webapp_fixture do
   require 'sinatra/base'
 
+  let(:nested_elements_html) do
+    html=<<-HTML
+      <div id="parent">
+        <div id="child">
+        </div>
+      </div>
+    HTML
+  end
+
+  let(:nested_element) do
+    Capybara::Node::Simple.new(nested_elements_html)
+  end
+
   let(:rack_app) do
     Class.new(Sinatra::Base) do
       get '/page1' do
