@@ -16,12 +16,12 @@ module PageMagic
       end
     end
 
+    let(:child_element) { parent_element.child }
+    let(:child_selector) { child_element.selector }
+
     def expected_element(type)
       Element.new(parent_element, type: type, selector: child_selector)
     end
-
-    let(:child_element) { parent_element.child }
-    let(:child_selector) { child_element.selector }
 
     describe '#element' do
       it 'uses the supplied name' do
