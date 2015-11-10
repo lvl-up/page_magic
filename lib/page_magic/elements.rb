@@ -12,6 +12,7 @@ module PageMagic
     end
 
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
+    ELEMENT_MISSING_MSG = 'Could not find: %s'
     TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
 
     class << self
@@ -80,9 +81,10 @@ module PageMagic
       @element_definitions ||= {}
     end
 
-    # TODO: use in element context - will need to raise exceptions.
-    def element_by_name(name, parent_page_element)
-      element_definitions[name].call(parent_page_element)
+    def element_by_name(name)
+      defintion = element_definitions[name]
+      fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless defintion
+      defintion.call(self)
     end
 
     private

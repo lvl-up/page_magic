@@ -19,16 +19,9 @@ module PageMagic
         elements_page.visit(application: rack_app).current_page
       end
 
-      context 'neither a method or page element are defined' do
-        it 'raises an error' do
-          expect { described_class.new(page).missing_thing }.to raise_error ElementMissingException
-        end
-      end
-
       context 'method is a element defintion' do
         it 'returns the sub page element' do
           element = described_class.new(page).a_link
-          # TODO: - returns the capybara object. maybe we should think about wrapping this.
           expect(element.text).to eq('a link')
         end
 

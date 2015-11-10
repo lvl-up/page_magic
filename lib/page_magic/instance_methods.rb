@@ -19,6 +19,12 @@ module PageMagic
       self.class.element_definitions
     end
 
+    def element_by_name(name)
+      defintion = element_definitions[name]
+      fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless defintion
+      defintion.call(self)
+    end
+
     # executes block stored using {ClassMethods#on_load} against self
     # @return [Element] self
     def execute_on_load

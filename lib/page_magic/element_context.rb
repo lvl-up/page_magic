@@ -11,11 +11,7 @@ module PageMagic
     def method_missing(method, *args, &block)
       return page_element.send(method, *args, &block) if page_element.methods.include?(method)
 
-      element_locator_factory = page_element.element_definitions[method]
-
-      fail ElementMissingException, "Could not find: #{method}" unless element_locator_factory
-
-      element_locator_factory.call(page_element, *args)
+      page_element.element_by_name(method)
     end
 
     def respond_to?(*args)
