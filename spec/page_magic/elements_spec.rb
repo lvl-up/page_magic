@@ -2,21 +2,19 @@
 module PageMagic
   describe Elements do
 
-    include_context :webapp_fixture
+    include_context :nested_elements_html
 
     subject do
-      Class.new.tap do |clazz|
+      Class.new do |clazz|
         clazz.extend(described_class)
       end
     end
 
-    let(:parent_element) do
-      Element.new(double(browser_element: nested_element), type: :element, selector: { id: 'parent' }) do
-        element :child, id: 'child'
-      end
-    end
+    let(:page){double(browser_element: nested_elements_node)}
 
-    let(:child_element) { parent_element.child }
+    let(:parent_element){Element.new(page, type: :element, selector: { id: 'parent' })}
+    let(:child_element){Element.new(parent_element, type: :element, selector: { id: 'child' })}
+
     let(:child_selector) { child_element.selector }
 
     def expected_element(type)
