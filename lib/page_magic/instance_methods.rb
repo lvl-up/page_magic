@@ -3,7 +3,7 @@ module PageMagic
   module InstanceMethods
     attr_reader :browser, :session, :browser_element
 
-    include Watchers, SessionMethods, WaitMethods
+    include Watchers, SessionMethods, WaitMethods, Element::Locators
 
     # Creates a new instance
     # @param [Session] session session that provides gateway to the browser throw the users chosen browser
@@ -17,12 +17,6 @@ module PageMagic
     # @return [Array] class level defined element definitions
     def element_definitions
       self.class.element_definitions
-    end
-
-    def element_by_name(name)
-      defintion = element_definitions[name]
-      fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless defintion
-      defintion.call(self)
     end
 
     # executes block stored using {ClassMethods#on_load} against self

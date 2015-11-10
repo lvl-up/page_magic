@@ -12,13 +12,14 @@ module PageMagic
     end
 
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
-    ELEMENT_MISSING_MSG = 'Could not find: %s'
+
     TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
 
     class << self
       def included(clazz)
         clazz.extend(InheritanceHooks)
       end
+
       alias_method :extended, :included
     end
 
@@ -79,12 +80,6 @@ module PageMagic
     #  and {Element} definitions
     def element_definitions
       @element_definitions ||= {}
-    end
-
-    def element_by_name(name)
-      defintion = element_definitions[name]
-      fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless defintion
-      defintion.call(self)
     end
 
     private

@@ -21,6 +21,7 @@ module PageMagic
     it_behaves_like 'session accessor'
     it_behaves_like 'element watcher'
     it_behaves_like 'waiter'
+    it_behaves_like 'element locator'
 
     it 'raises an error if a selector has not been specified' do
       page_element = described_class.new(Object.new, type: :element)

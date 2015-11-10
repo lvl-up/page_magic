@@ -1,5 +1,6 @@
 require 'forwardable'
 require 'page_magic/element/selector_methods'
+require 'page_magic/element/locators'
 require 'page_magic/element/selector'
 require 'page_magic/element/query'
 module PageMagic
@@ -8,7 +9,7 @@ module PageMagic
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
 
-    include Elements, SelectorMethods, Watchers, SessionMethods, WaitMethods
+    include Elements, SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
     extend Elements, SelectorMethods, Forwardable
 
     attr_reader :type, :name, :parent_page_element

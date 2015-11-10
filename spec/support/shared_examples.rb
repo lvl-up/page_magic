@@ -16,4 +16,10 @@ module PageMagic
       expect(described_class.included_modules).to include(WaitMethods)
     end
   end
+
+  shared_examples 'element locator' do
+    it 'includes Locators' do
+      expect(described_class.included_modules).to include(Element::Locators)
+    end
+  end
 end
