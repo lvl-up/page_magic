@@ -13,5 +13,4 @@ shared_context :nested_elements_html do
   let(:nested_elements_node) do
     Capybara::Node::Simple.new(nested_elements_html)
   end
-
 end
