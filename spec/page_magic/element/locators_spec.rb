@@ -1,17 +1,19 @@
 module PageMagic
   class Element
     describe Locators do
-      subject do
-        Object.new.tap do |o|
-          o.extend(Elements)
-          o.extend(described_class)
+      subject(:element_clazz) do
+        Class.new do
+          extend(Elements)
+          include(Locators)
         end
       end
+      subject { element_clazz.new }
+
       describe '#element_by_name' do
         it 'returns the required element' do
-          expected_element = Element.new(subject, type: :element, selector: { id: 'child' })
-          subject.element :child1, expected_element.selector
-          subject.element :child2, id: 'child 2'
+          expected_element = Element.new(type: :element, selector: { id: 'child' })
+          element_clazz.element :child1, expected_element.selector
+          element_clazz.element :child2, id: 'child 2'
 
           expect(subject.element_by_name(:child1)).to eq(expected_element)
         end

@@ -9,18 +9,17 @@ module PageMagic
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
 
-    include Elements, SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
+    include SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
     extend Elements, SelectorMethods, Forwardable
 
-    attr_reader :type, :name, :parent_page_element
+    attr_reader :type, :name, :parent_page_element, :browser_element
 
-    def initialize(parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)
+    def initialize(type: :element, selector: {}, prefetched_browser_element: nil, &block)
       @browser_element = prefetched_browser_element
       @selector = selector
 
       @before_hook = DEFAULT_HOOK
       @after_hook = DEFAULT_HOOK
-      @parent_page_element = parent_page_element
       @type = type
       @element_definitions = self.class.element_definitions.dup
       expand(&block) if block
@@ -41,14 +40,15 @@ module PageMagic
     end
 
     # @return [Object] the Capybara browser element that this element definition is tied to.
-    def browser_element
+    def init(parent_page_element)
       return @browser_element if @browser_element
+      @parent_page_element = parent_page_element
 
       fail UndefinedSelectorException, 'Pass a locator/define one on the class' if selector.empty?
 
       query = Query.find(type).build(query_selector, query_options)
 
-      @browser_element = parent_browser_element.find(*query).tap do |raw_element|
+      @browser_element = parent_page_element.browser_element.find(*query).tap do |raw_element|
         wrap_events(raw_element)
       end
     end
@@ -69,6 +69,11 @@ module PageMagic
 
     def respond_to?(*args)
       super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
+    end
+
+    # @return [Array] class level defined element definitions
+    def element_definitions
+      self.class.element_definitions
     end
 
     # @!method session
@@ -98,10 +103,6 @@ module PageMagic
 
     def element_context
       ElementContext.new(self)
-    end
-
-    def parent_browser_element
-      parent_page_element.browser_element
     end
 
     def query_options

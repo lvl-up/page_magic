@@ -11,7 +11,9 @@ module PageMagic
     def method_missing(method, *args, &block)
       return page_element.send(method, *args, &block) if page_element.methods.include?(method)
 
-      page_element.element_by_name(method)
+      definition = page_element.element_by_name(method)
+      definition.init(page_element)
+      definition
     end
 
     def respond_to?(*args)

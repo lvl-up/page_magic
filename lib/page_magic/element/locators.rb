@@ -10,7 +10,12 @@ module PageMagic
       def element_by_name(name)
         defintion = element_definitions[name]
         fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless defintion
-        defintion.call(self)
+        defintion.call
+      end
+
+      # @return [Array] class level defined element definitions
+      def element_definitions
+        self.class.element_definitions
       end
     end
   end

@@ -3,32 +3,33 @@ module PageMagic
   describe Elements do
     include_context :nested_elements_html
 
-    let(:page) { double(browser_element: nested_elements_node) }
+    let(:page) { double(init: nested_elements_node) }
 
-    subject { Element.new(page, type: :element, selector: { id: 'parent' }) }
-    let(:child_element) { Element.new(subject, type: :element, selector: { id: 'child' }) }
+    subject do
+      Class.new do
+        extend Elements
+        include Element::Locators
+      end
+    end
+
+    # subject { Element.new(page, type: :element, selector: { id: 'parent' }) }
+    let(:child_element) { Element.new(type: :element, selector: { id: 'child' }) }
 
     let(:child_selector) { child_element.selector }
 
     def expected_element(type)
-      Element.new(subject, type: type, selector: child_selector)
+      Element.new(type: type, selector: child_selector)
     end
 
     describe '#element' do
       it 'uses the supplied name' do
         subject.text_field :alias, child_selector
-        expect(subject.element_by_name(:alias)).to eq(expected_element(:text_field))
-      end
-
-      it 'sets the parent element' do
-        subject.text_field :alias, child_selector
-        section = subject.element_by_name(:alias)
-        expect(section.parent_page_element).to eq(subject)
+        expect(subject.new.element_by_name(:alias)).to eq(expected_element(:text_field))
       end
 
       it 'sets the selector' do
         subject.text_field :alias, child_selector
-        set_selector = subject.element_by_name(:alias).selector
+        set_selector = subject.new.element_by_name(:alias).selector
         expect(set_selector).to eq(expected_element(:text_field).selector)
       end
 
@@ -58,37 +59,38 @@ module PageMagic
           context 'with no name supplied' do
             it 'should default to the name of the class if one is not supplied' do
               subject.element section_class, child_selector
-              expect(subject.element_by_name(:page_section)).to eq(expected_element(:element))
+              expect(subject.new.element_by_name(:page_section)).to eq(expected_element(:element))
             end
           end
         end
       end
 
       context 'using a block' do
-        context 'browser_element' do
-          it 'should be assigned when selector is passed to section method' do
-            expected_element = child_element.browser_element.native
-
-            subject.element :page_section, child_selector do
-              extend RSpec::Matchers
-              expect(browser_element.native).to eq(expected_element)
-            end
-
-            subject.element_by_name(:page_section)
-          end
-
-          it 'should be assigned when selector is defined in the block passed to the section method' do
-            expected_element = child_element
-
-            subject.element :page_section do
-              selector expected_element.selector
-              extend RSpec::Matchers
-              expect(browser_element.native).to eq(expected_element.browser_element.native)
-            end
-
-            subject.elements(subject)
-          end
-        end
+        # TODO: - this isn't going to be possible use browser_element in on_load instead? or helper methods
+        # context 'browser_element' do
+        #   it 'should be assigned when selector is passed to section method' do
+        #     expected_element = child_element.browser_element.native
+        #
+        #     subject.element :page_section, child_selector do
+        #       extend RSpec::Matchers
+        #       expect(browser_element.native).to eq(expected_element)
+        #     end
+        #
+        #     subject.new.element_by_name(:page_section)
+        #   end
+        #
+        #   it 'should be assigned when selector is defined in the block passed to the section method' do
+        #     expected_element = child_element
+        #
+        #     subject.element :page_section do
+        #       selector expected_element.selector
+        #       extend RSpec::Matchers
+        #       expect(browser_element.native).to eq(expected_element.browser_element.native)
+        #     end
+        #
+        #     subject.new.elements(subject)
+        #   end
+        # end
 
         it 'should pass args through to the block' do
           subject.element :page_section, child_selector do |arg|
@@ -104,8 +106,7 @@ module PageMagic
       describe 'location' do
         context 'a prefetched object' do
           it 'should add a section' do
-            expected_section = Element.new(subject,
-                                           type: :element,
+            expected_section = Element.new(type: :element,
                                            prefetched_browser_element: :object)
             subject.element :page_section, :object
             expect(expected_section).to eq(subject.elements(subject).first)
@@ -165,8 +166,8 @@ module PageMagic
     describe '#element_definitions' do
       it 'should return your a copy of the core definition' do
         subject.text_field :alias, child_selector
-        first = subject.element_by_name(:alias)
-        second = subject.element_by_name(:alias)
+        first = subject.new.element_by_name(:alias)
+        second = subject.new.element_by_name(:alias)
         expect(first).to_not equal(second)
       end
     end
