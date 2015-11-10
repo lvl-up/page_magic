@@ -1,19 +1,18 @@
 # rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Elements do
-
     include_context :nested_elements_html
 
     subject do
-      Class.new do |clazz|
+      Class.new.tap do |clazz|
         clazz.extend(described_class)
       end
     end
 
-    let(:page){double(browser_element: nested_elements_node)}
+    let(:page) { double(browser_element: nested_elements_node) }
 
-    let(:parent_element){Element.new(page, type: :element, selector: { id: 'parent' })}
-    let(:child_element){Element.new(parent_element, type: :element, selector: { id: 'child' })}
+    let(:parent_element) { Element.new(page, type: :element, selector: { id: 'parent' }) }
+    let(:child_element) { Element.new(parent_element, type: :element, selector: { id: 'child' }) }
 
     let(:child_selector) { child_element.selector }
 
