@@ -1,5 +1,16 @@
 require 'active_support/inflector'
 module PageMagic
+  class ElementDefinitionBuilder
+    attr_reader :definition_class, :options
+    def initialize(definition_class, options)
+      @definition_class = definition_class
+      @options = options
+    end
+
+    def ==(other)
+      other.is_a?(ElementDefinitionBuilder) && options == other.options
+    end
+  end
   # module Elements - contains methods that add element definitions to the objects it is mixed in to
   module Elements
     # hooks for objects that inherit classes that include the Elements module
@@ -62,7 +73,8 @@ module PageMagic
       selector ? options[:selector] = selector : options[:prefetched_browser_element] = args.delete_at(0)
 
       add_element_definition(name) do |*e_args|
-        Class.new(section_class) { instance_exec(*e_args[1..-1], &block) }.new(options)
+        defintion_class = Class.new(section_class) { instance_exec(*e_args[1..-1], &block) }
+        ElementDefinitionBuilder.new(defintion_class, options)
       end
     end
 

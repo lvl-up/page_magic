@@ -11,6 +11,9 @@ module PageMagic
         include Element::Locators
       end
     end
+    let(:instance) do
+      subject.new
+    end
 
     # subject { Element.new(page, type: :element, selector: { id: 'parent' }) }
     let(:child_element) { Element.new(type: :element, selector: { id: 'child' }) }
@@ -22,15 +25,10 @@ module PageMagic
     end
 
     describe '#element' do
-      it 'uses the supplied name' do
+      it 'sets the selector and type' do
+        expected_definition = ElementDefinitionBuilder.new(anything, type: :text_field, selector: child_selector)
         subject.text_field :alias, child_selector
-        expect(subject.new.element_by_name(:alias)).to eq(expected_element(:text_field))
-      end
-
-      it 'sets the selector' do
-        subject.text_field :alias, child_selector
-        set_selector = subject.new.element_by_name(:alias).selector
-        expect(set_selector).to eq(expected_element(:text_field).selector)
+        expect(instance.element_by_name(:alias)).to eq(expected_definition)
       end
 
       context 'complex elements' do
@@ -45,21 +43,24 @@ module PageMagic
         context 'using a predefined class' do
           it 'should add an element using that class section' do
             subject.element section_class, :page_section, child_selector
-            expect(subject.elements(subject).first).to eq(expected_element(:element))
+            element_definition_builder = subject.elements(subject).first
+            expect(element_definition_builder.definition_class).to be < section_class
           end
 
           context 'with no selector supplied' do
             it 'defaults the selector to the one on the class' do
               section_class.selector child_selector
               subject.element section_class, :alias
-              expect(subject.elements(subject).first.selector).to eq(child_selector)
+              element_definition_builder = subject.elements(subject).first
+              expect(element_definition_builder.options[:selector]).to eq(child_selector)
             end
           end
 
           context 'with no name supplied' do
             it 'should default to the name of the class if one is not supplied' do
               subject.element section_class, child_selector
-              expect(subject.new.element_by_name(:page_section)).to eq(expected_element(:element))
+              element_definition_builder = instance.element_by_name(:page_section)
+              expect(element_definition_builder.definition_class).to be < section_class
             end
           end
         end
@@ -76,7 +77,7 @@ module PageMagic
         #       expect(browser_element.native).to eq(expected_element)
         #     end
         #
-        #     subject.new.element_by_name(:page_section)
+        #     instance.element_by_name(:page_section)
         #   end
         #
         #   it 'should be assigned when selector is defined in the block passed to the section method' do
@@ -88,7 +89,7 @@ module PageMagic
         #       expect(browser_element.native).to eq(expected_element.browser_element.native)
         #     end
         #
-        #     subject.new.elements(subject)
+        #     instance.elements(subject)
         #   end
         # end
 
@@ -106,10 +107,10 @@ module PageMagic
       describe 'location' do
         context 'a prefetched object' do
           it 'should add a section' do
-            expected_section = Element.new(type: :element,
-                                           prefetched_browser_element: :object)
             subject.element :page_section, :object
-            expect(expected_section).to eq(subject.elements(subject).first)
+
+            element_defintion_builder = subject.elements(subject).first
+            expect(element_defintion_builder.options[:prefetched_browser_element]).to eq(:object)
           end
         end
       end
@@ -166,8 +167,8 @@ module PageMagic
     describe '#element_definitions' do
       it 'should return your a copy of the core definition' do
         subject.text_field :alias, child_selector
-        first = subject.new.element_by_name(:alias)
-        second = subject.new.element_by_name(:alias)
+        first = instance.element_by_name(:alias)
+        second = instance.element_by_name(:alias)
         expect(first).to_not equal(second)
       end
     end

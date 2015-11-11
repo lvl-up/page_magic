@@ -125,11 +125,12 @@ module PageMagic
 
     describe 'hooks' do
       subject do
-        instance = described_class.new(type: :button, selector: { id: 'my_button' }) do
+        instance = Class.new(described_class) do
           before_events do
             call_in_before_hook
           end
-        end
+        end.new(type: :button, selector: { id: 'my_button' })
+
         instance.init(page)
         instance
       end
@@ -143,11 +144,12 @@ module PageMagic
 
       context 'method called in before hook' do
         subject do
-          instance = described_class.new(type: :button, selector: { id: 'my_button' }) do
-            after_events do
+          instance = Class.new(described_class) do
+            before_events do
               call_in_after_hook
             end
-          end
+          end.new(type: :button, selector: { id: 'my_button' })
+
           instance.init(page)
           instance
         end

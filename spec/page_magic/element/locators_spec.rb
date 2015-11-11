@@ -15,7 +15,7 @@ module PageMagic
           element_clazz.element :child1, expected_element.selector
           element_clazz.element :child2, id: 'child 2'
 
-          expect(subject.element_by_name(:child1)).to eq(expected_element)
+          expect(subject.element_by_name(:child1).options).to eq(type: :element, selector: { id: 'child' })
         end
 
         context 'element not found' do

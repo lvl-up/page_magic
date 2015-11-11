@@ -12,31 +12,33 @@ module PageMagic
     include SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
     extend Elements, SelectorMethods, Forwardable
 
-    attr_reader :type, :name, :parent_page_element, :browser_element
+    attr_reader :type, :name, :parent_page_element, :browser_element, :before_events, :after_events
+
+    class << self
+      # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the list of
+      # events that this block will be triggered for. The block is run in the scope of the element object
+      def after_events(&block)
+        return @after_hook unless block
+        @after_hook = block
+      end
+
+      # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the list of
+      # events that this block will be triggered for. The block is run in the scope of the element object
+      def before_events(&block)
+        return @before_hook unless block
+        @before_hook = block
+      end
+    end
 
     def initialize(type: :element, selector: {}, prefetched_browser_element: nil, &block)
       @browser_element = prefetched_browser_element
       @selector = selector
 
-      @before_hook = DEFAULT_HOOK
-      @after_hook = DEFAULT_HOOK
+      @before_events = self.class.before_events || DEFAULT_HOOK
+      @after_events = self.class.after_events || DEFAULT_HOOK
       @type = type
       @element_definitions = self.class.element_definitions.dup
       expand(&block) if block
-    end
-
-    # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the list of
-    # events that this block will be triggered for. The block is run in the scope of the element object
-    def after_events(&block)
-      return @after_hook unless block
-      @after_hook = block
-    end
-
-    # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the list of
-    # events that this block will be triggered for. The block is run in the scope of the element object
-    def before_events(&block)
-      return @before_hook unless block
-      @before_hook = block
     end
 
     # @return [Object] the Capybara browser element that this element definition is tied to.
