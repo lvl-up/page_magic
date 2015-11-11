@@ -17,41 +17,41 @@ module PageMagic
     describe '#find' do
       # context 'options supplied to selector' do
       #   it 'passes them on to the cappybara finder method' do
-      #     options = { count: 1 }
+      #     options = {count: 1}
       #     xpath_selector = '//div/input'
       #     expect(page.session.raw_session).to receive(:find).with(:xpath, xpath_selector, options)
       #     described_class.new(type: :text_field,
-      #                         selector: { xpath: xpath_selector }.merge(options)).init(page)
+      #                         selector: {xpath: xpath_selector}.merge(options)).init(page)
       #   end
       # end
       #
       # it 'should find by xpath' do
       #   element = described_class.new(type: :text_field,
-      #                                 selector: { xpath: '//div/label/input' }).init(page)
+      #                                 selector: {xpath: '//div/label/input'}).init(page)
       #   expect(element.value).to eq('filled in')
       # end
       #
       # it 'should locate an element using its id' do
       #   element = described_class.new(type: :text_field,
-      #                                 selector: { id: 'field_id' }).init(page)
+      #                                 selector: {id: 'field_id'}).init(page)
       #   expect(element.value).to eq('filled in')
       # end
       #
       # it 'should locate an element using its name' do
       #   element = described_class.new(type: :text_field,
-      #                                 selector: { name: 'field_name' }).init(page)
+      #                                 selector: {name: 'field_name'}).init(page)
       #   expect(element.value).to eq('filled in')
       # end
       #
       # it 'should locate an element using its label' do
       #   element = described_class.new(type: :text_field,
-      #                                 selector: { label: 'enter text' }).init(page)
+      #                                 selector: {label: 'enter text'}).init(page)
       #   expect(element[:id]).to eq('field_id')
       # end
       #
       # it 'should locate an element using css' do
       #   element = described_class.new(type: :text_field,
-      #                                 selector: { css: "input[name='field_name']" }).init(page)
+      #                                 selector: {css: "input[name='field_name']"}).init(page)
       #   expect(element[:id]).to eq('field_id')
       # end
       #
@@ -62,7 +62,7 @@ module PageMagic
       #
       # it 'should raise errors for unsupported criteria' do
       #   element = described_class.new(type: :link,
-      #                                 selector: { unsupported: '' })
+      #                                 selector: {unsupported: ''})
       #
       #   expect { element.init(page) }.to raise_error(PageMagic::UnsupportedCriteriaException)
       # end
@@ -70,12 +70,12 @@ module PageMagic
       # context 'text selector' do
       #   it 'should locate a link' do
       #     element = described_class.new(type: :link,
-      #                                   selector: { text: 'link in a form' }).init(page)
+      #                                   selector: {text: 'link in a form'}).init(page)
       #     expect(element[:id]).to eq('form_link')
       #   end
       #
       #   it 'should locate a button' do
-      #     element = described_class.new(type: :button, selector: { text: 'a button' }).init(page)
+      #     element = described_class.new(type: :button, selector: {text: 'a button'}).init(page)
       #     expect(element[:id]).to eq('form_button')
       #   end
       # end

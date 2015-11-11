@@ -61,7 +61,7 @@ module PageMagic
       selector ? options[:selector] = selector : options[:prefetched_browser_element] = args.delete_at(0)
 
       add_element_definition(name) do |*e_args|
-        defintion_class = Class.new(section_class) { instance_exec(*e_args[1..-1], &block) }
+        defintion_class = Class.new(section_class) { class_exec(*e_args[1..-1], &block) }
         ElementDefinitionBuilder.new(defintion_class, options)
       end
     end
