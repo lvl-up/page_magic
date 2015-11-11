@@ -77,5 +77,25 @@ module PageMagic
         end
       end
     end
+
+    context 'integration' do
+      include_context :webapp_fixture
+      let(:capybara_session) { Capybara::Session.new(:rack_test, rack_app).tap { |s| s.visit('/elements') } }
+      it 'finds fields' do
+        expect { capybara_session.find(*Query.find(:text_field).build(name: 'field_name')) }.to_not raise_exception
+      end
+
+      it 'finds buttons' do
+        expect { capybara_session.find(*Query.find(:button).build(text: 'a button')) }.to_not raise_exception
+      end
+
+      it 'finds links' do
+        expect { capybara_session.find(*Query.find(:link).build(text: 'a link')) }.to_not raise_exception
+      end
+
+      it 'finds elements' do
+        expect { capybara_session.find(*Query.find(:element).build(name: 'field_name')) }.to_not raise_exception
+      end
+    end
   end
 end
