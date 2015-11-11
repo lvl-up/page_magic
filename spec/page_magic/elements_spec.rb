@@ -47,7 +47,7 @@ module PageMagic
         context 'using a predefined class' do
           it 'should add an element using that class section' do
             subject.element section_class, :page_section, child_selector
-            element_definition_builder = subject.elements(subject).first
+            element_definition_builder = instance.element_by_name(:page_section)
             expect(element_definition_builder.definition_class).to be < section_class
           end
 
@@ -55,7 +55,7 @@ module PageMagic
             it 'defaults the selector to the one on the class' do
               section_class.selector child_selector
               subject.element section_class, :alias
-              element_definition_builder = subject.elements(subject).first
+              element_definition_builder = instance.element_by_name(:alias)
               expect(element_definition_builder.selector).to eq(child_selector)
             end
           end
@@ -71,40 +71,22 @@ module PageMagic
       end
 
       context 'using a block' do
-        # TODO: - this isn't going to be possible use browser_element in on_load instead? or helper methods
-        # context 'browser_element' do
-        #   it 'should be assigned when selector is passed to section method' do
-        #     expected_element = child_element.browser_element.native
-        #
-        #     subject.element :page_section, child_selector do
-        #       extend RSpec::Matchers
-        #       expect(browser_element.native).to eq(expected_element)
-        #     end
-        #
-        #     instance.element_by_name(:page_section)
-        #   end
-        #
-        #   it 'should be assigned when selector is defined in the block passed to the section method' do
-        #     expected_element = child_element
-        #
-        #     subject.element :page_section do
-        #       selector expected_element.selector
-        #       extend RSpec::Matchers
-        #       expect(browser_element.native).to eq(expected_element.browser_element.native)
-        #     end
-        #
-        #     instance.elements(subject)
-        #   end
-        # end
+        it 'passes the parent element in as the last argument' do
+          expected_element = instance
+          subject.element :page_section, child_selector do |_arg1, parent_element|
+            extend RSpec::Matchers
+            expect(parent_element).to eq(expected_element)
+          end
+          instance.element_by_name(:page_section, :arg1)
+        end
 
         it 'should pass args through to the block' do
           subject.element :page_section, child_selector do |arg|
-            arg[:passed_through] = true
+            extend RSpec::Matchers
+            expect(arg).to eq(:arg1)
           end
 
-          arg = {}
-          subject.elements(subject, arg)
-          expect(arg[:passed_through]).to eq(true)
+          instance.element_by_name(:page_section, :arg1)
         end
       end
 
@@ -113,7 +95,7 @@ module PageMagic
           it 'should add a section' do
             subject.element :page_section, :object
 
-            element_defintion_builder = subject.elements(subject).first
+            element_defintion_builder = instance.element_by_name(:page_section)
             expect(element_defintion_builder.element).to eq(:object)
           end
         end

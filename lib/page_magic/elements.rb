@@ -60,20 +60,12 @@ module PageMagic
                   element: args.delete_at(0) }
 
       add_element_definition(name) do |*e_args|
-        defintion_class = Class.new(section_class) { class_exec(*e_args[1..-1], &(block)) }
+        defintion_class = Class.new(section_class) { class_exec(*e_args, &(block)) }
         ElementDefinitionBuilder.new(options.merge(definition_class: defintion_class))
       end
     end
 
     TYPES.each { |type| alias_method type, :element }
-
-    # Get all {Element} definitions
-    # @param [Object] browser_element capybara browser element from which the definitions can be sourced
-    # @param [*Object] args argument to be passed to block used to expand the {Element} definitions
-    # @return [Array] list of {Element} defintions
-    def elements(browser_element, *args)
-      element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
-    end
 
     # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
     #  and {Element} definitions

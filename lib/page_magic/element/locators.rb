@@ -9,10 +9,10 @@ module PageMagic
       # @param [Symbol] name name of the element
       # @return [Element] element definition with the given name
       # @raise [ElementMissingException] raised when element with the given name is not found
-      def element_by_name(name)
+      def element_by_name(name, *args)
         defintion = element_definitions[name]
         fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless defintion
-        defintion.call
+        defintion.call(*args.append(self))
       end
 
       # @return [Array] class level defined element definitions
