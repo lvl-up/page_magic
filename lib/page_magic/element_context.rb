@@ -11,7 +11,16 @@ module PageMagic
     def method_missing(method, *args, &block)
       return page_element.send(method, *args, &block) if page_element.methods.include?(method)
 
-      page_element.element_by_name(method).build(page_element)
+      element_definition_builder = page_element.element_by_name(method)
+      options = element_definition_builder.options
+      element_definition_builder.build(page_element, find(options.delete(:selector), options.delete(:type), options))
+    end
+
+    # @return [Object] the Capybara browser element that this element definition is tied to.
+    def find(selector, type, options)
+      fail UndefinedSelectorException, 'Pass a locator/define one on the class' if selector.empty?
+      query = Element::Query.find(type).build(selector, options)
+      page_element.browser_element.find(*query)
     end
 
     def respond_to?(*args)

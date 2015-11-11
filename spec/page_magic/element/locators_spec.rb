@@ -11,8 +11,8 @@ module PageMagic
 
       describe '#element_by_name' do
         it 'returns the required element' do
-          expected_element = Element.new(type: :element, selector: { id: 'child' })
-          element_clazz.element :child1, expected_element.selector
+          expected_element = Element.new
+          element_clazz.element :child1, id: 'child'
           element_clazz.element :child2, id: 'child 2'
 
           expect(subject.element_by_name(:child1).options).to eq(type: :element, selector: { id: 'child' })

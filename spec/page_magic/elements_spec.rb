@@ -15,12 +15,12 @@ module PageMagic
       subject.new
     end
 
-    let(:child_element) { Element.new(type: :element, selector: { id: 'child' }) }
+    let(:child_element) { Element.new }
 
-    let(:child_selector) { child_element.selector }
+    let(:child_selector) { { id: 'child' } }
 
-    def expected_element(type)
-      Element.new(type: type, selector: child_selector)
+    def expected_element(_type)
+      Element.new
     end
 
     describe '#element' do

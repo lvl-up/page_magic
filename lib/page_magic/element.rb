@@ -34,29 +34,19 @@ module PageMagic
       end
     end
 
-    def initialize(type: :element, selector: {}, prefetched_browser_element: nil, &block)
+    def initialize(prefetched_browser_element: nil, &block)
       @browser_element = prefetched_browser_element
-      @selector = selector
-
       @before_events = self.class.before_events || DEFAULT_HOOK
       @after_events = self.class.after_events || DEFAULT_HOOK
-      @type = type
       @element_definitions = self.class.element_definitions.dup
       expand(&block) if block
     end
 
     # @return [Object] the Capybara browser element that this element definition is tied to.
-    def init(parent_page_element)
-      return @browser_element if @browser_element
+    def init(parent_page_element, browser_element)
+      @browser_element = browser_element
       @parent_page_element = parent_page_element
-
-      fail UndefinedSelectorException, 'Pass a locator/define one on the class' if selector.empty?
-
-      query = Query.find(type).build(query_selector, query_options)
-
-      @browser_element = parent_page_element.browser_element.find(*query).tap do |raw_element|
-        wrap_events(raw_element)
-      end
+      wrap_events(@browser_element)
       self
     end
 
@@ -91,8 +81,8 @@ module PageMagic
 
     def ==(other)
       return false unless other.is_a?(Element)
-      this = [type, selector, before_events, after_events]
-      this == [other.type, other.selector, other.before_events, other.after_events]
+      this = [before_events, after_events]
+      this == [other.before_events, other.after_events]
     end
 
     private
@@ -110,14 +100,6 @@ module PageMagic
 
     def element_context
       ElementContext.new(self)
-    end
-
-    def query_options
-      selector.dup.delete_if { |key, _value| key == selector.keys.first }
-    end
-
-    def query_selector
-      Hash[*selector.first]
     end
 
     def wrap_events(raw_element)
