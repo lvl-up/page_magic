@@ -23,12 +23,6 @@ module PageMagic
     it_behaves_like 'waiter'
     it_behaves_like 'element locator'
 
-    # TODO: needs to be moved to the element_context class find method
-    # it 'raises an error if a selector has not been specified' do
-    #   page_element = described_class.new(type: :element)
-    #   expect { page_element.init(:parent) }.to raise_error(PageMagic::UndefinedSelectorException)
-    # end
-
     describe 'inheriting' do
       it 'lets you create custom elements' do
         custom_element = Class.new(described_class) do

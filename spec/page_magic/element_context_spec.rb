@@ -7,6 +7,7 @@ module PageMagic
         include PageMagic
         url '/elements'
         link(:a_link, text: 'a link')
+        link(:prefetched, Object.new)
       end
     end
 
@@ -68,6 +69,13 @@ module PageMagic
           end
 
           expect(described_class.new(page).page_method).to eq(:called)
+        end
+      end
+
+      context 'element is prefetched' do
+        it 'does not call find' do
+          expect(subject).not_to receive(:find)
+          described_class.new(page).prefetched
         end
       end
     end
