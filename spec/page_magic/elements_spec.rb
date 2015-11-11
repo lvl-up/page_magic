@@ -15,13 +15,7 @@ module PageMagic
       subject.new
     end
 
-    let(:child_element) { Element.new }
-
     let(:child_selector) { { id: 'child' } }
-
-    def expected_element(_type)
-      Element.new
-    end
 
     describe '#element' do
       it 'sets the selector and type' do

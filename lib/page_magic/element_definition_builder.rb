@@ -14,10 +14,8 @@ module PageMagic
     # @param [Element] parent_page_element element containing the element modelled by this builder
     # @param [Object] browser_element capybara browser element corresponding to the element modelled by this builder
     # @return [Element] element definition
-    def build(parent_page_element, browser_element)
-      definition_class.new(options).tap do |definition|
-        definition.init(parent_page_element, browser_element)
-      end
+    def build(browser_element, parent_page_element)
+      definition_class.new(browser_element, parent_page_element)
     end
 
     def ==(other)

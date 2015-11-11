@@ -34,27 +34,13 @@ module PageMagic
       end
     end
 
-    def initialize(prefetched_browser_element: nil, &block)
-      @browser_element = prefetched_browser_element
+    def initialize(browser_element, parent_page_element)
+      @browser_element = browser_element
+      @parent_page_element = parent_page_element
       @before_events = self.class.before_events || DEFAULT_HOOK
       @after_events = self.class.after_events || DEFAULT_HOOK
       @element_definitions = self.class.element_definitions.dup
-      expand(&block) if block
-    end
-
-    # @return [Object] the Capybara browser element that this element definition is tied to.
-    def init(parent_page_element, browser_element)
-      @browser_element = browser_element
-      @parent_page_element = parent_page_element
-      wrap_events(@browser_element)
-      self
-    end
-
-    # expand the element definition by evaluating the given block in the scope of this object
-    # @param [*Object] args list of arguments to be supplied to the given block
-    def expand(*args, &block)
-      instance_exec(*args, &block)
-      self
+      wrap_events(browser_element)
     end
 
     def method_missing(method, *args, &block)
@@ -68,22 +54,11 @@ module PageMagic
       super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
     end
 
-    # @return [Array] class level defined element definitions
-    def element_definitions
-      self.class.element_definitions
-    end
-
     # @!method session
     # get the current session
     # @return [Session] returns the session of the parent page element.
     #  Capybara session
     def_delegator :parent_page_element, :session
-
-    def ==(other)
-      return false unless other.is_a?(Element)
-      this = [before_events, after_events]
-      this == [other.before_events, other.after_events]
-    end
 
     private
 

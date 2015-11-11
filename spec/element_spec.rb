@@ -15,7 +15,7 @@ module PageMagic
     let(:page) { session.current_page }
 
     subject do
-      described_class.new
+      described_class.new(:page_element, page)
     end
 
     it_behaves_like 'session accessor'
@@ -47,26 +47,22 @@ module PageMagic
       end
     end
 
-    describe '#init' do
+    describe '#initialize' do
       let!(:browser) { double('browser') }
 
       it 'sets the parent element' do
-        instance = described_class.new
-        instance.init(page, :browser_element)
-        expect(instance.parent_page_element).to eq(page)
+        instance = described_class.new(page, :parent_page_element)
+        expect(instance.parent_page_element).to eq(:parent_page_element)
       end
     end
 
     describe 'hooks' do
       subject do
-        instance = Class.new(described_class) do
+        Class.new(described_class) do
           before_events do
             call_in_before_hook
           end
-        end.new
-
-        instance.init(page, double('button', click: true))
-        instance
+        end.new(double('button', click: true), page)
       end
       context 'method called in before hook' do
         it 'calls methods on the page element' do
@@ -77,14 +73,11 @@ module PageMagic
 
       context 'method called in after hook' do
         subject do
-          instance = Class.new(described_class) do
-            before_events do
+          Class.new(described_class) do
+            after_events do
               call_in_after_hook
             end
-          end.new
-
-          instance.init(page, double('button', click: true))
-          instance
+          end.new(double('button', click: true), page)
         end
 
         it 'calls methods on the page element' do
@@ -118,10 +111,10 @@ module PageMagic
       subject do
         Class.new(described_class) do
           element :sub_element, css: '.sub-element'
-        end.new(prefetched_browser_element: double(element_method: ''))
+        end.new(double(element_method: ''), :parent_page_element)
       end
       it 'checks for methods on self' do
-        expect(subject.respond_to?(:expand)).to eq(true)
+        expect(subject.respond_to?(:session)).to eq(true)
       end
 
       it 'checks against registered elements' do
@@ -135,7 +128,6 @@ module PageMagic
 
     describe '#session' do
       it 'should have a handle to the session' do
-        subject.init(page, :element)
         expect(subject.session).to eq(page.session)
       end
     end

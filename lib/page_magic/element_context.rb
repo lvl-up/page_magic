@@ -13,7 +13,7 @@ module PageMagic
 
       builder = page_element.element_by_name(method)
       browser_element = find(builder.selector, builder.type, builder.options)
-      builder.build(page_element, browser_element)
+      builder.build(browser_element, page_element)
     end
 
     # @return [Object] the Capybara browser element that this element definition is tied to.
