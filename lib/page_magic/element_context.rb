@@ -11,9 +11,9 @@ module PageMagic
     def method_missing(method, *args, &block)
       return page_element.send(method, *args, &block) if page_element.methods.include?(method)
 
-      element_definition_builder = page_element.element_by_name(method)
-      options = element_definition_builder.options
-      element_definition_builder.build(page_element, find(options.delete(:selector), options.delete(:type), options))
+      builder = page_element.element_by_name(method)
+      browser_element = find(builder.selector, builder.type, builder.options)
+      builder.build(page_element, browser_element)
     end
 
     # @return [Object] the Capybara browser element that this element definition is tied to.

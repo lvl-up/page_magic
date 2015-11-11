@@ -11,11 +11,13 @@ module PageMagic
 
       describe '#element_by_name' do
         it 'returns the required element' do
-          expected_element = Element.new
-          element_clazz.element :child1, id: 'child'
+          selector = { id: 'child' }
+          element_clazz.element :child1, selector
           element_clazz.element :child2, id: 'child 2'
 
-          expect(subject.element_by_name(:child1).options).to eq(type: :element, selector: { id: 'child' })
+          expected_builder = ElementDefinitionBuilder.new(definition_class: Element, type: :element, selector: selector)
+
+          expect(subject.element_by_name(:child1)).to eq(expected_builder)
         end
 
         context 'element not found' do

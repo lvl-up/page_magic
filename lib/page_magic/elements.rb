@@ -51,18 +51,16 @@ module PageMagic
     #  @param [ElementClass] element_class a custom class of element that inherits {Element}.
     #  @param [Hash] selector a key value pair defining the method for locating this element. See above for details
     def element(*args, &block)
-      block ||= proc {}
-
       section_class = remove_argument(args, Class) || Element
-      selector = compute_selector(args, section_class)
       name = compute_name(args, section_class)
-
-      options = { type: __callee__ }
-      selector ? options[:selector] = selector : options[:prefetched_browser_element] = args.delete_at(0)
+      options = { type: __callee__,
+                  selector: compute_selector(args, section_class),
+                  options: compute_argument(args, Hash),
+                  element: args.delete_at(0) }
 
       add_element_definition(name) do |*e_args|
-        defintion_class = Class.new(section_class) { class_exec(*e_args[1..-1], &block) }
-        ElementDefinitionBuilder.new(defintion_class, options)
+        defintion_class = Class.new(section_class) { class_exec(*e_args[1..-1], &(block || proc {})) }
+        ElementDefinitionBuilder.new(options.merge(definition_class: defintion_class))
       end
     end
 
@@ -105,6 +103,10 @@ module PageMagic
 
     def method_added(method)
       fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
+    end
+
+    def compute_argument(args, clazz)
+      remove_argument(args, clazz) || clazz.new
     end
 
     def remove_argument(args, clazz)

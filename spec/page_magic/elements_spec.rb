@@ -25,9 +25,20 @@ module PageMagic
 
     describe '#element' do
       it 'sets the selector and type' do
-        expected_definition = ElementDefinitionBuilder.new(Element, type: :text_field, selector: child_selector)
+        expected_definition = ElementDefinitionBuilder.new(definition_class: Element,
+                                                           type: :text_field,
+                                                           selector: child_selector,
+                                                           options: {})
         subject.text_field :alias, child_selector
         expect(instance.element_by_name(:alias)).to eq(expected_definition)
+      end
+
+      context 'options' do
+        it 'puts them on the builder' do
+          options = { my: :options }
+          subject.text_field :alias, child_selector, options
+          expect(instance.element_by_name(:alias).options).to eq(options)
+        end
       end
 
       context 'complex elements' do
@@ -51,7 +62,7 @@ module PageMagic
               section_class.selector child_selector
               subject.element section_class, :alias
               element_definition_builder = subject.elements(subject).first
-              expect(element_definition_builder.options[:selector]).to eq(child_selector)
+              expect(element_definition_builder.selector).to eq(child_selector)
             end
           end
 
@@ -109,7 +120,7 @@ module PageMagic
             subject.element :page_section, :object
 
             element_defintion_builder = subject.elements(subject).first
-            expect(element_defintion_builder.options[:prefetched_browser_element]).to eq(:object)
+            expect(element_defintion_builder.element).to eq(:object)
           end
         end
       end

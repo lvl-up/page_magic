@@ -15,22 +15,22 @@ module PageMagic
     attr_reader :type, :name, :parent_page_element, :browser_element, :before_events, :after_events
 
     class << self
-      # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the list of
-      # events that this block will be triggered for. The block is run in the scope of the element object
+      # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the
+      # list of events that this block will be triggered for. The block is run in the scope of the element object
       def after_events(&block)
         return @after_hook unless block
         @after_hook = block
       end
 
-      # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the list of
-      # events that this block will be triggered for. The block is run in the scope of the element object
+      # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the
+      # list of events that this block will be triggered for. The block is run in the scope of the element object
       def before_events(&block)
         return @before_hook unless block
         @before_hook = block
       end
 
       def ==(other)
-        (other.is_a?(Element) || other < Element) && element_definitions == other.element_definitions
+        other <= PageMagic::Element && element_definitions == other.element_definitions
       end
     end
 
