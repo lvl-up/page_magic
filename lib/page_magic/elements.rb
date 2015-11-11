@@ -7,6 +7,12 @@ module PageMagic
       @options = options
     end
 
+    def build(page_element)
+      definition_class.new(options).tap do |definition|
+        definition.init(page_element)
+      end
+    end
+
     def ==(other)
       other.is_a?(ElementDefinitionBuilder) && options == other.options
     end
@@ -27,11 +33,9 @@ module PageMagic
     TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
 
     class << self
-      def included(clazz)
+      def extended(clazz)
         clazz.extend(InheritanceHooks)
       end
-
-      alias_method :extended, :included
     end
 
     # Creates an element defintion.

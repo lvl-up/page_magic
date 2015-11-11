@@ -15,7 +15,6 @@ module PageMagic
       subject.new
     end
 
-    # subject { Element.new(page, type: :element, selector: { id: 'parent' }) }
     let(:child_element) { Element.new(type: :element, selector: { id: 'child' }) }
 
     let(:child_selector) { child_element.selector }
@@ -26,7 +25,7 @@ module PageMagic
 
     describe '#element' do
       it 'sets the selector and type' do
-        expected_definition = ElementDefinitionBuilder.new(anything, type: :text_field, selector: child_selector)
+        expected_definition = ElementDefinitionBuilder.new(Element, type: :text_field, selector: child_selector)
         subject.text_field :alias, child_selector
         expect(instance.element_by_name(:alias)).to eq(expected_definition)
       end

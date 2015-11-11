@@ -28,6 +28,10 @@ module PageMagic
         return @before_hook unless block
         @before_hook = block
       end
+
+      def ==(other)
+        (other.is_a?(Element) || other < Element) && element_definitions == other.element_definitions
+      end
     end
 
     def initialize(type: :element, selector: {}, prefetched_browser_element: nil, &block)
@@ -53,6 +57,7 @@ module PageMagic
       @browser_element = parent_page_element.browser_element.find(*query).tap do |raw_element|
         wrap_events(raw_element)
       end
+      self
     end
 
     # expand the element definition by evaluating the given block in the scope of this object
