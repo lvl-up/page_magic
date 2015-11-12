@@ -18,6 +18,8 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 - [Starting a session](#starting-a-session)
 - [Defining Pages](#defining-pages)
   - [Elements](#elements)
+    - [Interacting with elements](#interacting-with-elements)
+      -  [Multple Results](#multiple-results)
     - [Sub elements](#sub-elements)
     - [Custom elements](#custom-elements)
   - [Hooks](#hooks)
@@ -77,6 +79,16 @@ After visiting a page with a PageMagic session, you can access all of the elemen
 session.username.set 'joe@blogs.com'
 session.password.set 'passw0rd'
 session.login_button.click
+```
+#### Multple Results
+Where an element has been scoped to return multple results, these will be returned in an array. These elements can be defined
+using all of the same features as described in this readme and behave in exactly the same way.
+```ruby
+class LoginPage
+  element :links, css: 'a'
+end
+
+session.link => Array<Element> 
 ```
 
 ### Sub Elements
