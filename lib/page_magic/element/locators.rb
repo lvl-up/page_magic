@@ -3,7 +3,7 @@ module PageMagic
     # contains method for finding element definitions
     module Locators
       # message used when raising {ElementMissingException} from methods within this module
-      ELEMENT_MISSING_MSG = 'Could not find: %s'
+      ELEMENT_NOT_DEFINED_MSG = 'Element not defined: %s'
 
       # find an element definition based on its name
       # @param [Symbol] name name of the element
@@ -11,7 +11,7 @@ module PageMagic
       # @raise [ElementMissingException] raised when element with the given name is not found
       def element_by_name(name, *args)
         defintion = element_definitions[name]
-        fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless defintion
+        fail ElementMissingException, (ELEMENT_NOT_DEFINED_MSG % name) unless defintion
         defintion.call(*args.append(self))
       end
 

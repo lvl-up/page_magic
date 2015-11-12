@@ -23,30 +23,20 @@ module PageMagic
       double('session', raw_session: double('browser'))
     end
 
-    describe '#find' do
-      context 'options supplied to selector' do
-        it 'passes them on to the cappybara finder method' do
-          options = { count: 1 }
-          xpath_selector = '//div/input'
-          expect(page.browser_element).to receive(:find).with(:xpath, xpath_selector, count: 1).and_call_original
-          expect(subject.find({ xpath: xpath_selector }, :text_field, options).value).to eq('a button')
-        end
-      end
-
-      it 'builds a query to run against the browser' do
-        options = {}
-        selector = { xpath: '//div/input' }
-        expect(Element::Query).to receive(:find).with(:text_field).and_call_original
-        expect(Element::Query::TEXT_FIELD).to receive(:build).with(selector, options).and_call_original
-        expect(subject.find(selector, :text_field, options).value).to eq('a button')
-      end
-    end
-
     describe '#method_missing' do
       context 'method is a element defintion' do
         it 'returns the sub page element' do
           element = described_class.new(page).a_link
           expect(element.text).to eq('a link')
+        end
+
+        it 'passes arguments through to the element definition' do
+          elements_page.link :pass_through, css: 'a' do |args|
+            args[:passed_through] = true
+          end
+          args = {}
+          described_class.new(page).pass_through(args)
+          expect(args[:passed_through]).to eq(true)
         end
 
         it 'does not evaluate any of the other definitions' do
@@ -57,6 +47,22 @@ module PageMagic
           end
 
           described_class.new(page).a_link
+        end
+
+        context 'more than one match found in the browser' do
+          it 'returns an array of element definitions' do
+            elements_page.link :links, css: 'a'
+            links = described_class.new(page).links
+            expect(links.find_all { |e| e.class == Element }.size).to eq(2)
+            expect(links.collect(&:text)).to eq(['a link', 'link in a form'])
+          end
+        end
+        context 'no results found' do
+          it 'raises an error' do
+            elements_page.link :missing, css: 'wrong'
+            expected_message = described_class::ELEMENT_NOT_FOUND_MSG % 'css "wrong"'
+            expect { described_class.new(page).missing }.to raise_exception(ElementMissingException, expected_message)
+          end
         end
       end
 

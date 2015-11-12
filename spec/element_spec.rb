@@ -14,6 +14,8 @@ module PageMagic
 
     let(:page) { session.current_page }
 
+    # let!(:browser) { double('browser') }
+
     subject do
       described_class.new(:page_element, page)
     end
@@ -41,9 +43,27 @@ module PageMagic
       end
     end
 
-    describe '#initialize' do
-      let!(:browser) { double('browser') }
+    describe 'EVENT_TYPES' do
+      context 'methods created' do
+        it 'creates methods for each of the event types' do
+          missing = described_class::EVENT_TYPES.find_all { |event| !subject.respond_to?(event) }
+          expect(missing).to be_empty
+        end
 
+        context 'method called' do
+          let(:browser_element) { instance_double(Capybara::Node::Element) }
+          subject do
+            described_class.new(browser_element, page)
+          end
+          it 'calls the browser_element passing on all args' do
+            expect(browser_element).to receive(:select).with(:args)
+            subject.select :args
+          end
+        end
+      end
+    end
+
+    describe '#initialize' do
       it 'sets the parent element' do
         instance = described_class.new(page, :parent_page_element)
         expect(instance.parent_page_element).to eq(:parent_page_element)

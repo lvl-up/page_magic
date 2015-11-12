@@ -6,6 +6,7 @@ module PageMagic
 
     def initialize(definition_class:, selector:, type:, options:{}, element: nil)
       unless element
+        selector ||= definition_class.selector
         fail UndefinedSelectorException, INVALID_SELECTOR_MSG if selector.nil? || selector.empty?
       end
 
@@ -14,6 +15,11 @@ module PageMagic
       @type = type
       @options = options
       @element = element
+    end
+
+    # @return [Capybara::Query] query to find this element in the browser
+    def build_query
+      Element::Query.find(type).build(selector, options)
     end
 
     # Create new instance of the ElementDefinition modeled by this builder

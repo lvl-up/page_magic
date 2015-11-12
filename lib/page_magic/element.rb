@@ -43,8 +43,14 @@ module PageMagic
       wrap_events(browser_element)
     end
 
+    EVENT_TYPES.each do |method|
+      define_method method do |*args|
+        browser_element.send(method, *args)
+      end
+    end
+
     def method_missing(method, *args, &block)
-      ElementContext.new(self).send(method, args.first, &block)
+      ElementContext.new(self).send(method, *args, &block)
     rescue ElementMissingException
       return super unless browser_element.respond_to?(method)
       browser_element.send(method, *args, &block)

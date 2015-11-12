@@ -22,7 +22,7 @@ module PageMagic
 
         context 'element not found' do
           it 'raises an error' do
-            expected_message = (described_class::ELEMENT_MISSING_MSG % :child)
+            expected_message = (described_class::ELEMENT_NOT_DEFINED_MSG % :child)
             command = proc { subject.element_by_name(:child) }
             expect(&command).to raise_exception ElementMissingException, expected_message
           end

@@ -1,6 +1,7 @@
 module PageMagic
   # class ElementContext - resolves which element definition to use when accessing the browser.
   class ElementContext
+    ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'
     attr_reader :page_element
 
     def initialize(page_element)
@@ -8,27 +9,37 @@ module PageMagic
     end
 
     # acts as proxy to element defintions defined on @page_element
+    # @return [Object] result of callng method on page_element
+    # @return [Element] animated page element containing located browser element
+    # @return [Array<Element>] array of elements if more that one result was found the browser
     def method_missing(method, *args, &block)
       return page_element.send(method, *args, &block) if page_element.methods.include?(method)
 
-      builder = page_element.element_by_name(method)
-      browser_element = builder.element || find(builder.selector, builder.type, builder.options)
+      builder = page_element.element_by_name(method, *args)
 
-      builder.build(browser_element, page_element)
-    end
+      prefecteched_element = builder.element
+      return builder.build(prefecteched_element, page_element) if prefecteched_element
 
-    # Find an element inside page_element
-    # @param [Hash] selector selector to be used. See {Selector} for valid types
-    # @param [Symbol] type type of the element being searched for
-    # @param [Hash] options additional options be passed to Capybara
-    # @return [Object] the Capybara browser element that this element definition is tied to.
-    def find(selector, type, options)
-      query = Element::Query.find(type).build(selector, options)
-      page_element.browser_element.find(*query)
+      elements = find(builder)
+      elements.size == 1 ? elements.first : elements
     end
 
     def respond_to?(*args)
       page_element.element_definitions.keys.include?(args.first)
+    end
+
+    private
+
+    def find(builder)
+      query_args = builder.build_query
+      result = page_element.browser_element.all(*query_args)
+
+      if result.size == 0
+        query = Capybara::Query.new(*query_args)
+        fail ElementMissingException, ELEMENT_NOT_FOUND_MSG % query.description
+      end
+
+      result.to_a.collect { |e| builder.build(e, page_element) }
     end
   end
 end
