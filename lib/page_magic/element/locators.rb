@@ -1,4 +1,5 @@
 module PageMagic
+  #
   class Element
     # contains method for finding element definitions
     module Locators
