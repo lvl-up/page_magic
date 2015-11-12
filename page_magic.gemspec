@@ -52,6 +52,7 @@ Gem::Specification.new do |s|
     "lib/page_magic/wait_methods.rb",
     "lib/page_magic/watcher.rb",
     "lib/page_magic/watchers.rb",
+    "page_magic.gemspec",
     "spec/element_spec.rb",
     "spec/page_magic/class_methods_spec.rb",
     "spec/page_magic/driver_spec.rb",
@@ -90,7 +91,7 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<capybara>, ["= 2.5.0"])
+      s.add_runtime_dependency(%q<capybara>, [">= 2.5"])
       s.add_runtime_dependency(%q<activesupport>, ["~> 4"])
       s.add_runtime_dependency(%q<wait>, ["~> 0"])
       s.add_development_dependency(%q<jeweler>, ["~> 2.0"])
@@ -99,7 +100,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<redcarpet>, ["~> 3.3"])
       s.add_development_dependency(%q<github-markup>, ["~> 1.4"])
     else
-      s.add_dependency(%q<capybara>, ["= 2.5.0"])
+      s.add_dependency(%q<capybara>, [">= 2.5"])
       s.add_dependency(%q<activesupport>, ["~> 4"])
       s.add_dependency(%q<wait>, ["~> 0"])
       s.add_dependency(%q<jeweler>, ["~> 2.0"])
@@ -109,7 +110,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<github-markup>, ["~> 1.4"])
     end
   else
-    s.add_dependency(%q<capybara>, ["= 2.5.0"])
+    s.add_dependency(%q<capybara>, [">= 2.5"])
     s.add_dependency(%q<activesupport>, ["~> 4"])
     s.add_dependency(%q<wait>, ["~> 0"])
     s.add_dependency(%q<jeweler>, ["~> 2.0"])
