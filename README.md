@@ -33,6 +33,7 @@ Give it a try and let us know what you think! There will undoubtedly be things t
   - [Method watchers](#method-watchers)
   - [Simple watchers](#simple-watchers)
   - [Custom watchers](#custom-watchers)
+- [Waiting]
 - [Drivers](#drivers)
 - [Pulling it all together](#pulling-it-all-together)
 
@@ -151,7 +152,9 @@ end
 ```
 
 ## Hooks
-PageMagic provides hooks to allow you to interact at the right moments with your pages
+PageMagic provides hooks to allow you to interact at the right moments with your pages.
+
+**Note:** with hooks you may well find PageMagic's [watchers](#watchers) useful.
 
 ### On load hook
 PageMagic lets you define an on_load hook for your pages. This lets you write any custom wait logic you might need 
@@ -295,6 +298,9 @@ element :product_row, css '.cta' do
   end
 end
 ```
+
+# Waiting
+It's inevitable that if there is JavaScript on the page that you are going to have to wait for things to happen before you can move on. PageMagic supplies the `wait_until` method that can be used anywhere you might need it. The wait_until method takes a block that it will execute until either that block returns true or the timeout occurs. See the method docs for details on configuring timeouts and retry intervals.
 
 # Drivers
 ## Registering a custom driver
