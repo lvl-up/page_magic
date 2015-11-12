@@ -154,7 +154,9 @@ end
 ## Hooks
 PageMagic provides hooks to allow you to interact at the right moments with your pages.
 
-**Note:** with hooks you may well find PageMagic's [watchers](#watchers) useful.
+**Note:** 
+- with hooks you may well find PageMagic's [watchers](#watchers) useful.
+- The following examples wait for actions to happen. You can of course write you own wait code or try out our [wait_until](#waiting) helper:)
 
 ### On load hook
 PageMagic lets you define an on_load hook for your pages. This lets you write any custom wait logic you might need 
@@ -164,7 +166,7 @@ class LoginPage
   # ... code defining elements as shown above
   
   on_load do
-    # wait code here
+    wait_until{login_fields_have_appeared?}
   end
 end
 ```
@@ -173,7 +175,7 @@ end
 Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_events` and `after_events` hooks that you use to perform custom actions and wait for things to happen.
 
 ```ruby
-class MessagePage
+class EmailMessagePage
   include PageMagic
   ## code defining other elements, such as subject and body
   
