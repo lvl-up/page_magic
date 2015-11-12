@@ -15,6 +15,7 @@ Well PageMagic might just be the answer!
 Give it a try and let us know what you think! There will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
 # Contents
 - [Installation](#installation)
+- [Quick Start](#quick-start)
 - [Defining Pages](#defining-pages)
   - [Elements](#elements)
     - [Interacting with elements](#interacting-with-elements)
@@ -36,7 +37,34 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 - [Pulling it all together](#pulling-it-all-together)
 
 # Installation
-`gem install page_magic --pre`
+`gem install page_magic`
+
+# Quick Start
+Getting started with PageMagic is as easy, try running this:
+```ruby
+require 'page_magic'
+
+class Google
+  include PageMagic
+  url 'https://www.google.com'
+
+  text_field :search_field, name: 'q'
+  button :search_button, name: 'btnG'
+
+  def search term
+    search_field.set term
+    search_button.click
+  end
+end
+
+google = Google.visit(browser: :chrome)
+google.search('page_magic')
+```
+This example defines a simple page to represent Google's search page, visits it and performs a search. 
+
+This code models a single page and will let you [interact](#interacting-with-elements) with the [elements](#elements) defined on it as well as use the [helper method](Helpers) we defined.
+
+You can do lots with PageMagic including [mapping pages](#page-mapping) to a [session](#starting-a-session) so that they are fluidly switched in for you. You can even define [hooks](#hooks) to run when ever a element is interacted with. So what are you wating for? there' no place better to start than the [beginning](#defining-pages). Have fun! :)
 
 # Defining Pages
 To define something that PageMagic can work with, simply include PageMagic in to a class.
