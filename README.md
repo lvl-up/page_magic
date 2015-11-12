@@ -15,7 +15,6 @@ Well PageMagic might just be the answer!
 Give it a try and let us know what you think! There will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
 # Contents
 - [Installation](#installation)
-- [Starting a session](#starting-a-session)
 - [Defining Pages](#defining-pages)
   - [Elements](#elements)
     - [Interacting with elements](#interacting-with-elements)
@@ -27,30 +26,17 @@ Give it a try and let us know what you think! There will undoubtedly be things t
     - [On load hook](#on-load-hook)
   - [Helper Methods](#helper-methods)
   - [Dynamic Selectors](#dynamic-selectors)
+- [Starting a session](#starting-a-session)
+- [Page mapping](#page-mapping)
 - [Watchers](#watchers)
   - [Method watchers](#method-watchers)
   - [Simple watchers](#simple-watchers)
   - [Custom watchers](#custom-watchers)
-- [Page mapping](#page-mapping)
 - [Drivers](#drivers)
 - [Pulling it all together](#pulling-it-all-together)
 
 # Installation
 `gem install page_magic --pre`
-
-# Starting a session
-To start a PageMagic session simply decide what browser you want to use and pass it to PageMagic's `.session` method
-```ruby
-session = PageMagic.session(browser: :chrome, url: 'https://21st-century-mail.com')
-```
-Out of the box, PageMagic knows how to work with:
-- Chrome and Firefox
-- poltergeist
-- RackTest - Read more on testing rack compliant object's directly later on
-
-Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register any Capybara specific driver you want. See [below](#registering-a-custom-driver) for how to do this.
-
-**Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
 
 # Defining Pages
 To define something that PageMagic can work with, simply include PageMagic in to a class.
@@ -206,6 +192,30 @@ Here we have defined the 'message' element using a block that takes subject argu
 session.message(subject: 'test message')
 ```
 
+# Starting a session
+To start a PageMagic session simply decide what browser you want to use and pass it to PageMagic's `.session` method
+```ruby
+session = PageMagic.session(browser: :chrome, url: 'https://21st-century-mail.com')
+```
+Out of the box, PageMagic knows how to work with:
+- Chrome and Firefox
+- poltergeist
+- RackTest - Read more on testing rack compliant object's directly later on
+
+Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register any Capybara specific driver you want. See [below](#registering-a-custom-driver) for how to do this.
+
+**Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
+
+# Page mapping
+With PageMagic you can map which pages should be used to handle which URL paths. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
+```ruby
+# define what pages map to what
+browser.define_page_mappings %r{/messages/\d+} => MessagePage,
+                             '/login' => LoginPage,
+                             '/' => MailBox
+```
+You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping paths that that starts with '/messages/' and are followed by one ore more digits to the `MessagePage` class.
+
 # Watchers
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
 things have changed. 
@@ -257,15 +267,6 @@ element :product_row, css '.cta' do
   end
 end
 ```
-# Page mapping
-With PageMagic you can map which pages should be used to handle which URL paths. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
-```ruby
-# define what pages map to what
-browser.define_page_mappings %r{/messages/\d+} => MessagePage,
-                             '/login' => LoginPage,
-                             '/' => MailBox
-```
-You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping paths that that starts with '/messages/' and are followed by one ore more digits to the `MessagePage` class.
 
 # Drivers
 ## Registering a custom driver
