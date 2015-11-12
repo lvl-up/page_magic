@@ -17,6 +17,10 @@ module PageMagic
       builder.build(browser_element, page_element)
     end
 
+    # Find an element inside page_element
+    # @param [Hash] selector selector to be used. See {Selector} for valid types
+    # @param [Symbol] type type of the element being searched for
+    # @param [Hash] options additional options be passed to Capybara
     # @return [Object] the Capybara browser element that this element definition is tied to.
     def find(selector, type, options)
       query = Element::Query.find(type).build(selector, options)
