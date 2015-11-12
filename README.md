@@ -33,7 +33,7 @@ Give it a try and let us know what you think! There will undoubtedly be things t
   - [Method watchers](#method-watchers)
   - [Simple watchers](#simple-watchers)
   - [Custom watchers](#custom-watchers)
-- [Waiting]
+- [Waiting](#waiting)
 - [Drivers](#drivers)
 - [Pulling it all together](#pulling-it-all-together)
 
