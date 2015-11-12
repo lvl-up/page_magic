@@ -1,3 +1,4 @@
+require 'capybara/query'
 module PageMagic
   class Element
     # class Query - models overall queries for Capybara, queries can include:

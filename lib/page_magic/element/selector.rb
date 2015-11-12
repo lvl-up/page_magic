@@ -14,12 +14,13 @@ module PageMagic
         end
       end
 
-      attr_reader :name, :formatter, :supports_type
+      attr_reader :name, :formatter, :exact, :supports_type
 
-      def initialize(selector = nil, supports_type: false, &formatter)
+      def initialize(selector = nil, supports_type: false, exact: false, &formatter)
         @name = selector
         @formatter = formatter || proc { |arg| arg }
         @supports_type = supports_type
+        @exact = exact
       end
 
       # Build selector query parameters for Capybara's find method
@@ -30,12 +31,13 @@ module PageMagic
           array << element_type if supports_type
           array << name if name
           array << formatter.call(locator)
+          array << { exact: true } if exact
         end
       end
 
       XPATH = Selector.new(:xpath, supports_type: false)
       ID = Selector.new(:id, supports_type: false)
-      LABEL = Selector.new(:field, supports_type: false)
+      LABEL = Selector.new(:field, supports_type: false, exact: true)
 
       CSS = Selector.new(supports_type: false)
       TEXT = Selector.new(supports_type: true)

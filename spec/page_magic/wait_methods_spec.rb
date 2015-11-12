@@ -1,4 +1,3 @@
-# rubocop:disable Lint/HandleExceptions
 module PageMagic
   describe WaitMethods do
     subject do
@@ -16,11 +15,7 @@ module PageMagic
     it 'should keep trying for a specified period' do
       start_time = Time.now
 
-      begin
-        subject.wait_until(default_options) { false }
-      rescue TimeoutException
-        #   This is expected
-      end
+      expect { subject.wait_until(default_options) { false } }.to raise_exception TimeoutException
 
       expect(Time.now - default_options[:timeout_after]).to be > start_time
     end
@@ -34,13 +29,11 @@ module PageMagic
     context 'retry time specified' do
       it 'retries at the given interval' do
         count = 0
-        begin
+        expect do
           subject.wait_until(timeout_after: default_options[:timeout_after] * 2, retry_every: 0.1) do
             count += 1
           end
-        rescue TimeoutException
-          #   This is expected
-        end
+        end.to raise_exception TimeoutException
         expect(count).to eq(2)
       end
     end

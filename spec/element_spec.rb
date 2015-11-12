@@ -14,18 +14,16 @@ module PageMagic
 
     let(:page) { session.current_page }
 
+    # let!(:browser) { double('browser') }
+
     subject do
-      described_class.new(:help, page, type: :link, selector: :selector)
+      described_class.new(:page_element, page)
     end
 
     it_behaves_like 'session accessor'
     it_behaves_like 'element watcher'
     it_behaves_like 'waiter'
-
-    it 'raises an error if a selector has not been specified' do
-      page_element = described_class.new(:name, Object.new, type: :element)
-      expect { page_element.browser_element }.to raise_error(PageMagic::UndefinedSelectorException)
-    end
+    it_behaves_like 'element locator'
 
     describe 'inheriting' do
       it 'lets you create custom elements' do
@@ -45,117 +43,58 @@ module PageMagic
       end
     end
 
-    describe '#browser_element' do
-      let!(:browser) { double('browser') }
-
-      context 'options supplied to selector' do
-        it 'passes them on to the cappybara finder method' do
-          options = { count: 1 }
-          xpath_selector = '//div/input'
-          expect(page.session.raw_session).to receive(:find).with(:xpath, xpath_selector, options)
-          described_class.new(:my_input,
-                              page,
-                              type: :text_field,
-                              selector: { xpath: xpath_selector }.merge(options)).browser_element
-        end
-      end
-
-      it 'should find by xpath' do
-        element = described_class.new(:my_input,
-                                      page,
-                                      type: :text_field,
-                                      selector: { xpath: '//div/label/input' }).browser_element
-        expect(element.value).to eq('filled in')
-      end
-
-      it 'should locate an element using its id' do
-        element = described_class.new(:my_input,
-                                      page,
-                                      type: :text_field,
-                                      selector: { id: 'field_id' }).browser_element
-        expect(element.value).to eq('filled in')
-      end
-
-      it 'should locate an element using its name' do
-        element = described_class.new(:my_input,
-                                      page,
-                                      type: :text_field,
-                                      selector: { name: 'field_name' }).browser_element
-        expect(element.value).to eq('filled in')
-      end
-
-      it 'should locate an element using its label' do
-        element = described_class.new(:my_input,
-                                      page,
-                                      type: :text_field,
-                                      selector: { label: 'enter text' }).browser_element
-        expect(element[:id]).to eq('field_id')
-      end
-
-      it 'should locate an element using css' do
-        element = described_class.new(:my_input,
-                                      page,
-                                      type: :text_field,
-                                      selector: { css: "input[name='field_name']" }).browser_element
-        expect(element[:id]).to eq('field_id')
-      end
-
-      it 'should return a prefetched value' do
-        element = described_class.new(:help, page, type: :link, prefetched_browser_element: :prefetched_object)
-        expect(element.browser_element).to eq(:prefetched_object)
-      end
-
-      it 'should raise errors for unsupported criteria' do
-        element = described_class.new(:my_link,
-                                      page,
-                                      type: :link,
-                                      selector: { unsupported: '' })
-
-        expect { element.browser_element }.to raise_error(PageMagic::UnsupportedCriteriaException)
-      end
-
-      context 'text selector' do
-        it 'should locate a link' do
-          element = described_class.new(:my_link,
-                                        page,
-                                        type: :link,
-                                        selector: { text: 'link in a form' }).browser_element
-          expect(element[:id]).to eq('form_link')
+    describe 'EVENT_TYPES' do
+      context 'methods created' do
+        it 'creates methods for each of the event types' do
+          missing = described_class::EVENT_TYPES.find_all { |event| !subject.respond_to?(event) }
+          expect(missing).to be_empty
         end
 
-        it 'should locate a button' do
-          element = described_class.new(:my_button, page, type: :button, selector: { text: 'a button' }).browser_element
-          expect(element[:id]).to eq('form_button')
+        context 'method called' do
+          let(:browser_element) { instance_double(Capybara::Node::Element) }
+          subject do
+            described_class.new(browser_element, page)
+          end
+          it 'calls the browser_element passing on all args' do
+            expect(browser_element).to receive(:select).with(:args)
+            subject.select :args
+          end
         end
+      end
+    end
+
+    describe '#initialize' do
+      it 'sets the parent element' do
+        instance = described_class.new(page, :parent_page_element)
+        expect(instance.parent_page_element).to eq(:parent_page_element)
       end
     end
 
     describe 'hooks' do
       subject do
-        described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
+        Class.new(described_class) do
           before_events do
             call_in_before_hook
           end
-        end
+        end.new(double('button', click: true), page)
       end
       context 'method called in before hook' do
         it 'calls methods on the page element' do
-          expect(page.browser).to receive(:find).and_return(double('button', click: true))
           expect(subject).to receive(:call_in_before_hook)
           subject.click
         end
       end
 
-      context 'method called in before hook' do
+      context 'method called in after hook' do
         subject do
-          described_class.new(:my_button, page, type: :button, selector: { id: 'my_button' }) do
+          Class.new(described_class) do
             after_events do
               call_in_after_hook
             end
-          end
+          end.new(double('button', click: true), page)
         end
+
         it 'calls methods on the page element' do
-          expect(page.browser).to receive(:find).and_return(double('button', click: true))
           expect(subject).to receive(:call_in_after_hook)
           subject.click
         end
@@ -184,15 +123,12 @@ module PageMagic
 
     describe '#respond_to?' do
       subject do
-        described_class.new(:name,
-                            Object.new,
-                            type: :element,
-                            prefetched_browser_element: double(element_method: '')) do
+        Class.new(described_class) do
           element :sub_element, css: '.sub-element'
-        end
+        end.new(double(element_method: ''), :parent_page_element)
       end
       it 'checks for methods on self' do
-        expect(subject.respond_to?(:expand)).to eq(true)
+        expect(subject.respond_to?(:session)).to eq(true)
       end
 
       it 'checks against registered elements' do
@@ -201,41 +137,6 @@ module PageMagic
 
       it 'checks for the method of the browser_element' do
         expect(subject.respond_to?(:element_method)).to eq(true)
-      end
-    end
-
-    describe '#section?' do
-      context 'element definitions exist' do
-        subject do
-          described_class.new(:my_link, page, type: :button, selector: { text: 'a button' }) do
-            element :thing, text: 'text'
-          end
-        end
-        it 'returns true' do
-          expect(subject.section?).to eq(true)
-        end
-      end
-
-      context 'method defined' do
-        subject do
-          described_class.new(:my_link, :page, type: :link, selector: { text: 'my link' }) do
-            def custom_method
-            end
-          end
-        end
-
-        it 'returns true' do
-          expect(subject.section?).to eq(true)
-        end
-      end
-
-      context 'neither method or elements defined' do
-        subject do
-          described_class.new(:my_link, :page, type: :link, selector: { text: 'my link' })
-        end
-        it 'returns false' do
-          expect(subject.section?).to eq(false)
-        end
       end
     end
 

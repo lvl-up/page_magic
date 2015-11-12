@@ -1,6 +1,6 @@
 require 'forwardable'
-require 'page_magic/element/method_observer'
 require 'page_magic/element/selector_methods'
+require 'page_magic/element/locators'
 require 'page_magic/element/selector'
 require 'page_magic/element/query'
 module PageMagic
@@ -9,60 +9,48 @@ module PageMagic
     EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
     DEFAULT_HOOK = proc {}.freeze
 
-    include Elements, MethodObserver, SelectorMethods, Watchers, SessionMethods, WaitMethods
+    include SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
     extend Elements, SelectorMethods, Forwardable
 
-    attr_reader :type, :name, :parent_page_element
+    attr_reader :type, :name, :parent_page_element, :browser_element, :before_events, :after_events
 
-    def initialize(name, parent_page_element, type: :element, selector: {}, prefetched_browser_element: nil, &block)
-      @browser_element = prefetched_browser_element
-      @selector = selector
+    class << self
+      # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the
+      # list of events that this block will be triggered for. The block is run in the scope of the element object
+      def after_events(&block)
+        return @after_hook unless block
+        @after_hook = block
+      end
 
-      @before_hook = DEFAULT_HOOK
-      @after_hook = DEFAULT_HOOK
-      @parent_page_element = parent_page_element
-      @type = type
-      @name = name.to_s.downcase.to_sym
-      @element_definitions = self.class.element_definitions.dup
-      expand(&block) if block
-    end
+      # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the
+      # list of events that this block will be triggered for. The block is run in the scope of the element object
+      def before_events(&block)
+        return @before_hook unless block
+        @before_hook = block
+      end
 
-    # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the list of
-    # events that this block will be triggered for. The block is run in the scope of the element object
-    def after_events(&block)
-      return @after_hook unless block
-      @after_hook = block
-    end
-
-    # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the list of
-    # events that this block will be triggered for. The block is run in the scope of the element object
-    def before_events(&block)
-      return @before_hook unless block
-      @before_hook = block
-    end
-
-    # @return [Object] the Capybara browser element that this element definition is tied to.
-    def browser_element
-      return @browser_element if @browser_element
-
-      fail UndefinedSelectorException, 'Pass a locator/define one on the class' if selector.empty?
-
-      query = Query.find(type).build(query_selector, query_options)
-
-      @browser_element = parent_browser_element.find(*query).tap do |raw_element|
-        wrap_events(raw_element)
+      def ==(other)
+        other <= PageMagic::Element && element_definitions == other.element_definitions
       end
     end
 
-    # expand the element definition by evaluating the given block in the scope of this object
-    # @param [*Object] args list of arguments to be supplied to the given block
-    def expand(*args, &block)
-      instance_exec(*args, &block)
-      self
+    def initialize(browser_element, parent_page_element)
+      @browser_element = browser_element
+      @parent_page_element = parent_page_element
+      @before_events = self.class.before_events || DEFAULT_HOOK
+      @after_events = self.class.after_events || DEFAULT_HOOK
+      @element_definitions = self.class.element_definitions.dup
+      wrap_events(browser_element)
+    end
+
+    EVENT_TYPES.each do |method|
+      define_method method do |*args|
+        browser_element.send(method, *args)
+      end
     end
 
     def method_missing(method, *args, &block)
-      ElementContext.new(self).send(method, args.first, &block)
+      ElementContext.new(self).send(method, *args, &block)
     rescue ElementMissingException
       return super unless browser_element.respond_to?(method)
       browser_element.send(method, *args, &block)
@@ -72,23 +60,11 @@ module PageMagic
       super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
     end
 
-    # use to find out if this element is a section
-    # @return [Boolean] true if this element contains helper methods or sub element definitions
-    def section?
-      !element_definitions.empty? || singleton_methods_added?
-    end
-
     # @!method session
     # get the current session
     # @return [Session] returns the session of the parent page element.
     #  Capybara session
     def_delegator :parent_page_element, :session
-
-    def ==(other)
-      return false unless other.is_a?(Element)
-      this = [type, name, selector, before_events, after_events]
-      this == [other.type, other.name, other.selector, other.before_events, other.after_events]
-    end
 
     private
 
@@ -105,18 +81,6 @@ module PageMagic
 
     def element_context
       ElementContext.new(self)
-    end
-
-    def parent_browser_element
-      parent_page_element.browser_element
-    end
-
-    def query_options
-      selector.dup.delete_if { |key, _value| key == selector.keys.first }
-    end
-
-    def query_selector
-      Hash[*selector.first]
     end
 
     def wrap_events(raw_element)
