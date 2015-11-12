@@ -143,7 +143,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (~> 4)
-  capybara (= 2.5.0)
+  capybara (>= 2.5)
   codeclimate-test-reporter
   github-markup (~> 1.4)
   jeweler (~> 2.0)
