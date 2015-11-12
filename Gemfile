@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'capybara', '~> 2'
+gem 'capybara', '2.5.0'
 gem 'activesupport', '~> 4'
 gem 'wait', '~> 0'
 

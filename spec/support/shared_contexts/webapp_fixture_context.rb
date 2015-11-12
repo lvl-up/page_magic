@@ -1,17 +1,18 @@
 shared_context :webapp_fixture do
   require 'sinatra/base'
 
-  rack_app = Class.new(Sinatra::Base) do
-    get '/page1' do
-      "<html><head><title>page1</title></head><body><a href='/page2'>next page</a></body></html>"
-    end
+  let(:rack_app) do
+    Class.new(Sinatra::Base) do
+      get '/page1' do
+        "<html><head><title>page1</title></head><body><a href='/page2'>next page</a></body></html>"
+      end
 
-    get '/page2' do
-      'page 2 content'
-    end
+      get '/page2' do
+        'page 2 content'
+      end
 
-    get '/elements' do
-      <<-ELEMENTS
+      get '/elements' do
+        <<-ELEMENTS
           <a href='#'>a link</a>
 
 
@@ -23,7 +24,8 @@ shared_context :webapp_fixture do
             <input id='form_button' type='submit' value='a button'/>
           </form>
 
-      ELEMENTS
+        ELEMENTS
+      end
     end
   end
 

@@ -10,3 +10,6 @@ AllCops:
 
 Metrics/ParameterLists:
   CountKeywordArgs: false
+
+Metrics/MethodLength:
+  Max: 11

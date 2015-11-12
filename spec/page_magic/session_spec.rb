@@ -12,18 +12,6 @@ module PageMagic
     let(:url) { 'http://url.com' }
     let(:browser) { double('browser', current_url: url, visit: nil, current_path: :current_path) }
 
-    describe '#current_url' do
-      it "returns the browser's current url" do
-        expect(subject.current_url).to eq(browser.current_url)
-      end
-    end
-
-    describe '#current_path' do
-      it "returns the browser's current path" do
-        expect(subject.current_path).to eq(browser.current_path)
-      end
-    end
-
     describe '#current_page' do
       let(:another_page_class) do
         Class.new do
@@ -52,6 +40,18 @@ module PageMagic
       end
     end
 
+    describe '#current_path' do
+      it "returns the browser's current path" do
+        expect(subject.current_path).to eq(browser.current_path)
+      end
+    end
+
+    describe '#current_url' do
+      it "returns the browser's current url" do
+        expect(subject.current_url).to eq(browser.current_url)
+      end
+    end
+
     describe '#find_mapped_page' do
       subject do
         described_class.new(nil).tap do |session|
@@ -77,51 +77,42 @@ module PageMagic
       end
     end
 
-    describe '#wait' do
-      it 'passes the supplied block to the wait api' do
-        block = proc { :executed }
-        allow_any_instance_of(Wait).to receive(:until).and_call_original
-        expect(subject.wait_until(&block)).to eq(:executed)
+    describe '#execute_script' do
+      it 'calls the execute script method on the capybara session' do
+        expect(browser).to receive(:execute_script).with(:script).and_return(:result)
+        expect(subject.execute_script(:script)).to be(:result)
       end
     end
 
-    describe '#visit' do
-      let(:session) do
-        allow(browser).to receive(:visit)
-        PageMagic::Session.new(browser, url)
-      end
+    describe '#method_missing' do
+      it 'should delegate to current page' do
+        page.class_eval do
+          def my_method
+            :called
+          end
+        end
 
-      it 'sets the current page' do
-        session.define_page_mappings '/page' => page
-        session.visit(page)
-        expect(session.current_page).to be_a(page)
+        session = PageMagic::Session.new(browser).visit(page, url: url)
+        expect(session.my_method).to be(:called)
       end
+    end
 
-      it 'uses the current url and the path in the page mappings' do
-        session.define_page_mappings '/page' => page
-        expect(browser).to receive(:visit).with("#{browser.current_url}/page")
-        session.visit(page)
-      end
-
-      context 'no mappings found' do
-        it 'raises an error' do
-          expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::URL_MISSING_MSG
+    context '#respond_to?' do
+      subject do
+        PageMagic::Session.new(browser).tap do |s|
+          allow(s).to receive(:current_page).and_return(page.new)
         end
       end
-
-      context 'mapping is a regular expression' do
-        it 'raises an error' do
-          session.define_page_mappings(/mapping/ => page)
-          expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
-        end
+      it 'checks self' do
+        expect(subject.respond_to?(:current_url)).to eq(true)
       end
 
-      context 'url supplied' do
-        it 'visits that url' do
-          expected_url = 'http://url.com/page'
-          expect(browser).to receive(:visit).with(expected_url)
-          session.visit(url: expected_url)
+      it 'checks the current page' do
+        page.class_eval do
+          def my_method
+          end
         end
+        expect(subject.respond_to?(:my_method)).to eq(true)
       end
     end
 
@@ -163,35 +154,55 @@ module PageMagic
       end
     end
 
-    context '#method_missing' do
-      it 'should delegate to current page' do
-        page.class_eval do
-          def my_method
-            :called
+    describe '#visit' do
+      let(:session) do
+        allow(browser).to receive(:visit)
+        PageMagic::Session.new(browser, url)
+      end
+
+      context 'page supplied' do
+        it 'sets the current page' do
+          session.define_page_mappings '/page' => page
+          session.visit(page)
+          expect(session.current_page).to be_a(page)
+        end
+
+        it 'uses the current url and the path in the page mappings' do
+          session.define_page_mappings '/page' => page
+          expect(browser).to receive(:visit).with("#{browser.current_url}/page")
+          session.visit(page)
+        end
+
+        context 'no mappings found' do
+          it 'raises an error' do
+            expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::URL_MISSING_MSG
           end
         end
 
-        session = PageMagic::Session.new(browser).visit(page, url: url)
-        expect(session.my_method).to be(:called)
-      end
-    end
-
-    context '#respond_to?' do
-      subject do
-        PageMagic::Session.new(browser).tap do |s|
-          allow(s).to receive(:current_page).and_return(page.new)
-        end
-      end
-      it 'checks self' do
-        expect(subject.respond_to?(:current_url)).to eq(true)
-      end
-
-      it 'checks the current page' do
-        page.class_eval do
-          def my_method
+        context 'mapping is a regular expression' do
+          it 'raises an error' do
+            session.define_page_mappings(/mapping/ => page)
+            expect { session.visit(page) }.to raise_exception InvalidURLException, described_class::REGEXP_MAPPING_MSG
           end
         end
-        expect(subject.respond_to?(:my_method)).to eq(true)
+
+        it 'calls the onload hook' do
+          on_load_hook_called = false
+          page.on_load do
+            on_load_hook_called = true
+          end
+          session.define_page_mappings('/page' => page)
+          session.visit(page)
+          expect(on_load_hook_called).to eq(true)
+        end
+      end
+
+      context 'url supplied' do
+        it 'visits that url' do
+          expected_url = 'http://url.com/page'
+          expect(browser).to receive(:visit).with(expected_url)
+          session.visit(url: expected_url)
+        end
       end
     end
   end

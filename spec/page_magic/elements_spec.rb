@@ -1,205 +1,161 @@
 # rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Elements do
-    let(:page_elements) do
-      Class.new.tap do |clazz|
-        clazz.extend(described_class)
+    include_context :nested_elements_html
+
+    let(:page) { double(init: nested_elements_node) }
+
+    subject do
+      Class.new do
+        extend Elements
+        include Element::Locators
       end
     end
-
-    let(:selector) { { id: 'id' } }
-    let(:browser_element) { double('browser_element', find: :browser_element) }
-    let(:parent_page_element) do
-      double('parent_page_element', browser_element: browser_element)
+    let(:instance) do
+      subject.new
     end
 
-    describe 'adding elements' do
-      context 'using a selector' do
-        it 'should add an element' do
-          expected_element = Element.new(:name, parent_page_element, type: :text_field, selector: selector)
-          page_elements.text_field :name, selector
-          expect(page_elements.element_definitions[:name].call(parent_page_element)).to eq(expected_element)
+    let(:child_selector) { { id: 'child' } }
+
+    describe '#element' do
+      it 'sets the selector and type' do
+        expected_definition = ElementDefinitionBuilder.new(definition_class: Element,
+                                                           type: :text_field,
+                                                           selector: child_selector,
+                                                           options: {})
+        subject.text_field :alias, child_selector
+        expect(instance.element_by_name(:alias)).to eq(expected_definition)
+      end
+
+      context 'options' do
+        it 'puts them on the builder' do
+          options = { my: :options }
+          subject.text_field :alias, child_selector, options
+          expect(instance.element_by_name(:alias).options).to eq(options)
         end
-      end
-
-      it 'uses the supplied name' do
-        page_elements.text_field :alias, selector
-        expect(page_elements.elements(parent_page_element).first.name).to eq(:alias)
       end
 
       context 'complex elements' do
         let!(:section_class) do
           Class.new(Element) do
-            def ==(other)
-              other.name == name &&
-                other.browser_element == browser_element
+            def self.name
+              'PageSection'
             end
           end
         end
 
         context 'using a predefined class' do
           it 'should add an element using that class section' do
-            expected_section = section_class.new(:page_section, parent_page_element, type: :section, selector: selector)
-
-            page_elements.element section_class, :page_section, selector
-            expect(page_elements.elements(parent_page_element).first).to eq(expected_section)
+            subject.element section_class, :page_section, child_selector
+            element_definition_builder = instance.element_by_name(:page_section)
+            expect(element_definition_builder.definition_class).to be < section_class
           end
 
           context 'with no selector supplied' do
             it 'defaults the selector to the one on the class' do
-              section_class.selector selector
-              page_elements.element section_class, :alias
-              expect(page_elements.elements(parent_page_element).first.selector).to eq(selector)
+              section_class.selector child_selector
+              subject.element section_class, :alias
+              element_definition_builder = instance.element_by_name(:alias)
+              expect(element_definition_builder.selector).to eq(child_selector)
             end
           end
 
           context 'with no name supplied' do
             it 'should default to the name of the class if one is not supplied' do
-              allow(section_class).to receive(:name).and_return('PageSection')
-              page_elements.element section_class, selector
-              expect(page_elements.elements(parent_page_element).first.name).to eq(:page_section)
+              subject.element section_class, child_selector
+              element_definition_builder = instance.element_by_name(:page_section)
+              expect(element_definition_builder.definition_class).to be < section_class
             end
           end
         end
       end
 
       context 'using a block' do
-        context 'browser_element' do
-          before :each do
-            @browser = double('browser')
-            @element = double('element')
-            @parent_page_element = double('parent_page_element')
-            allow(@parent_page_element).to receive(:browser_element).and_return(@browser)
-            expect(@browser).to receive(:find).with(:selector).and_return(@element)
+        it 'passes the parent element in as the last argument' do
+          expected_element = instance
+          subject.element :page_section, child_selector do |_arg1, parent_element|
+            extend RSpec::Matchers
+            expect(parent_element).to eq(expected_element)
           end
-
-          it 'should be assigned when selector is passed to section method' do
-            element = @element
-
-            page_elements.element :page_section, css: :selector do
-              extend RSpec::Matchers
-              expect(browser_element).to eq(element)
-            end
-
-            page_elements.element_definitions[:page_section].call(@parent_page_element)
-          end
-
-          it 'should be assigned when selector is defined in the block passed to the section method' do
-            element = @element
-
-            page_elements.element :page_section do
-              selector css: :selector
-              extend RSpec::Matchers
-              expect(browser_element).to eq(element)
-            end
-
-            page_elements.elements(@parent_page_element, nil)
-          end
+          instance.element_by_name(:page_section, :arg1)
         end
 
         it 'should pass args through to the block' do
-          page_elements.element :page_section, css: '.blah' do |arg|
-            arg[:passed_through] = true
+          subject.element :page_section, child_selector do |arg|
+            extend RSpec::Matchers
+            expect(arg).to eq(:arg1)
           end
 
-          arg = {}
-          browser = double('browser', find: :browser_element)
-          parent_page_element = double('parent_browser_element', browser_element: browser)
-          page_elements.elements(parent_page_element, arg)
-          expect(arg[:passed_through]).to eq(true)
-        end
-
-        it 'should return your a copy of the core definition' do
-          page_elements.element :page_section, selector
-          first = page_elements.element_definitions[:page_section].call(parent_page_element)
-          second = page_elements.element_definitions[:page_section].call(parent_page_element)
-          expect(first).to_not equal(second)
+          instance.element_by_name(:page_section, :arg1)
         end
       end
 
       describe 'location' do
         context 'a prefetched object' do
           it 'should add a section' do
-            expected_section = Element.new(:page_section, parent_page_element, type: :element, browser_element: :object)
-            page_elements.element :page_section, :object
-            expect(expected_section).to eq(page_elements.elements(parent_page_element).first)
+            subject.element :page_section, :object
+
+            element_defintion_builder = instance.element_by_name(:page_section)
+            expect(element_defintion_builder.element).to eq(:object)
           end
         end
       end
 
-      describe 'session handle' do
-        it 'should be on instances created from a class' do
-          browser_element = double(:browser_element, find: :browser_element)
-          parent = double('parent', session: :current_session, browser_element: browser_element)
-          page_elements.element :page_section, selector
-
-          section = page_elements.element_definitions[:page_section].call(parent)
-
-          expect(section.session).to eq(:current_session)
+      describe 'restrictions' do
+        subject do
+          Class.new.tap do |clazz|
+            clazz.extend(described_class)
+          end
         end
 
-        it 'should be on instances created dynamically using the section method' do
-          browser_element = double('browser_element')
-          allow(browser_element).to receive(:find)
-          parent = double('parent', session: :current_session, browser_element: browser_element)
+        it 'should not allow method names that match element names' do
+          expect do
+            subject.class_eval do
+              link(:hello, text: 'world')
 
-          page_elements.element :page_section, css: :selector do
+              def hello
+              end
+            end
+          end.to raise_error(InvalidMethodNameException)
+        end
+
+        it 'should not allow element names that match method names' do
+          expect do
+            subject.class_eval do
+              def hello
+              end
+
+              link(:hello, text: 'world')
+            end
+          end.to raise_error(InvalidElementNameException)
+        end
+
+        it 'should not allow duplicate element names' do
+          expect do
+            subject.class_eval do
+              link(:hello, text: 'world')
+              link(:hello, text: 'world')
+            end
+          end.to raise_error(InvalidElementNameException)
+        end
+
+        it 'should not evaluate the elements when applying naming checks' do
+          subject.class_eval do
+            link(:link1, :selector) do
+              fail('should not have been evaluated')
+            end
+            link(:link2, :selector)
           end
-
-          section = page_elements.element_definitions[:page_section].call(parent)
-          expect(section.session).to eq(:current_session)
         end
       end
     end
 
-    describe 'retrieving element definitions' do
+    describe '#element_definitions' do
       it 'should return your a copy of the core definition' do
-        page_elements.text_field :name, selector
-        first = page_elements.element_definitions[:name].call(parent_page_element)
-        second = page_elements.element_definitions[:name].call(parent_page_element)
+        subject.text_field :alias, child_selector
+        first = instance.element_by_name(:alias)
+        second = instance.element_by_name(:alias)
         expect(first).to_not equal(second)
-      end
-    end
-
-    describe 'restrictions' do
-      it 'should not allow method names that match element names' do
-        expect do
-          page_elements.class_eval do
-            link(:hello, text: 'world')
-
-            def hello
-            end
-          end
-        end.to raise_error(InvalidMethodNameException)
-      end
-
-      it 'should not allow element names that match method names' do
-        expect do
-          page_elements.class_eval do
-            def hello
-            end
-
-            link(:hello, text: 'world')
-          end
-        end.to raise_error(InvalidElementNameException)
-      end
-
-      it 'should not allow duplicate element names' do
-        expect do
-          page_elements.class_eval do
-            link(:hello, text: 'world')
-            link(:hello, text: 'world')
-          end
-        end.to raise_error(InvalidElementNameException)
-      end
-
-      it 'should not evaluate the elements when applying naming checks' do
-        page_elements.class_eval do
-          link(:link1, :selector) do
-            fail('should not have been evaluated')
-          end
-          link(:link2, :selector)
-        end
       end
     end
   end

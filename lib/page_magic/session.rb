@@ -1,10 +1,13 @@
 require 'wait'
+require 'forwardable'
 module PageMagic
   # class Session - coordinates access to the browser though page objects.
   class Session
     URL_MISSING_MSG = 'a path must be mapped or a url supplied'
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping is a Regexp'
     INVALID_MAPPING_MSG = 'mapping must be a string or regexp'
+
+    extend Forwardable
 
     attr_reader :raw_session, :transitions
 
@@ -15,6 +18,24 @@ module PageMagic
       @raw_session = capybara_session
       visit(url: url) if url
       @transitions = {}
+    end
+
+    # @return [Object] returns page object representing the currently loaded page on the browser. If no mapping
+    # is found then nil returned
+    def current_page
+      mapping = find_mapped_page(current_path)
+      @current_page = mapping.new(self) if mapping
+      @current_page
+    end
+
+    # @return [String] path in the browser
+    def current_path
+      raw_session.current_path
+    end
+
+    # @return [String] full url in the browser
+    def current_url
+      raw_session.current_url
     end
 
     # Map paths to Page classes. The session will auto load page objects from these mapping when
@@ -29,12 +50,22 @@ module PageMagic
       @transitions = transitions
     end
 
-    # @return [Object] returns page object representing the currently loaded page on the browser. If no mapping
-    # is found then nil returned
-    def current_page
-      mapping = find_mapped_page(current_path)
-      @current_page = mapping.new(self) if mapping
-      @current_page
+    # @!method execute_script
+    #  execute javascript on the browser
+    #  @param [String] script the script to be executed
+    #  @return [Object] object returned by the capybara execute_script method
+    def_delegator :raw_session, :execute_script
+
+    # proxies unknown method calls to the currently loaded page object
+    # @return [Object] returned object from the page object method call
+    def method_missing(name, *args, &block)
+      current_page.send(name, *args, &block)
+    end
+
+    # @param args see {::Object#respond_to?}
+    # @return [Boolean] true if self or the current page object responds to the give method name
+    def respond_to?(*args)
+      super || current_page.respond_to?(*args)
     end
 
     # Direct the browser to the given page or url. {Session#current_page} will be set be an instance of the given/mapped
@@ -59,49 +90,11 @@ module PageMagic
       else
         fail InvalidURLException, URL_MISSING_MSG
       end
-      @current_page = page.new(self) if page
+      @current_page = page.new(self).execute_on_load if page
       self
     end
 
-    # @return [String] path in the browser
-    def current_path
-      raw_session.current_path
-    end
-
-    # @return [String] full url in the browser
-    def current_url
-      raw_session.current_url
-    end
-
-    # Wait until a the supplied block returns true
-    # @example
-    #   wait_until do
-    #     (rand % 2) == 0
-    #   end
-    def wait_until(&block)
-      @wait ||= Wait.new
-      @wait.until(&block)
-    end
-
-    # proxies unknown method calls to the currently loaded page object
-    # @return [Object] returned object from the page object method call
-    def method_missing(name, *args, &block)
-      current_page.send(name, *args, &block)
-    end
-
-    # @param args see {::Object#respond_to?}
-    # @return [Boolean] true if self or the current page object responds to the give method name
-    def respond_to?(*args)
-      super || current_page.respond_to?(*args)
-    end
-
     private
-
-    def url(base_url, path)
-      path = path.sub(%r{^/}, '')
-      base_url = base_url.sub(%r{/$}, '')
-      "#{base_url}/#{path}"
-    end
 
     def find_mapped_page(path)
       mapping = transitions.keys.find do |key|
@@ -116,6 +109,12 @@ module PageMagic
       else
         string == matcher
       end
+    end
+
+    def url(base_url, path)
+      path = path.sub(%r{^/}, '')
+      base_url = base_url.sub(%r{/$}, '')
+      "#{base_url}/#{path}"
     end
   end
 end

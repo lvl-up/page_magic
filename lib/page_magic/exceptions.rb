@@ -1,8 +1,5 @@
 module PageMagic
-  class UnsupportedSelectorException < Exception
-  end
-
-  class UndefinedSelectorException < Exception
+  class ElementMissingException < Exception
   end
 
   class InvalidElementNameException < Exception
@@ -11,15 +8,21 @@ module PageMagic
   class InvalidMethodNameException < Exception
   end
 
-  class UnsupportedCriteriaException < Exception
-  end
-
-  class ElementMissingException < Exception
-  end
-
   class InvalidURLException < Exception
   end
 
+  class TimeoutException < Exception
+  end
+
   class UnspportedBrowserException < Exception
+  end
+
+  class UnsupportedCriteriaException < Exception
+  end
+
+  class UnsupportedSelectorException < Exception
+  end
+
+  class UndefinedSelectorException < Exception
   end
 end

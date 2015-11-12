@@ -5,6 +5,14 @@ describe PageMagic do
     Class.new { include PageMagic }
   end
 
+  describe '.drivers' do
+    it 'returns loaded drivers' do
+      expected_drivers = described_class::Drivers.new.tap(&:load)
+
+      expect(described_class.drivers).to eq(expected_drivers)
+    end
+  end
+
   describe '.included' do
     it 'gives a method for defining the url' do
       subject.url :url
@@ -40,15 +48,7 @@ describe PageMagic do
     end
   end
 
-  describe '::drivers' do
-    it 'returns loaded drivers' do
-      expected_drivers = described_class::Drivers.new.tap(&:load)
-
-      expect(described_class.drivers).to eq(expected_drivers)
-    end
-  end
-
-  describe '::session' do
+  describe '.session' do
     let(:url) { 'http://url.com/' }
     let(:application) { rack_application.new }
 

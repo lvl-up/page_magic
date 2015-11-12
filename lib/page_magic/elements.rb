@@ -1,4 +1,5 @@
 require 'active_support/inflector'
+require 'page_magic/element_definition_builder'
 module PageMagic
   # module Elements - contains methods that add element definitions to the objects it is mixed in to
   module Elements
@@ -12,17 +13,13 @@ module PageMagic
     end
 
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
+
     TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
 
     class << self
-      def included(clazz)
+      def extended(clazz)
         clazz.extend(InheritanceHooks)
       end
-      alias_method :extended, :included
-    end
-
-    def elements(browser_element, *args)
-      element_definitions.values.collect { |definition| definition.call(browser_element, *args) }
     end
 
     # Creates an element defintion.
@@ -55,21 +52,23 @@ module PageMagic
     #  @param [Hash] selector a key value pair defining the method for locating this element. See above for details
     def element(*args, &block)
       block ||= proc {}
-
       section_class = remove_argument(args, Class) || Element
-      selector = compute_selector(args, section_class)
       name = compute_name(args, section_class)
+      options = { type: __callee__,
+                  selector: compute_selector(args, section_class),
+                  options: compute_argument(args, Hash),
+                  element: args.delete_at(0) }
 
-      options = { type: __callee__ }
-      selector ? options[:selector] = selector : options[:browser_element] = args.delete_at(0)
-
-      add_element_definition(name) do |parent_browser_element, *e_args|
-        section_class.new(name, parent_browser_element, options).expand(*e_args, &block)
+      add_element_definition(name) do |*e_args|
+        defintion_class = Class.new(section_class) { class_exec(*e_args, &(block)) }
+        ElementDefinitionBuilder.new(options.merge(definition_class: defintion_class))
       end
     end
 
     TYPES.each { |type| alias_method type, :element }
 
+    # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
+    #  and {Element} definitions
     def element_definitions
       @element_definitions ||= {}
     end
@@ -85,15 +84,6 @@ module PageMagic
       element_definitions[name] = block
     end
 
-    def method_added(method)
-      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
-    end
-
-    def remove_argument(args, clazz)
-      argument = args.find { |arg| arg.is_a?(clazz) }
-      args.delete(argument)
-    end
-
     def compute_name(args, section_class)
       name = remove_argument(args, Symbol)
       name || section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
@@ -102,6 +92,19 @@ module PageMagic
     def compute_selector(args, section_class)
       selector = remove_argument(args, Hash)
       selector || section_class.selector if section_class.respond_to?(:selector)
+    end
+
+    def method_added(method)
+      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
+    end
+
+    def compute_argument(args, clazz)
+      remove_argument(args, clazz) || clazz.new
+    end
+
+    def remove_argument(args, clazz)
+      argument = args.find { |arg| arg.is_a?(clazz) }
+      args.delete(argument)
     end
   end
 end
