@@ -119,11 +119,11 @@ module PageMagic
       end
 
       it 'finds elements by id' do
-        expect { capybara_session.find(*Query.find(:field).build(id: 'field_id')) }.to_not raise_exception
+        expect { capybara_session.find(*Query.find(:text_field).build(id: 'field_id')) }.to_not raise_exception
       end
 
       it 'finds elements by label' do
-        expect { capybara_session.find(*Query.find(:field).build(label: 'enter text')) }.to_not raise_exception
+        expect { capybara_session.find(*Query.find(:text_field).build(label: 'enter text')) }.to_not raise_exception
       end
 
       it 'finds elements by text' do

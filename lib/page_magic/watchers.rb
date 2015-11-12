@@ -28,6 +28,8 @@ module PageMagic
       watchers << watched_element.check(self)
     end
 
+    # retrieve a watcher given its name
+    # @param [Symbol] name the name of the watcher
     # @return [Watcher] watcher with the given name
     def watcher(name)
       watchers.find { |watcher| watcher.name == name }
