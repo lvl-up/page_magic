@@ -18,14 +18,14 @@ module PageMagic
       # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the
       # list of events that this block will be triggered for. The block is run in the scope of the element object
       def after_events(&block)
-        return @after_hook unless block
+        return (@after_hook || DEFAULT_HOOK) unless block
         @after_hook = block
       end
 
       # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the
       # list of events that this block will be triggered for. The block is run in the scope of the element object
       def before_events(&block)
-        return @before_hook unless block
+        return (@before_hook || DEFAULT_HOOK) unless block
         @before_hook = block
       end
 
@@ -37,8 +37,8 @@ module PageMagic
     def initialize(browser_element, parent_page_element)
       @browser_element = browser_element
       @parent_page_element = parent_page_element
-      @before_events = self.class.before_events || DEFAULT_HOOK
-      @after_events = self.class.after_events || DEFAULT_HOOK
+      @before_events = self.class.before_events
+      @after_events = self.class.after_events
       @element_definitions = self.class.element_definitions.dup
       wrap_events(browser_element)
     end
