@@ -14,8 +14,6 @@ module PageMagic
 
     let(:page) { session.current_page }
 
-    # let!(:browser) { double('browser') }
-
     subject do
       described_class.new(:page_element, page)
     end
@@ -24,6 +22,44 @@ module PageMagic
     it_behaves_like 'element watcher'
     it_behaves_like 'waiter'
     it_behaves_like 'element locator'
+
+    describe '.after_events' do
+      subject do
+        Class.new(described_class)
+      end
+
+      context 'hook set' do
+        it 'returns that hook' do
+          hook = proc {}
+          subject.after_events(&hook)
+          expect(subject.after_events).to eq(hook)
+        end
+      end
+      context 'hook not registered' do
+        it 'returns the default hook' do
+          expect(subject.after_events).to eq(described_class::DEFAULT_HOOK)
+        end
+      end
+    end
+
+    describe '.before_events' do
+      subject do
+        Class.new(described_class)
+      end
+
+      context 'hook set' do
+        it 'returns that hook' do
+          hook = proc {}
+          subject.before_events(&hook)
+          expect(subject.before_events).to eq(hook)
+        end
+      end
+      context 'hook not registered' do
+        it 'returns the default hook' do
+          expect(subject.before_events).to eq(described_class::DEFAULT_HOOK)
+        end
+      end
+    end
 
     describe 'inheriting' do
       it 'lets you create custom elements' do
@@ -63,13 +99,6 @@ module PageMagic
       end
     end
 
-    describe '#initialize' do
-      it 'sets the parent element' do
-        instance = described_class.new(page, :parent_page_element)
-        expect(instance.parent_page_element).to eq(:parent_page_element)
-      end
-    end
-
     describe 'hooks' do
       subject do
         Class.new(described_class) do
@@ -98,6 +127,13 @@ module PageMagic
           expect(subject).to receive(:call_in_after_hook)
           subject.click
         end
+      end
+    end
+
+    describe '#initialize' do
+      it 'sets the parent element' do
+        instance = described_class.new(page, :parent_page_element)
+        expect(instance.parent_page_element).to eq(:parent_page_element)
       end
     end
 

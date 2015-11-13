@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/page_magic.svg)](https://badge.fury.io/rb/page_magic) [![Circle CI](https://circleci.com/gh/Ladtech/page_magic.svg?style=shield&circle-token=49c8f6869c1e0dc6f3b368e6e22a11fcea3aab8a)](https://circleci.com/gh/Ladtech/page_magic) [![Code Climate](https://codeclimate.com/github/Ladtech/page_magic/badges/gpa.svg)](https://codeclimate.com/github/Ladtech/page_magic) [![Test Coverage](https://codeclimate.com/github/Ladtech/page_magic/badges/coverage.svg)](https://codeclimate.com/github/Ladtech/page_magic/coverage) [![PullReview stats](https://www.pullreview.com/github/Ladtech/page_magic/badges/master.svg?)](https://www.pullreview.com/github/Ladtech/page_magic/reviews/master)
+[![Gem Version](https://badge.fury.io/rb/page_magic.svg)](https://badge.fury.io/rb/page_magic) [![Dependency Status](https://gemnasium.com/Ladtech/page_magic.svg)](https://gemnasium.com/Ladtech/page_magic) [![Circle CI](https://circleci.com/gh/Ladtech/page_magic.svg?style=shield&circle-token=49c8f6869c1e0dc6f3b368e6e22a11fcea3aab8a)](https://circleci.com/gh/Ladtech/page_magic) [![Code Climate](https://codeclimate.com/github/Ladtech/page_magic/badges/gpa.svg)](https://codeclimate.com/github/Ladtech/page_magic) [![Test Coverage](https://codeclimate.com/github/Ladtech/page_magic/badges/coverage.svg)](https://codeclimate.com/github/Ladtech/page_magic/coverage) [![PullReview stats](https://www.pullreview.com/github/Ladtech/page_magic/badges/master.svg?)](https://www.pullreview.com/github/Ladtech/page_magic/reviews/master)
 #PageMagic
 PageMagic is an API for testing web applications. 
 
@@ -230,10 +230,29 @@ To start a PageMagic session simply decide what browser you want to use and pass
 ```ruby
 session = PageMagic.session(browser: :chrome, url: 'https://21st-century-mail.com')
 ```
-Out of the box, PageMagic knows how to work with:
-- Chrome and Firefox
-- poltergeist
-- RackTest - Read more on testing rack compliant object's directly later on
+
+Your session won't you do much besides navigating to the given url until you have [mapped pages](#page-mapping) to it, so take a look at this next! 
+
+**Note** PageMagic supports having multiple sessions pointed at different urls using different browsers at the same time :)
+ 
+## Rack applications and Rack::Test
+To run a session against a rack application instead of a live site, simply supply the rack application when creating the session
+```ruby
+session = PageMagic.session(application: YourRackApp, url: '/path_to_start_at')
+```
+
+By default PageMagic uses the Rack::Test driver for capybara however you are free to use any browser you like as long as 
+the [driver is registered](#drivers) for it.
+
+```ruby
+session = PageMagic.session(application: YourRackApp, browser: :your_chosen_browser, url: '/path_to_start_at')
+```
+
+Out of the box, PageMagic supports the following as parameters to browser:
+- :chrome
+- :firefox
+- :poltergeist
+- :rack_test
 
 Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register any Capybara specific driver you want. See [below](#registering-a-custom-driver) for how to do this.
 
