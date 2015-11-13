@@ -350,7 +350,7 @@ You can obviously use PageMagic anywhere you fancy but one of the places you mig
 Put the following in to `features/support/page_magic.rb` to make these helpers available to all of your steps.
 
 ```ruby
-require 'page_magic
+require 'page_magic'
 require 'active_support/inflector'
 require 'your_pages'
 
