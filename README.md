@@ -36,7 +36,6 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 - [Waiting](#waiting)
 - [Drivers](#drivers)
 - [Cucumber Quick Start](#cucumber-quick-start)
-- [Pulling it all together](#pulling-it-all-together)
 
 # Installation
 `gem install page_magic`
@@ -128,7 +127,7 @@ session.message.read.click
 PageMagic allows you to define your own custom elements.
 ```ruby
 class Nav < PageMagic::Element
-  selector css: '.nav
+  selector css: '.nav'
   
   element :options, css: '.options' do
     link(:link1, id: 'link1')
@@ -396,35 +395,4 @@ Then /^I should be on the '(.*)' page$/ do |page_name|
   expected_page = page_class(page_name)
   fail "On #{current_page}, expected #{expected_page}" unless current_page == expected_page
 end
-```
-
-# Pulling it all together
-Imagine the scene. You've written a web based mail client and now you want to test it...
-You have a scenario in mind that goes something along the lines of:
-- Send yourself an email with a unique subject
-- Go to the Login page and login
-- Find the message using it's unique subject and read it
-- delete the message
-
-You're mail client is totally 21st century so there is loads of lovely ajax etc...
-
-Using the PageMagic you can implement an API that might look something like the following to use:
-
-```ruby
-test_subject = send_test_mail('test@21st-century-mail.com')
-#Visit your site using a PageMagic session we prepared earlier
-session.visit(LoginPage)
-
-#Login using some handy helper method on our page object
-session.login('username', 'password')
-
-#Find the message amongst all the other messages that are on screen and read it
-session.message(subject: test_subject).read.click
-
-#Now we are on the message screen lets delete it without having to worry about the ajax.
-session.delete_message
-
-fail "message is still there!" if session.message(subject: test_subject).exists?
-
-# Sweet :)
 ```
