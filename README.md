@@ -365,7 +365,7 @@ World(Module.new do
 
         def session
           $session ||= begin
-            PageMagic.session(browser: :chrome, url: 'http://localhost:9292').tap do |session|
+            PageMagic.session(browser: :chrome, url: the_base_url).tap do |session|
 
               session.define_page_mappings '/login' => LoginPage,
                                            '/' => HomePage
