@@ -12,6 +12,7 @@ group :test do
   gem 'poltergeist'
   gem 'codeclimate-test-reporter', group: :test, require: nil
   gem 'pullreview-coverage', require: false
+  gem 'cucumber'
 end
 
 group :development do

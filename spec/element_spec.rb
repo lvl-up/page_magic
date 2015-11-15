@@ -133,7 +133,7 @@ module PageMagic
     describe '#initialize' do
       it 'sets the parent element' do
         instance = described_class.new(page, :parent_page_element)
-        expect(instance.parent_page_element).to eq(:parent_page_element)
+        expect(instance.parent_element).to eq(:parent_page_element)
       end
     end
 

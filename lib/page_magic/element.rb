@@ -12,7 +12,7 @@ module PageMagic
     include SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
     extend Elements, SelectorMethods, Forwardable
 
-    attr_reader :type, :name, :parent_page_element, :browser_element, :before_events, :after_events
+    attr_reader :type, :name, :parent_element, :browser_element, :before_events, :after_events
 
     class << self
       # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the
@@ -29,14 +29,19 @@ module PageMagic
         @before_hook = block
       end
 
+      def parent_element(page_element = nil)
+        return @parent_page_element unless page_element
+        @parent_page_element = page_element
+      end
+
       def ==(other)
         other <= PageMagic::Element && element_definitions == other.element_definitions
       end
     end
 
-    def initialize(browser_element, parent_page_element)
+    def initialize(browser_element, parent_element)
       @browser_element = browser_element
-      @parent_page_element = parent_page_element
+      @parent_element = parent_element
       @before_events = self.class.before_events
       @after_events = self.class.after_events
       @element_definitions = self.class.element_definitions.dup
@@ -64,7 +69,7 @@ module PageMagic
     # get the current session
     # @return [Session] returns the session of the parent page element.
     #  Capybara session
-    def_delegator :parent_page_element, :session
+    def_delegator :parent_element, :session
 
     private
 
