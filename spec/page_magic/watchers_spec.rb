@@ -56,6 +56,16 @@ module PageMagic
         end
       end
 
+      context 'watcher with the same name added' do
+        it 'replaces the watcher' do
+          subject.watch(:object_id)
+          original_watcher = subject.watchers.first
+          subject.watch(:object_id)
+          expect(subject.watchers.size).to eq(1)
+          expect(subject.watchers.first).to_not be(original_watcher)
+        end
+      end
+
       context 'watcher defined on element that does not exist' do
         it 'raises an error' do
           expected_message = described_class::ELEMENT_MISSING_MSG % :missing

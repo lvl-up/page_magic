@@ -23,6 +23,18 @@ module PageMagic
     it_behaves_like 'waiter'
     it_behaves_like 'element locator'
 
+    describe '.watch' do
+      let(:described_class) { Class.new(Element) }
+      it 'adds a before hook with the watcher in it' do
+        described_class.watch(:object_id)
+        instance = described_class.new(:element, :parent_element)
+
+        watcher_block = instance.before_events.last
+        instance.instance_exec(&watcher_block)
+        expect(instance.watchers.first.last).to eq(instance.object_id)
+      end
+    end
+
     describe '.after_events' do
       subject do
         Class.new(described_class)
@@ -32,12 +44,12 @@ module PageMagic
         it 'returns that hook' do
           hook = proc {}
           subject.after_events(&hook)
-          expect(subject.after_events).to eq(hook)
+          expect(subject.after_events).to eq([described_class::DEFAULT_HOOK, hook])
         end
       end
       context 'hook not registered' do
         it 'returns the default hook' do
-          expect(subject.after_events).to eq(described_class::DEFAULT_HOOK)
+          expect(subject.after_events).to eq([described_class::DEFAULT_HOOK])
         end
       end
     end
@@ -51,12 +63,12 @@ module PageMagic
         it 'returns that hook' do
           hook = proc {}
           subject.before_events(&hook)
-          expect(subject.before_events).to eq(hook)
+          expect(subject.before_events).to eq([described_class::DEFAULT_HOOK, hook])
         end
       end
       context 'hook not registered' do
         it 'returns the default hook' do
-          expect(subject.before_events).to eq(described_class::DEFAULT_HOOK)
+          expect(subject.before_events).to eq([described_class::DEFAULT_HOOK])
         end
       end
     end
@@ -103,28 +115,28 @@ module PageMagic
       subject do
         Class.new(described_class) do
           before_events do
-            call_in_before_hook
+            call_in_before_events
           end
         end.new(double('button', click: true), page)
       end
-      context 'method called in before hook' do
+      context 'method called in before_events' do
         it 'calls methods on the page element' do
-          expect(subject).to receive(:call_in_before_hook)
+          expect(subject).to receive(:call_in_before_events)
           subject.click
         end
       end
 
-      context 'method called in after hook' do
+      context 'method called in after_events' do
         subject do
           Class.new(described_class) do
             after_events do
-              call_in_after_hook
+              call_in_after_events
             end
           end.new(double('button', click: true), page)
         end
 
         it 'calls methods on the page element' do
-          expect(subject).to receive(:call_in_after_hook)
+          expect(subject).to receive(:call_in_after_events)
           subject.click
         end
       end
@@ -134,6 +146,24 @@ module PageMagic
       it 'sets the parent element' do
         instance = described_class.new(page, :parent_page_element)
         expect(instance.parent_element).to eq(:parent_page_element)
+      end
+
+      context 'inherited items' do
+        let(:described_class) do
+          Class.new(Element)
+        end
+
+        it 'copies the event hooks from the class' do
+          before_hook = proc {}
+          after_hook = proc {}
+          described_class.before_events(&before_hook)
+          described_class.after_events(&after_hook)
+
+          instance = described_class.new(:element, :parent_element)
+
+          expect(instance.before_events).to include(before_hook)
+          expect(instance.after_events).to include(after_hook)
+        end
       end
     end
 
