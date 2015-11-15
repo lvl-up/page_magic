@@ -65,15 +65,6 @@ module PageMagic
       end
     end
 
-    def compute_options(args)
-      section_class = remove_argument(args, Class) || Element
-      { name: compute_name(args, section_class),
-        selector: compute_selector(args, section_class),
-        options: compute_argument(args, Hash),
-        element: args.delete_at(0),
-        section_class: section_class }
-    end
-
     TYPES.each { |type| alias_method type, :element }
 
     # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
@@ -83,6 +74,15 @@ module PageMagic
     end
 
     private
+
+    def compute_options(args)
+      section_class = remove_argument(args, Class) || Element
+      { name: compute_name(args, section_class),
+        selector: compute_selector(args, section_class),
+        options: compute_argument(args, Hash),
+        element: args.delete_at(0),
+        section_class: section_class }
+    end
 
     def add_element_definition(name, &block)
       fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
