@@ -270,7 +270,7 @@ You can use even use regular expressions to map multiple paths to the same page.
 
 # Watchers
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
-things have changed. The watch method can be called from anywhere within an element definition. For PageObjects it can
+things have changed. The `watch` method can be called from anywhere within an element definition. For PageObjects it can
 only be called from within hooks and helper methods.
 
 **Note**: Watchers are not inherited
