@@ -43,7 +43,7 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 `gem install page_magic`
 
 # Quick Start
-Getting started with PageMagic is as easy, try running this:
+Getting started with PageMagic is easy, try running this:
 
 ```ruby
 require 'page_magic'
