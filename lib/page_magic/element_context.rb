@@ -20,7 +20,7 @@ module PageMagic
       builder = page_element.element_by_name(method, *args)
 
       prefecteched_element = builder.element
-      return builder.build(prefecteched_element, page_element) if prefecteched_element
+      return builder.build(prefecteched_element) if prefecteched_element
 
       elements = find(builder)
       elements.size == 1 ? elements.first : elements
@@ -41,7 +41,7 @@ module PageMagic
         fail ElementMissingException, ELEMENT_NOT_FOUND_MSG % query.description
       end
 
-      result.to_a.collect { |e| builder.build(e, page_element) }
+      result.to_a.collect { |e| builder.build(e) }
     end
   end
 end
