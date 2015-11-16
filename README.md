@@ -42,6 +42,7 @@ Give it a try and let us know what you think! There will undoubtedly be things t
 
 # Quick Start
 Getting started with PageMagic is as easy, try running this:
+
 ```ruby
 require 'page_magic'
 
@@ -61,6 +62,7 @@ end
 google = Google.visit(browser: :chrome)
 google.search('page_magic')
 ```
+
 This example defines a simple page to represent Google's search page, visits it and performs a search. 
 
 This code models a single page and will let you [interact](#interacting-with-elements) with the [elements](#elements) defined on it as well as use the [helper method](Helpers) we defined.
