@@ -165,6 +165,7 @@ PageMagic provides hooks to allow you to interact at the right moments with your
 ### On load hook
 PageMagic lets you define an on_load hook for your pages. This lets you write any custom wait logic you might need 
 before letting execution continue.
+
 ```ruby
 class LoginPage
   # ... code defining elements as shown above
@@ -207,6 +208,7 @@ end
 ```
 
 We can interact with helper in the same way as we did page elements.
+
 ```ruby
 session.login('joe', 'blogs')
 ```
