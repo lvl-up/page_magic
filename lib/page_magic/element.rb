@@ -15,31 +15,43 @@ module PageMagic
     attr_reader :type, :name, :parent_element, :browser_element, :before_events, :after_events
 
     class << self
-      # Get/Sets the block of code to be run after an event is triggered on an element. See {EVENT_TYPES} for the
-      # list of events that this block will be triggered for. The block is run in the scope of the element object
-      def after_events(&block)
-        @after_events ||= [DEFAULT_HOOK]
-        return @after_events unless block
-        @after_events << block
+      # @!method after_events
+      # If a block is passed in, it adds it to be run after an event is triggered on an element.
+      # See {EVENT_TYPES} for the
+      # @return [Array] all registered blocks
+
+      # @!method before_events
+      # If a block is passed in, it adds it to be run before an event is triggered on an element.
+      # @see .after_events
+      %i(after_events before_events).each do |method|
+        define_method method do |&block|
+          instance_variable_name = "@#{method}".to_sym
+          instance_variable_value = instance_variable_get(instance_variable_name) || [DEFAULT_HOOK]
+          instance_variable_value << block if block
+          instance_variable_set(instance_variable_name, instance_variable_value)
+        end
       end
 
-      # Get/Sets the block of code to be run before an event is triggered on an element. See {EVENT_TYPES} for the
-      # list of events that this block will be triggered for. The block is run in the scope of the element object
-      def before_events(&block)
-        @before_events ||= [DEFAULT_HOOK]
-        return @before_events unless block
-        @before_events << block
-      end
-
+      # Get/Sets the parent element desribed by this class
+      # @param [Element] page_element parent page element
+      # @return [Element]
       def parent_element(page_element = nil)
         return @parent_page_element unless page_element
         @parent_page_element = page_element
       end
 
+      # called when class inherits this one
+      # @param [Class] clazz inheriting class
+      def inherited(clazz)
+        super
+        clazz.before_events.replace(before_events)
+        clazz.after_events.replace(after_events)
+      end
+
+      # Defines watchers to be used by instances
+      # @see Watchers#watch
       def watch(name, method = nil, &block)
-        before_events do
-          watch(name, method, &block)
-        end
+        before_events { watch(name, method, &block) }
       end
 
       def ==(other)
@@ -47,9 +59,9 @@ module PageMagic
       end
     end
 
-    def initialize(browser_element, parent_element)
+    def initialize(browser_element)
       @browser_element = browser_element
-      @parent_element = parent_element
+      @parent_element = self.class.parent_element
       @before_events = self.class.before_events
       @after_events = self.class.after_events
       @element_definitions = self.class.element_definitions.dup

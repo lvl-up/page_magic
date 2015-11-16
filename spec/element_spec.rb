@@ -14,26 +14,18 @@ module PageMagic
 
     let(:page) { session.current_page }
 
+    let(:described_class) do
+      Class.new(Element).tap { |clazz| clazz.parent_element(page) }
+    end
+
     subject do
-      described_class.new(:page_element, page)
+      described_class.new(:page_element)
     end
 
     it_behaves_like 'session accessor'
     it_behaves_like 'element watcher'
     it_behaves_like 'waiter'
     it_behaves_like 'element locator'
-
-    describe '.watch' do
-      let(:described_class) { Class.new(Element) }
-      it 'adds a before hook with the watcher in it' do
-        described_class.watch(:object_id)
-        instance = described_class.new(:element, :parent_element)
-
-        watcher_block = instance.before_events.last
-        instance.instance_exec(&watcher_block)
-        expect(instance.watchers.first.last).to eq(instance.object_id)
-      end
-    end
 
     describe '.after_events' do
       subject do
@@ -73,8 +65,22 @@ module PageMagic
       end
     end
 
-    describe 'inheriting' do
-      it 'lets you create custom elements' do
+    describe '.inherited' do
+      it 'copies before hooks' do
+        before_hook = proc {}
+        described_class.before_events(&before_hook)
+        sub_class = Class.new(described_class)
+        expect(sub_class.before_events).to include(before_hook)
+      end
+
+      it 'copies after hooks' do
+        after_hook = proc {}
+        described_class.after_events(&after_hook)
+        sub_class = Class.new(described_class)
+        expect(sub_class.after_events).to include(after_hook)
+      end
+
+      it 'lets sub classes defined their own elements' do
         custom_element = Class.new(described_class) do
           text_field :form_field, id: 'field_id'
 
@@ -91,6 +97,18 @@ module PageMagic
       end
     end
 
+    describe '.watch' do
+      let(:described_class) { Class.new(Element) }
+      it 'adds a before hook with the watcher in it' do
+        described_class.watch(:object_id)
+        instance = described_class.new(:element)
+
+        watcher_block = instance.before_events.last
+        instance.instance_exec(&watcher_block)
+        expect(instance.watchers.first.last).to eq(instance.object_id)
+      end
+    end
+
     describe 'EVENT_TYPES' do
       context 'methods created' do
         it 'creates methods for each of the event types' do
@@ -101,7 +119,7 @@ module PageMagic
         context 'method called' do
           let(:browser_element) { instance_double(Capybara::Node::Element) }
           subject do
-            described_class.new(browser_element, page)
+            described_class.new(browser_element)
           end
           it 'calls the browser_element passing on all args' do
             expect(browser_element).to receive(:select).with(:args)
@@ -117,7 +135,7 @@ module PageMagic
           before_events do
             call_in_before_events
           end
-        end.new(double('button', click: true), page)
+        end.new(double('button', click: true))
       end
       context 'method called in before_events' do
         it 'calls methods on the page element' do
@@ -132,7 +150,7 @@ module PageMagic
             after_events do
               call_in_after_events
             end
-          end.new(double('button', click: true), page)
+          end.new(double('button', click: true))
         end
 
         it 'calls methods on the page element' do
@@ -144,8 +162,8 @@ module PageMagic
 
     describe '#initialize' do
       it 'sets the parent element' do
-        instance = described_class.new(page, :parent_page_element)
-        expect(instance.parent_element).to eq(:parent_page_element)
+        instance = described_class.new(:element)
+        expect(instance.parent_element).to eq(page)
       end
 
       context 'inherited items' do
@@ -159,7 +177,7 @@ module PageMagic
           described_class.before_events(&before_hook)
           described_class.after_events(&after_hook)
 
-          instance = described_class.new(:element, :parent_element)
+          instance = described_class.new(:element)
 
           expect(instance.before_events).to include(before_hook)
           expect(instance.after_events).to include(after_hook)
@@ -191,7 +209,7 @@ module PageMagic
       subject do
         Class.new(described_class) do
           element :sub_element, css: '.sub-element'
-        end.new(double(element_method: ''), :parent_page_element)
+        end.new(double(element_method: ''))
       end
       it 'checks for methods on self' do
         expect(subject.respond_to?(:session)).to eq(true)
