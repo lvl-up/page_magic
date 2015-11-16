@@ -10,7 +10,7 @@ module PageMagic
     subject { described_class.new(browser) }
 
     let(:url) { 'http://url.com' }
-    let(:browser) { double('browser', current_url: url, visit: nil, current_path: :current_path) }
+    let(:browser) { double('browser', current_url: "#{url}/somepath", visit: nil, current_path: :current_path) }
 
     describe '#current_page' do
       let(:another_page_class) do
@@ -167,9 +167,9 @@ module PageMagic
           expect(session.current_page).to be_a(page)
         end
 
-        it 'uses the current url and the path in the page mappings' do
+        it 'uses the base url and the path in the page mappings' do
           session.define_page_mappings '/page' => page
-          expect(browser).to receive(:visit).with("#{browser.current_url}/page")
+          expect(browser).to receive(:visit).with("#{url}/page")
           session.visit(page)
         end
 
