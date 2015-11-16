@@ -1,5 +1,5 @@
 module PageMagic
-  #
+  # for the benefit of pull review :@
   class Element
     # contains method for finding element definitions
     module Locators

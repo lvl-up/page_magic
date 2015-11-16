@@ -35,7 +35,7 @@ Give it a try and let us know what you think! There will undoubtedly be things t
   - [Custom watchers](#custom-watchers)
 - [Waiting](#waiting)
 - [Drivers](#drivers)
-- [Pulling it all together](#pulling-it-all-together)
+- [Cucumber Quick Start](#cucumber-quick-start)
 
 # Installation
 `gem install page_magic`
@@ -127,7 +127,7 @@ session.message.read.click
 PageMagic allows you to define your own custom elements.
 ```ruby
 class Nav < PageMagic::Element
-  selector css: '.nav
+  selector css: '.nav'
   
   element :options, css: '.options' do
     link(:link1, id: 'link1')
@@ -342,34 +342,57 @@ PageMagic.drivers.register Webkit
 #3. Use registered driver
 session = PageMagic.session(browser: webkit, url: 'https://21st-century-mail.com')
 ```
+# Cucumber quick start
+You can obviously use PageMagic anywhere you fancy but one of the places you might decide to use it is within a Cucumber test suite. If that's the case something like the following could prove useful.
 
-# Pulling it all together
-Imagine the scene. You've written a web based mail client and now you want to test it...
-You have a scenario in mind that goes something along the lines of:
-- Send yourself an email with a unique subject
-- Go to the Login page and login
-- Find the message using it's unique subject and read it
-- delete the message
-
-You're mail client is totally 21st century so there is loads of lovely ajax etc...
-
-Using the PageMagic you can implement an API that might look something like the following to use:
+## Helper methods
+Put the following in to `features/support/page_magic.rb` to make these helpers available to all of your steps.
 
 ```ruby
-test_subject = send_test_mail('test@21st-century-mail.com')
-#Visit your site using a PageMagic session we prepared earlier
-session.visit(LoginPage)
+require 'page_magic'
+require 'active_support/inflector'
+require 'your_pages'
 
-#Login using some handy helper method on our page object
-session.login('username', 'password')
+World(Module.new do
+        def page_class(string)
+          "#{string}Page".delete(' ').constantize
+        end
 
-#Find the message amongst all the other messages that are on screen and read it
-session.message(subject: test_subject).read.click
+        def snake_case(string)
+          string.delete(' ').underscore
+        end
 
-#Now we are on the message screen lets delete it without having to worry about the ajax.
-session.delete_message
+        def session
+          $session ||= begin
+            PageMagic.session(browser: :chrome, url: the_base_url).tap do |session|
 
-fail "message is still there!" if session.message(subject: test_subject).exists?
+              session.define_page_mappings '/login' => LoginPage,
+                                           '/' => HomePage
 
-# Sweet :)
+            end
+          end
+        end
+      end)
+```
+## Example steps
+Use the [above](#helper-methods) helpers to navigate to pages with steps like the following.
+
+```ruby
+Given /^I am on the '(.*)' page$/ do |page_name|
+  session.visit(page_class(page_name))
+end
+
+And /^I set '(.*)' to be '(.*)'$/ do |field, value|
+  session.send(snake_case(field)).set value
+end
+
+When /^I click '(.*)'$/ do |element|
+  session.send(snake_case(element)).click
+end
+
+Then /^I should be on the '(.*)' page$/ do |page_name|
+  current_page = session.current_page.class
+  expected_page = page_class(page_name)
+  fail "On #{current_page}, expected #{expected_page}" unless current_page == expected_page
+end
 ```
