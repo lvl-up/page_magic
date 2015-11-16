@@ -270,7 +270,8 @@ You can use even use regular expressions to map multiple paths to the same page.
 
 # Watchers
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
-things have changed. 
+things have changed. The watch method can be called from anywhere within an element definition. For PageObjects it can
+only be called from within hooks and helper methods.
 
 **Note**: Watchers are not inherited
 
@@ -278,9 +279,7 @@ things have changed.
 Method watchers watch the output of the given method name.
 ```ruby
 button :javascript_button, css: '.fancy_button' do
-  before_events do
-    watch(:url)
-  end
+  watch(:url)
   
   after_events do
     wait_until{changed?(:url)}
@@ -293,9 +292,7 @@ Simple watchers use the `watch` method passing two parameters, the first is the 
 eye and the second is the method that needs to be called to get the value that should be observed.
 ```ruby
 element :product_row, css '.cta' do
-  before_events do
-    element(:total, css: '.total')
-  end
+  watch(:total, :text)
   
   after_events do
     wait_until{changed?(:total)}
@@ -308,10 +305,8 @@ that needs to be observed. Use watch in this way if you need to do something non
 access an element not located within the current element but elsewhere within the page.
 ```ruby
 element :product_row, css '.cta' do
-  before_events do
-    element(:total) do
-      session.nav.total.text
-    end
+  watch(:total) do
+    session.nav.total.text
   end
   
   after_events do
