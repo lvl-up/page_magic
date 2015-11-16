@@ -5,6 +5,7 @@ PageMagic is an API for testing web applications.
 It has a simple but powerful DSL which makes modelling and interacting with your pages easy.
 
 Wouldn't it be great if there was a framework that could:
+
 - [Model your pages](#defining-pages)
 - [Fluently define event hooks / waiters on page elements](#hooks)
 - [Map paths to pages so that the correct page object is loaded as you navigate](#page-mapping)
@@ -14,6 +15,7 @@ Well PageMagic might just be the answer!
 
 Give it a try and let us know what you think! There will undoubtedly be things that can be improved and issues that we are not aware of so your feedback/pull requests are greatly appreciated!
 # Contents
+
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Defining Pages](#defining-pages)
