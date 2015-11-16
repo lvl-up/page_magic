@@ -24,7 +24,7 @@ module PageMagic
     # is found then nil returned
     def current_page
       mapping = find_mapped_page(current_path)
-      @current_page = mapping.new(self) if mapping
+      @current_page = initialize_page(mapping) if mapping
       @current_page
     end
 
@@ -90,7 +90,7 @@ module PageMagic
       else
         fail InvalidURLException, URL_MISSING_MSG
       end
-      @current_page = page.new(self).execute_on_load if page
+      @current_page = initialize_page(page) if page
       self
     end
 
@@ -101,6 +101,10 @@ module PageMagic
         matches?(path, key)
       end
       transitions[mapping]
+    end
+
+    def initialize_page(page_class)
+      page_class.new(self).execute_on_load
     end
 
     def matches?(string, matcher)
