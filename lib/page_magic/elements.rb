@@ -52,16 +52,16 @@ module PageMagic
     #  @param [Hash] selector a key value pair defining the method for locating this element. See above for details
     def element(*args, &block)
       block ||= proc {}
-      section_class = remove_argument(args, Class) || Element
-      name = compute_name(args, section_class)
-      options = { type: __callee__,
-                  selector: compute_selector(args, section_class),
-                  options: compute_argument(args, Hash),
-                  element: args.delete_at(0) }
+      options = compute_options(args.dup)
+      options[:type] = __callee__
+      section_class = options.delete(:section_class)
 
-      add_element_definition(name) do |*e_args|
-        defintion_class = Class.new(section_class) { class_exec(*e_args, &(block)) }
-        ElementDefinitionBuilder.new(options.merge(definition_class: defintion_class))
+      add_element_definition(options.delete(:name)) do |parent_element, *e_args|
+        definition_class = Class.new(section_class) do
+          parent_element(parent_element)
+          class_exec(*e_args, &(block))
+        end
+        ElementDefinitionBuilder.new(options.merge(definition_class: definition_class))
       end
     end
 
@@ -74,6 +74,15 @@ module PageMagic
     end
 
     private
+
+    def compute_options(args)
+      section_class = remove_argument(args, Class) || Element
+      { name: compute_name(args, section_class),
+        selector: compute_selector(args, section_class),
+        options: compute_argument(args, Hash),
+        element: args.delete_at(0),
+        section_class: section_class }
+    end
 
     def add_element_definition(name, &block)
       fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]

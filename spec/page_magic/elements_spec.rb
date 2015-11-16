@@ -73,7 +73,7 @@ module PageMagic
       context 'using a block' do
         it 'passes the parent element in as the last argument' do
           expected_element = instance
-          subject.element :page_section, child_selector do |_arg1, parent_element|
+          subject.element :page_section, child_selector do |_arg1|
             extend RSpec::Matchers
             expect(parent_element).to eq(expected_element)
           end

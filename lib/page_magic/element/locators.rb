@@ -13,7 +13,7 @@ module PageMagic
       def element_by_name(name, *args)
         defintion = element_definitions[name]
         fail ElementMissingException, (ELEMENT_NOT_DEFINED_MSG % name) unless defintion
-        defintion.call(*args.append(self))
+        defintion.call(self, *args)
       end
 
       # @return [Array] class level defined element definitions

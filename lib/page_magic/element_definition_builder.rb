@@ -23,11 +23,10 @@ module PageMagic
     end
 
     # Create new instance of the ElementDefinition modeled by this builder
-    # @param [Element] parent_page_element element containing the element modelled by this builder
     # @param [Object] browser_element capybara browser element corresponding to the element modelled by this builder
     # @return [Element] element definition
-    def build(browser_element, parent_page_element)
-      definition_class.new(browser_element, parent_page_element)
+    def build(browser_element)
+      definition_class.new(browser_element)
     end
 
     def ==(other)
