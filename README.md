@@ -74,7 +74,7 @@ You can do lots with PageMagic including [mapping pages](#page-mapping) to a [se
 # Defining Pages
 To define something that PageMagic can work with, simply include PageMagic in to a class.
 ```ruby
-class LoginPage
+class Google
   include PageMagic
 end
 ```
@@ -82,32 +82,33 @@ end
 Defining elements is easy see the example below.
 
 ```ruby
-class LoginPage
+class Google
   include PageMagic
-  text_field(:username, label: 'username')
-  text_field(:password, label: 'password')
-  button(:login_button, text: 'login')
+  
+  text_field :search_field, name: 'q'
+  button :search_button, name: 'btnG'
 end
 ```
 
 ### Interacting with elements
-Elements are defined with an id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:username`, `:password`, and `:login_button`
+Elements are defined with an id which is the name of the method you will use to reference it. In the above example, the textfields and button were defined with the id's, `:search_field` and `:search_button`.
 
 After visiting a page with a PageMagic session, you can access all of the elements of that page through the session itself.
+
 ```ruby
-session.username.set 'joe@blogs.com'
-session.password.set 'passw0rd'
-session.login_button.click
+session.search_field.set 'page_magic'
+session.search_button.click
 ```
+
 #### Multple Results
 Where an element has been scoped to return multple results, these will be returned in an array. These elements can be defined
-using all of the same features as described in this readme and behave in exactly the same way.
+using all of the same features as described in this readme.
 ```ruby
-class LoginPage
-  element :links, css: 'a'
+class ResultsPage
+  element :results, css: 'srg g'
 end
 
-session.link => Array<Element> 
+session.results => Array<Element> 
 ```
 
 ### Sub Elements
