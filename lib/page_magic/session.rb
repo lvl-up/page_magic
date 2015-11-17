@@ -5,7 +5,7 @@ module PageMagic
   # class Session - coordinates access to the browser though page objects.
   class Session
     URL_MISSING_MSG = 'a path must be mapped or a url supplied'
-    REGEXP_MAPPING_MSG = 'URL could not be derived because mapping is a Regexp'
+    REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'
     INVALID_MAPPING_MSG = 'mapping must be a string or regexp'
 
     extend Forwardable
@@ -25,7 +25,7 @@ module PageMagic
     # @return [Object] returns page object representing the currently loaded page on the browser. If no mapping
     # is found then nil returned
     def current_page
-      mapping = find_mapped_page(current_path)
+      mapping = find_mapped_page(current_url)
       @current_page = initialize_page(mapping) if mapping
       @current_page
     end
@@ -49,7 +49,10 @@ module PageMagic
     # @option transitions [String] path as literal
     # @option transitions [Regexp] path as a regexp for dynamic matching.
     def define_page_mappings(transitions)
-      @transitions = transitions.collect { |key, value| [Matcher.new(key), value] }.to_h
+      @transitions = transitions.collect do |key, value|
+        key = key.is_a?(Matcher) ? key : Matcher.new(key)
+        [key, value]
+      end.to_h
     end
 
     # @!method execute_script
@@ -87,8 +90,8 @@ module PageMagic
       if url
         raw_session.visit(url)
       elsif (mapping = transitions.key(page))
-        fail InvalidURLException, REGEXP_MAPPING_MSG if mapping.fuzzy?
-        raw_session.visit(url(base_url, mapping.path))
+        fail InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
+        raw_session.visit(url(base_url, mapping.compute_uri))
       else
         fail InvalidURLException, URL_MISSING_MSG
       end
@@ -98,10 +101,8 @@ module PageMagic
 
     private
 
-    def find_mapped_page(path)
-      mapping = transitions.keys.find do |matcher|
-        matcher.matches?(path)
-      end
+    def find_mapped_page(url)
+      mapping = transitions.keys.find { |matcher| matcher.match?(url) }
       transitions[mapping]
     end
 

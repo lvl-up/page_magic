@@ -4,37 +4,38 @@ module PageMagic
     let(:page) do
       Class.new do
         include PageMagic
+        url 'http://url.com'
       end
     end
 
     subject { described_class.new(browser) }
 
-    let(:url) { 'http://url.com' }
+    let(:url) { page.url }
     let(:browser) { double('browser', current_url: "#{url}/somepath", visit: nil, current_path: :current_path) }
 
     describe '#current_page' do
       let(:another_page_class) do
         Class.new do
           include PageMagic
-          url '/another_page1'
+          url 'http://www.example.com/another_page1'
         end
       end
 
       before do
-        subject.define_page_mappings another_page_class.url => another_page_class
+        subject.define_page_mappings '/another_page1' => another_page_class
         subject.visit(page, url: url)
       end
 
       context 'page url has not changed' do
         it 'returns the original page' do
-          allow(browser).to receive(:current_path).and_return(page.url)
+          allow(browser).to receive(:current_url).and_return(page.url)
           expect(subject.current_page).to be_an_instance_of(page)
         end
       end
 
       context 'page url has changed' do
         it 'returns the mapped page object' do
-          allow(browser).to receive(:current_path).and_return(another_page_class.url)
+          allow(browser).to receive(:current_url).and_return(another_page_class.url)
           expect(subject.current_page).to be_an_instance_of(another_page_class)
         end
       end
@@ -49,6 +50,23 @@ module PageMagic
     describe '#current_url' do
       it "returns the browser's current url" do
         expect(subject.current_url).to eq(browser.current_url)
+      end
+    end
+
+    describe '#define_page_mappings' do
+      context 'mapping includes a literal' do
+        it 'creates a matcher to contain the specification' do
+          subject.define_page_mappings :path => :page
+          expect(subject.transitions).to eq(Matcher.new(:path) => :page)
+        end
+      end
+
+      context 'mapping is a matcher' do
+        it 'leaves it intact' do
+          expected_matcher = Matcher.new(:page)
+          subject.define_page_mappings expected_matcher => :page
+          expect(subject.transitions.key(:page)).to be(expected_matcher)
+        end
       end
     end
 
