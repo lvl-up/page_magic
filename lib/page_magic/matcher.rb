@@ -11,10 +11,12 @@ module PageMagic
       @fragment = fragment
     end
 
+    # @return [Boolean] true if no component contains a Regexp
     def can_compute_uri?
-      !fragment.is_a?(Regexp) && !path.is_a?(Regexp) && !fuzzy?(parameters)
+      !fuzzy?(fragment) && !fuzzy?(path) && !fuzzy?(parameters)
     end
 
+    # @return [String] uri represented by this mapping
     def compute_uri
       "#{path}".tap do |uri|
         uri << "?#{parameters.to_query}" if parameters
@@ -22,21 +24,22 @@ module PageMagic
       end
     end
 
+    # @return [Fixnum] hash for instance
     def hash
       [path, parameters, fragment].hash
     end
 
-    def match?(string)
-      uri = URI(string)
+    # @param [String] uri
+    # @return [Boolean] returns true if the uri is matched against this matcher
+    def match?(uri)
+      uri = URI(uri)
       path_valid?(uri.path) && query_string_valid?(uri.query) && fragment_valid?(uri.fragment)
     end
 
     def <=>(other)
-      result = compare(path, other.path)
-      return result unless result == 0
-      result = compare(parameters, other.parameters)
-      return result unless result == 0
-      compare(fragment, other.fragment)
+      [:path, :parameters, :fragment].inject(0) do |result, component|
+        result == 0 ? compare(send(component), other.send(component)) : result
+      end
     end
 
     def ==(other)
@@ -66,12 +69,12 @@ module PageMagic
       compatible?(string, fragment)
     end
 
-    def fuzzy?(component = nil)
+    def fuzzy?(component)
       return false unless component
       if component.is_a?(Hash)
-        return !component.values.find { |o| fuzzy?(o) }.nil?
+        component.values.any? { |o| fuzzy?(o) }
       else
-        return component.is_a?(Regexp)
+        component.is_a?(Regexp)
       end
     end
 
@@ -99,10 +102,9 @@ module PageMagic
 
     def query_string_valid?(string)
       return true unless parameters
-      actual_parameters = parameters_hash(string)
-      parameters.find do |key, value|
-        !compatible?(actual_parameters[key.downcase.to_s], value)
-      end.nil?
+      !parameters.any? do |key, value|
+        !compatible?(parameters_hash(string)[key.downcase.to_s], value)
+      end
     end
   end
 end
