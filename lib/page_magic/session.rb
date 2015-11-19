@@ -102,13 +102,11 @@ module PageMagic
     private
 
     def find_mapped_page(url)
-      # TODO: - rank matches and choose highest rank? could be difficult because path match overalls everything?
-      # TODO maybe find based on path, then rank of parameters and fragment?
       matches(url).first
     end
 
     def matches(url)
-      transitions.keys.find_all { |matcher| matcher.match?(url) }.collect{|match| transitions[match]}
+      transitions.keys.find_all { |matcher| matcher.match?(url) }.sort.collect { |match| transitions[match] }
     end
 
     def initialize_page(page_class)

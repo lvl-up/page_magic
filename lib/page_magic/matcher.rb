@@ -1,5 +1,6 @@
 require 'active_support/core_ext/object/to_query'
 module PageMagic
+  # models mapping used to relate pages to uris
   class Matcher
     attr_reader :path, :parameters, :fragment
 
@@ -10,12 +11,12 @@ module PageMagic
     end
 
     def can_compute_uri?
-      !fragment.is_a?(Regexp) && !path.is_a?(Regexp) && !parameters.values.find { |v| v.is_a?(Regexp) }
+      !fragment.is_a?(Regexp) && !path.is_a?(Regexp) && !fuzzy?(parameters)
     end
 
     def compute_uri
       "#{path}".tap do |uri|
-        uri << "?#{parameters.to_query}" unless parameters.empty?
+        uri << "?#{parameters.to_query}" if parameters
         uri << "##{fragment}" if fragment
       end
     end
@@ -29,47 +30,30 @@ module PageMagic
       path_valid?(uri.path) && query_string_valid?(uri.query) && fragment_valid?(uri.fragment)
     end
 
-    def score
-      score = 0
-      score += fuzzy?(path) ? 1 : 2 if path
-      parameters.values.each do |value|
-        score += fuzzy?(value) ? 1 : 2
-      end
-      score += fuzzy?(fragment) ? 1 : 2 if fragment
-      score
+    def <=>(other)
+      result = compare(path, other.path)
+      return result unless result == 0
+      result = compare(parameters, other.parameters)
+      return result unless result == 0
+      compare(fragment, other.fragment)
     end
 
-    def <=> other
-      result = if path
-                 if other.path
-                   if fuzzy?(path)
-                     fuzzy?(other.path) ? 0 : 1
-                   else
-                     fuzzy?(other.path) ? -1 : 0
-                   end
-                 else
-                   -1
-                 end
-               elsif other.path
-                 1
-               else
-                 0
-               end
-      return result unless result == 0
-      if parameters
-        if !other.parameters
-          -1
-        else
-          if fuzzy?(parameters)
-            fuzzy?(other.parameters) ? 0 : 1
-          else
-            fuzzy?(other.parameters) ? -1 : 0
-          end
-        end
-      elsif other.parameters
-        1
+    def compare(this, other)
+      return presence_comparison(this, other) unless this && other
+      fuzzy_comparison(this, other)
+    end
+
+    def presence_comparison(this, other)
+      return 0 if this.nil? && other.nil?
+      return 1 if this.nil? && other
+      -1
+    end
+
+    def fuzzy_comparison(this, other)
+      if fuzzy?(this)
+        fuzzy?(other) ? 0 : 1
       else
-        0
+        fuzzy?(other) ? -1 : 0
       end
     end
 
@@ -91,14 +75,12 @@ module PageMagic
     end
 
     def fuzzy?(component = nil)
-      if component
-        if component.is_a?(Hash)
-          return !component.keys.find{|o|fuzzy?(o)}.nil?
-        else
-          return component.is_a?(Regexp) if component
-        end
+      return false unless component
+      if component.is_a?(Hash)
+        return !component.values.find { |o| fuzzy?(o) }.nil?
+      else
+        return component.is_a?(Regexp)
       end
-      ![path, parameters, fragment].compact.find { |o| fuzzy?(o) }.nil?
     end
 
     def path_valid?(string)
@@ -110,10 +92,15 @@ module PageMagic
     end
 
     def query_string_valid?(string)
-      actual_parameters = CGI.parse(string.to_s.downcase).collect { |key, value| [key.downcase, value.first] }.to_h
+      return true unless parameters
+      actual_parameters = parameters_hash(string)
       parameters.find do |key, value|
         !compatible?(actual_parameters[key.downcase.to_s], value)
       end.nil?
+    end
+
+    def parameters_hash(string)
+      CGI.parse(string.to_s.downcase).collect { |key, value| [key.downcase, value.first] }.to_h
     end
   end
 end

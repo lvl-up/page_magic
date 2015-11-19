@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Matcher do
     describe '#can_compute_uri?' do
@@ -9,7 +10,7 @@ module PageMagic
 
       context 'regex in parameters' do
         it 'returns false' do
-          expect(described_class.new(parameters: {param: //}).can_compute_uri?).to eq(false)
+          expect(described_class.new(parameters: { param: // }).can_compute_uri?).to eq(false)
         end
       end
 
@@ -36,13 +37,13 @@ module PageMagic
       context 'params present' do
         context '1 param' do
           it 'returns a uri' do
-            expect(described_class.new(parameters: {a: 1}).compute_uri).to eq('?a=1')
+            expect(described_class.new(parameters: { a: 1 }).compute_uri).to eq('?a=1')
           end
         end
 
         context 'more than 1 param' do
           it 'returns a uri' do
-            expect(described_class.new(parameters: {a: 1, b: 2}).compute_uri).to eq('?a=1&b=2')
+            expect(described_class.new(parameters: { a: 1, b: 2 }).compute_uri).to eq('?a=1&b=2')
           end
         end
       end
@@ -88,7 +89,7 @@ module PageMagic
       context 'query string requirement exists' do
         context 'parameter requirement is a literal' do
           subject do
-            described_class.new(parameters: {foo: 'bar'})
+            described_class.new(parameters: { foo: 'bar' })
           end
 
           it 'returns true for a match' do
@@ -102,7 +103,7 @@ module PageMagic
 
         context 'parameter requirement is a regexp' do
           subject do
-            described_class.new(parameters: {foo: /b[a]r/})
+            described_class.new(parameters: { foo: /b[a]r/ })
           end
 
           it 'returns true for a match on the regexp' do
@@ -147,136 +148,77 @@ module PageMagic
     end
 
     describe '<=>' do
-      context 'self has path' do
-        context 'other has path' do
+      it 'compares paths' do
+        subject = described_class.new('/')
+        expect(subject).to receive(:compare).with('/', nil).and_return(:result)
+        expect(subject <=> described_class.new).to eq(:result)
+      end
+
+      context 'paths are equal' do
+        it 'compares parameters' do
+          subject = described_class.new('/', parameters: :params1)
+          expect(subject).to receive(:compare).with('/', '/').and_call_original
+          expect(subject).to receive(:compare).with(:params1, :params2).and_return(:params_result)
+          expect(subject <=> described_class.new('/', parameters: :params2)).to eq(:params_result)
+        end
+      end
+
+      context 'parameters are equal' do
+        it 'compares fragments' do
+          subject = described_class.new('/', parameters: :params, fragment: :frag1)
+          expect(subject).to receive(:compare).with('/', '/').and_call_original
+          expect(subject).to receive(:compare).with(:params, :params).and_call_original
+          expect(subject).to receive(:compare).with(:frag1, :frag2).and_return(:fragment_result)
+          expect(subject <=> described_class.new('/', parameters: :params, fragment: :frag2)).to eq(:fragment_result)
+        end
+      end
+    end
+
+    describe 'compare' do
+      context 'param 1 not nil' do
+        context 'param 2 not nil' do
           context 'literal to fuzzy' do
             it 'returns -1' do
-              expect(described_class.new('/') <=> described_class.new(%r{})).to eq(-1)
+              expect(described_class.new.instance_eval { compare('/', //) }).to eq(-1)
             end
           end
 
           context 'literal to literal' do
             it 'returns 0' do
-              expect(described_class.new('/') <=> described_class.new('/')).to eq(0)
+              expect(described_class.new.instance_eval { compare('/', '/') }).to eq(0)
             end
           end
 
           context 'fuzzy to fuzzy' do
             it 'returns 0' do
-              expect(described_class.new(%r{}) <=> described_class.new(%r{})).to eq(0)
+              expect(described_class.new.instance_eval { compare(//, //) }).to eq(0)
             end
           end
 
           context 'fuzzy to literal' do
             it 'returns 1' do
-              expect(described_class.new(%r{}) <=> described_class.new('/')).to eq(1)
+              expect(described_class.new.instance_eval { compare(//, '/') }).to eq(1)
             end
           end
         end
 
-        context 'other does not have path' do
+        context 'param2 is nil' do
           it 'returns -1' do
-            expect(described_class.new('/') <=> described_class.new).to eq(-1)
+            expect(described_class.new.instance_eval { compare('/', nil) }).to eq(-1)
           end
         end
       end
 
-      context 'self does not have path' do
-        context 'other does have path' do
+      context 'param1 is nil' do
+        context 'param2 not nil' do
           it 'returns 1' do
-            expect(described_class.new <=> described_class.new('/')).to eq(1)
+            expect(described_class.new.instance_eval { compare(nil, '/') }).to eq(1)
           end
         end
 
-        context 'other does not have path' do
+        context 'param2 nil' do
           it 'returns 0' do
-            expect(described_class.new <=> described_class.new).to eq(0)
-          end
-        end
-      end
-
-      context 'self has parameters' do
-        context 'other has parameters' do
-          context 'literal to literal' do
-            it 'returns 0' do
-              expect(described_class.new(parameters: {'/' => :mapping}) <=> described_class.new(parameters: {'/' => :mapping})).to eq(0)
-            end
-          end
-
-          context 'literal to fuzzy' do
-            it 'returns -1' do
-              expect(described_class.new(parameters: {'/' => :mapping}) <=> described_class.new(parameters: {%r{} => :mapping})).to eq(-1)
-            end
-          end
-
-          context 'fuzzy to literal' do
-            it 'returns -1' do
-              expect(described_class.new(parameters: {%r{} => :mapping}) <=> described_class.new(parameters: {'/' => :mapping}) ).to eq(1)
-            end
-          end
-
-          context 'fuzzy to fuzzy' do
-            it 'returns 0' do
-              expect(described_class.new(parameters: {%r{} => :mapping}) <=> described_class.new(parameters: {%r{} => :mapping}) ).to eq(0)
-            end
-          end
-
-          context 'literal to literal' do
-            it 'returns 0' do
-              expect(described_class.new(parameters: {'/' => :mapping}) <=> described_class.new(parameters: {'/' => :mapping}) ).to eq(0)
-            end
-          end
-        end
-
-        context 'other does not have parameters' do
-          it 'returns -1' do
-            expect(described_class.new(parameters: {'/' => :mapping}) <=> described_class.new).to eq(-1)
-          end
-        end
-
-
-      end
-    end
-
-    describe 'score' do
-      context 'has path' do
-        context 'literal' do
-          it 'scores 2' do
-            expect(described_class.new('/').score).to eq(2)
-          end
-        end
-
-        context 'regexp' do
-          it 'returns 1' do
-            expect(described_class.new(%r{}).score).to eq(1)
-          end
-        end
-      end
-
-      context 'has parameters' do
-        context 'literal' do
-          it 'returns 2 per literal' do
-            expect(described_class.new(parameters: {a: '1', b: '2'}).score).to eq(4)
-          end
-        end
-
-        context 'regexp' do
-          it 'returns 2 per regexp' do
-            expect(described_class.new(parameters: {a: %r{}, b: %r{}}).score).to eq(2)
-          end
-        end
-      end
-
-      context 'has fragment' do
-        context 'literal' do
-          it 'scores 2' do
-            expect(described_class.new(fragment: 'fragment').score).to eq(2)
-          end
-        end
-
-        context 'regexp' do
-          it 'returns 1' do
-            expect(described_class.new(fragment: %r{}).score).to eq(1)
+            expect(described_class.new.instance_eval { compare(nil, nil) }).to eq(0)
           end
         end
       end

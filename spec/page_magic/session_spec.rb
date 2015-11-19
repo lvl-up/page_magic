@@ -79,14 +79,20 @@ module PageMagic
 
     describe '#find_mapped_page' do
       subject do
-        described_class.new(nil).tap do |session|
-          session.define_page_mappings '/page' => :mapped_page_using_string
-        end
+        described_class.new(nil)
       end
 
       context 'match found' do
         it 'returns the page class' do
+          subject.define_page_mappings '/page' => :mapped_page_using_string
           expect(subject.instance_eval { find_mapped_page('/page') }).to be(:mapped_page_using_string)
+        end
+
+        context 'more than one match is found' do
+          it 'returns the most specific match' do
+            subject.define_page_mappings %r{/page} => :mapped_page_using_regex, '/page' => :mapped_page_using_string
+            expect(subject.instance_eval { find_mapped_page('/page') }).to eq(:mapped_page_using_string)
+          end
         end
       end
 
@@ -98,23 +104,23 @@ module PageMagic
     end
 
     describe '#matches' do
-
       subject do
-        described_class.new(nil).tap do |session|
-          session.define_page_mappings '/page' => :mapped_page_using_string
-        end
+        described_class.new(nil)
       end
 
       it 'returns matching page mappings' do
+        subject.define_page_mappings '/page' => :mapped_page_using_string
         expect(subject.instance_eval { matches('/page') }).to eq([:mapped_page_using_string])
       end
 
       context 'more than one match on path' do
-        context ''
+        it 'orders the results by specificity ' do
+          subject.define_page_mappings %r{/page} => :mapped_page_using_regex, '/page' => :mapped_page_using_string
+          expected_result = [:mapped_page_using_string, :mapped_page_using_regex]
+          expect(subject.instance_eval { matches('/page') }).to eq(expected_result)
+        end
       end
     end
-
-
 
     describe '#method_missing' do
       it 'should delegate to current page' do
