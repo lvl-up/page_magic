@@ -59,7 +59,8 @@ module PageMagic
     end
 
     def ==(other)
-      other.is_a?(Matcher) && path == other.path && parameters == other.parameters && fragment == other.fragment
+      return false unless other.is_a?(Matcher)
+      path == other.path && parameters == other.parameters && fragment == other.fragment
     end
 
     alias_method :eql?, :==
