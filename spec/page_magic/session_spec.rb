@@ -56,7 +56,7 @@ module PageMagic
     describe '#define_page_mappings' do
       context 'mapping includes a literal' do
         it 'creates a matcher to contain the specification' do
-          subject.define_page_mappings :path => :page
+          subject.define_page_mappings path: :page
           expect(subject.transitions).to eq(Matcher.new(:path) => :page)
         end
       end
@@ -70,21 +70,23 @@ module PageMagic
       end
     end
 
+    describe '#execute_script' do
+      it 'calls the execute script method on the capybara session' do
+        expect(browser).to receive(:execute_script).with(:script).and_return(:result)
+        expect(subject.execute_script(:script)).to be(:result)
+      end
+    end
+
     describe '#find_mapped_page' do
       subject do
         described_class.new(nil).tap do |session|
-          session.define_page_mappings '/page' => :mapped_page_using_string, /page\d/ => :mapped_page_using_regex
+          session.define_page_mappings '/page' => :mapped_page_using_string
         end
       end
 
-      context 'mapping is string' do
+      context 'match found' do
         it 'returns the page class' do
           expect(subject.instance_eval { find_mapped_page('/page') }).to be(:mapped_page_using_string)
-        end
-      end
-      context 'mapping is regex' do
-        it 'returns the page class' do
-          expect(subject.instance_eval { find_mapped_page('/page2') }).to be(:mapped_page_using_regex)
         end
       end
 
@@ -95,12 +97,24 @@ module PageMagic
       end
     end
 
-    describe '#execute_script' do
-      it 'calls the execute script method on the capybara session' do
-        expect(browser).to receive(:execute_script).with(:script).and_return(:result)
-        expect(subject.execute_script(:script)).to be(:result)
+    describe '#matches' do
+
+      subject do
+        described_class.new(nil).tap do |session|
+          session.define_page_mappings '/page' => :mapped_page_using_string
+        end
+      end
+
+      it 'returns matching page mappings' do
+        expect(subject.instance_eval { matches('/page') }).to eq([:mapped_page_using_string])
+      end
+
+      context 'more than one match on path' do
+        context ''
       end
     end
+
+
 
     describe '#method_missing' do
       it 'should delegate to current page' do
