@@ -5,7 +5,7 @@ module PageMagic
     attr_reader :path, :parameters, :fragment
 
     def initialize(path = nil, parameters: nil, fragment: nil)
-      #TODO raise exception if at least one is not specified
+      # TODO: raise exception if at least one is not specified
       @path = path
       @parameters = parameters
       @fragment = fragment
@@ -39,25 +39,6 @@ module PageMagic
       compare(fragment, other.fragment)
     end
 
-    def compare(this, other)
-      return presence_comparison(this, other) unless this && other
-      fuzzy_comparison(this, other)
-    end
-
-    def presence_comparison(this, other)
-      return 0 if this.nil? && other.nil?
-      return 1 if this.nil? && other
-      -1
-    end
-
-    def fuzzy_comparison(this, other)
-      if fuzzy?(this)
-        fuzzy?(other) ? 0 : 1
-      else
-        fuzzy?(other) ? -1 : 0
-      end
-    end
-
     def ==(other)
       return false unless other.is_a?(Matcher)
       path == other.path && parameters == other.parameters && fragment == other.fragment
@@ -67,6 +48,11 @@ module PageMagic
 
     private
 
+    def compare(this, other)
+      return presence_comparison(this, other) unless this && other
+      fuzzy_comparison(this, other)
+    end
+
     def compatible?(string, comparitor)
       return true if comparitor.nil?
       if fuzzy?(comparitor)
@@ -74,6 +60,10 @@ module PageMagic
       else
         string == comparitor
       end
+    end
+
+    def fragment_valid?(string)
+      compatible?(string, fragment)
     end
 
     def fuzzy?(component = nil)
@@ -85,12 +75,26 @@ module PageMagic
       end
     end
 
+    def fuzzy_comparison(this, other)
+      if fuzzy?(this)
+        fuzzy?(other) ? 0 : 1
+      else
+        fuzzy?(other) ? -1 : 0
+      end
+    end
+
+    def parameters_hash(string)
+      CGI.parse(string.to_s.downcase).collect { |key, value| [key.downcase, value.first] }.to_h
+    end
+
     def path_valid?(string)
       compatible?(string, path)
     end
 
-    def fragment_valid?(string)
-      compatible?(string, fragment)
+    def presence_comparison(this, other)
+      return 0 if this.nil? && other.nil?
+      return 1 if this.nil? && other
+      -1
     end
 
     def query_string_valid?(string)
@@ -99,10 +103,6 @@ module PageMagic
       parameters.find do |key, value|
         !compatible?(actual_parameters[key.downcase.to_s], value)
       end.nil?
-    end
-
-    def parameters_hash(string)
-      CGI.parse(string.to_s.downcase).collect { |key, value| [key.downcase, value.first] }.to_h
     end
   end
 end
