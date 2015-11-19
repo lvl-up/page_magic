@@ -266,13 +266,16 @@ Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capyba
 **Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
 
 # Page mapping
-With PageMagic you can map which pages should be used to handle which URL paths. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
+With PageMagic you can map which pages should be used to handle which URLs. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
 ```ruby
 # define what pages map to what
 browser.define_page_mappings %r{/messages/\d+} => MessagePage,
                              '/login' => LoginPage,
                              '/' => MailBox
 ```
+## Matching request parameters
+## Matching fragments
+
 You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping paths that that starts with '/messages/' and are followed by one ore more digits to the `MessagePage` class.
 
 # Watchers

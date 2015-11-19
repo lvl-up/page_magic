@@ -4,8 +4,9 @@ module PageMagic
   class Matcher
     attr_reader :path, :parameters, :fragment
 
+    # @raise [MatcherInvalidException] if at least one component is not specified
     def initialize(path = nil, parameters: nil, fragment: nil)
-      # TODO: raise exception if at least one is not specified
+      fail MatcherInvalidException unless path || parameters || fragment
       @path = path
       @parameters = parameters
       @fragment = fragment

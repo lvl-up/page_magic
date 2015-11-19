@@ -16,6 +16,10 @@ require 'page_magic/drivers'
 module PageMagic
   extend SingleForwardable
 
+  # @!method matcher
+  # define match critera for loading a page object class
+  # @see Matcher#initialize
+  # @return [Matcher]
   def_delegator Matcher, :new, :matcher
 
   class << self

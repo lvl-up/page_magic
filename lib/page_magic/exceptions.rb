@@ -11,6 +11,9 @@ module PageMagic
   class InvalidURLException < Exception
   end
 
+  class MatcherInvalidException < Exception
+  end
+
   class TimeoutException < Exception
   end
 

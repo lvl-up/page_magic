@@ -1,6 +1,13 @@
 # rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Matcher do
+    describe '#initialize' do
+      context 'no componentes specified' do
+        it 'raises an exeception' do
+          expect { described_class.new }.to raise_exception(MatcherInvalidException)
+        end
+      end
+    end
     describe '#can_compute_uri?' do
       context 'regex in path' do
         it 'returns false' do
@@ -22,7 +29,58 @@ module PageMagic
 
       context 'regexp not present' do
         it 'returns true' do
-          expect(described_class.new.can_compute_uri?).to eq(true)
+          expect(described_class.new('/').can_compute_uri?).to eq(true)
+        end
+      end
+    end
+
+    describe 'compare' do
+      subject { described_class.new('/') }
+      context 'param 1 not nil' do
+        context 'param 2 not nil' do
+          context 'literal to fuzzy' do
+            it 'returns -1' do
+              expect(subject.instance_eval { compare('/', //) }).to eq(-1)
+            end
+          end
+
+          context 'literal to literal' do
+            it 'returns 0' do
+              expect(subject.instance_eval { compare('/', '/') }).to eq(0)
+            end
+          end
+
+          context 'fuzzy to fuzzy' do
+            it 'returns 0' do
+              expect(subject.instance_eval { compare(//, //) }).to eq(0)
+            end
+          end
+
+          context 'fuzzy to literal' do
+            it 'returns 1' do
+              expect(subject.instance_eval { compare(//, '/') }).to eq(1)
+            end
+          end
+        end
+
+        context 'param2 is nil' do
+          it 'returns -1' do
+            expect(subject.instance_eval { compare('/', nil) }).to eq(-1)
+          end
+        end
+      end
+
+      context 'param1 is nil' do
+        context 'param2 not nil' do
+          it 'returns 1' do
+            expect(subject.instance_eval { compare(nil, '/') }).to eq(1)
+          end
+        end
+
+        context 'param2 nil' do
+          it 'returns 0' do
+            expect(subject.instance_eval { compare(nil, nil) }).to eq(0)
+          end
         end
       end
     end
@@ -151,7 +209,7 @@ module PageMagic
       it 'compares paths' do
         subject = described_class.new('/')
         expect(subject).to receive(:compare).with('/', nil).and_return(:result)
-        expect(subject <=> described_class.new).to eq(:result)
+        expect(subject <=> described_class.new(parameters: {})).to eq(:result)
       end
 
       context 'paths are equal' do
@@ -170,56 +228,6 @@ module PageMagic
           expect(subject).to receive(:compare).with(:params, :params).and_call_original
           expect(subject).to receive(:compare).with(:frag1, :frag2).and_return(:fragment_result)
           expect(subject <=> described_class.new('/', parameters: :params, fragment: :frag2)).to eq(:fragment_result)
-        end
-      end
-    end
-
-    describe 'compare' do
-      context 'param 1 not nil' do
-        context 'param 2 not nil' do
-          context 'literal to fuzzy' do
-            it 'returns -1' do
-              expect(described_class.new.instance_eval { compare('/', //) }).to eq(-1)
-            end
-          end
-
-          context 'literal to literal' do
-            it 'returns 0' do
-              expect(described_class.new.instance_eval { compare('/', '/') }).to eq(0)
-            end
-          end
-
-          context 'fuzzy to fuzzy' do
-            it 'returns 0' do
-              expect(described_class.new.instance_eval { compare(//, //) }).to eq(0)
-            end
-          end
-
-          context 'fuzzy to literal' do
-            it 'returns 1' do
-              expect(described_class.new.instance_eval { compare(//, '/') }).to eq(1)
-            end
-          end
-        end
-
-        context 'param2 is nil' do
-          it 'returns -1' do
-            expect(described_class.new.instance_eval { compare('/', nil) }).to eq(-1)
-          end
-        end
-      end
-
-      context 'param1 is nil' do
-        context 'param2 not nil' do
-          it 'returns 1' do
-            expect(described_class.new.instance_eval { compare(nil, '/') }).to eq(1)
-          end
-        end
-
-        context 'param2 nil' do
-          it 'returns 0' do
-            expect(described_class.new.instance_eval { compare(nil, nil) }).to eq(0)
-          end
         end
       end
     end
