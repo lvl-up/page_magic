@@ -106,18 +106,16 @@ end
 
 ### Interacting with elements
 Elements are defined with an id which is the name of the method you will use to reference it. In the above example, 
-the textfields and button were defined with the id's, `:search_field` and `:search_button`.
+the text field was defined with the ide `:search_field`.
 
-After visiting a page with a PageMagic session, you can access all of the elements of that page through the session 
-itself.
+After visiting a page you are will get a `Session` object. Elements can be accessed through the session itself.
 
 ```ruby
 page.search_field.set 'page_magic'
 ```
 
 #### Multple Results
-Where an element has been scoped to return multple results, these will be returned in an array. These elements can be 
-defined using all of the same features as described in this readme.
+Where an element has been scoped to return multple results, these will be returned in an array. 
 ```ruby
 class ResultsPage
   include PageMagic
@@ -162,9 +160,7 @@ class Github
 end
 ```
 
-If an id is not specified then the name of the element class will be used. The selector for the element can be  
-specified on the class itself or overiden when defining the element on the page. The custom element can also be 
-extended as with other elements.
+If an id is not specified then the name of the element class will be used. In the above example the name given to the element of type `SearchField` would be `search_field`. The selector for the element can bespecified on the class itself or overiden when defining the element. The custom element can also be extended as with other elements.
 
 ```ruby
 class MyPage
@@ -176,16 +172,15 @@ end
 ```
 
 ## Hooks
-PageMagic provides hooks to allow you to interact at the right moments with your pages.
+PageMagic provides hooks to allow you to define actions that are executed when you pages and elements are interacted with.
 
 **Note:** 
-- with hooks you may well find PageMagic's [watchers](#watchers) useful.
-- The following examples wait for actions to happen. You can of course write you own wait code or try out our
+- You may well find PageMagic's [watchers](#watchers) useful.
+- The following examples wait for actions to happen. You can of course write you own wait code or feel free try out our
  [wait_until](#waiting) helper:)
 
 ### On load hook
-PageMagic lets you define an on_load hook for your pages. This lets you write any custom wait logic you might need 
-before letting execution continue.
+PageMagic lets you define an on_load hook for your pages. This will be executed when the browser thinks the page has been loaded.
 
 ```ruby
 class Github
@@ -198,9 +193,8 @@ end
 ```
 
 ### Element event hooks
-Frequently, you are going to have to work with pages that make heavy use of ajax. This means that just because you've 
-clicked something, it doesn't mean that the action is finished. For these occasions PageMagic provides `before_events` 
-and `after_events` hooks that you use to perform custom actions and wait for things to happen.
+Frequently, you are going to have to work with pages that make heavy use of ajax. For these occasions PageMagic provides `before_events` 
+and `after_events` hooks that you use to perform custom action.
 
 In the following example we have added watchers and event hooks to the SearchField custom element we defined in the 
 [previous section](#custom-elements). Encapsulating the business logic here means that we can really add value to 
@@ -217,9 +211,7 @@ end
 ```
 
 ## Helper methods
-Using elements that are defined on a page is great, but if you are enacting a procedure through interacting with a 
-few of them then your code could end up with some pretty repetitive code. In this case you can define helper methods  
-instead. 
+Helper methods can be defined to avoid writing repetive page/element specific code outside of your pages and elements.
 
 ```ruby
 class Github
@@ -240,7 +232,7 @@ page.search('page_magic')
 ## Dynamic Selectors
 In some cases you wont be able to specify the selector for an element until runtime. PageMagic allows you to handle 
 such situations with support for dynamic selectors. In the case of our Github example it would be nice to select a 
-particular result by supplying the owners organisation name at runtime. 
+particular result by supplying the owners organisation name. 
 
 ```ruby
 class ResultsPage
@@ -256,7 +248,7 @@ end
 ```
 
 In the above example the selector looks for an element that has a link containing text that includes that organisation.
-The example uses a named parameter.
+The example uses a named parameter and is invoked as follows.
 ```ruby
 page.results(organisation: 'Ladtech')
 ```
@@ -270,8 +262,7 @@ session = PageMagic.session(browser: :chrome, url: 'https://www.github.com)
 Your session won't do much besides navigating to the given url until you have [mapped pages](#page-mapping) to it, so 
 take a look at this next! 
 
-**Note** PageMagic supports having multiple sessions pointed at different urls using different browsers at the same 
-time :)
+**Note** PageMagic supports having multiple sessions using different browsers at the same time :)
  
 ## Rack applications and Rack::Test
 To run a session against a rack application instead of a live site, simply supply the rack application when creating 
@@ -295,24 +286,22 @@ Out of the box, PageMagic supports the following as parameters to browser:
 - :rack_test
 
 Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capybara) so you can register any Capybara 
-specific driver you want. See [below](#registering-a-custom-driver) for how to do this.
+compliant driver you want. See [below](#registering-a-custom-driver) for how to do this.
 
 **Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore 
-you will need add the requiste gem to your Gemfile.
+you will need add the requiste gems to your Gemfile.
 
 # Page mapping
-With PageMagic you can map which pages should be used to handle which resouces. This feature removes a lot of the 
-juggling and bring back fluency to your code!
-
-**Note:** By default mappings are matched against a URL's path. In addition, PageMagic supports mapping against both 
-query string parameters and the fragement identifer (see below).
+With PageMagic you can map which pages should be used to handle which resources. Meaning that when a the page in the browser changes, PageMagic loads the correct PageObject class to handle it. This feature removes a lot of the juggling and brings back fluency to your code!
 
 ```ruby
 # define what pages map to what
 session.define_page_mappings '/' => GitHub, '/search' => ResultsPage
 ```
-
 You can use even use regular expressions and provide more than one mapping to the same page object class.
+
+**Note:** By default mappings are matched against a URL's path. In addition, PageMagic supports mapping against both 
+query string parameters and the fragement identifer (see below). Any combination of these can be used to define a page mapping.
 
 ## Mapping against query string parameters
 ```ruby
@@ -320,9 +309,7 @@ browser.define_page_mappings PageMagic.mapping(parameters: {parameter_name: stri
 ```
 
 ## Mapping against fragment identifiers
-JavaScript MVC frameworks allow different resources to be mapped against the value received through the fragment 
-portion of URLs. That is the part of the URL that follows the 
-[Fragement identififer](https://en.wikipedia.org/wiki/Fragment_identifier). PageMagic supports mapping page_objects 
+JavaScript MVC frameworks allow different resources to be mapped the fragment portion of URLs. That is the part of the URL that follows the [Fragement identififer](https://en.wikipedia.org/wiki/Fragment_identifier) (#). PageMagic supports mapping page_objects 
 against URL fragments.
 
 ```ruby
@@ -330,9 +317,7 @@ browser.define_page_mappings PageMagic.mapping(fragment: string_or_regex) => Res
 ```
 
 # Watchers
-PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide 
-when things have changed. The `watch` method can be called from anywhere within an element definition. For PageObjects 
-it can only be called from within hooks and helper methods.
+PageMagic lets you set a watcher on any element. Use watchers to decide when things have changed. The `watch` method can be called from anywhere within an element definition. For PageObjects it can only be called from within hooks and helper methods.
 
 **Note**: Watchers are not inherited
 
@@ -349,8 +334,9 @@ end
 ```
 
 ## Simple watchers
-Simple watchers use the `watch` method passing two parameters, the first is the name of the element you want to keep 
-an eye and the second is the method that needs to be called to get the value that should be observed.
+Use `watch` method passing two parameters, the first is the name of the element you want to keep 
+an eye on and the second is the method that needs to be called to get the value that should be observed.
+
 ```ruby
 element :product_row, css '.cta' do
   watch(:total, :text)
@@ -378,8 +364,7 @@ end
 ```
 
 # Waiting
-It's inevitable that if there is JavaScript on the page that you are going to have to wait for things to happen 
-before you can move on. PageMagic supplies the `wait_until` method that can be used anywhere you might need it. The wait_until method takes a block that it will execute until either that block returns true or the timeout occurs. See the method docs for details on configuring timeouts and retry intervals.
+It's inevitable that if there is JavaScript on the page that you are going to have to wait for things to happen. PageMagic supplies the `wait_until` method that can be used anywhere you might need it. The wait_until method takes a block that it will execute until either that block returns true or the timeout occurs. See the method docs for details on configuring timeouts and retry intervals.
 
 # Drivers
 ## Registering a custom driver
