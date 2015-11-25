@@ -77,7 +77,7 @@ github = Github.visit(browser: chrome)
 github.search('page_magic')
 ```
 
-This example defines a simple page to represent Github's home page page, visits it and performs a search. 
+This example defines a page to represent Github's home page, visits it and performs a search. 
 
 This code models a single page and will let you [interact](#interacting-with-elements) with the [elements](#elements) 
 defined on it as well as use the [helper method](Helpers) we defined.
