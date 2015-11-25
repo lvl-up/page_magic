@@ -37,12 +37,18 @@ module PageMagic
       path_valid?(uri.path) && query_string_valid?(uri.query) && fragment_valid?(uri.fragment)
     end
 
+    # compare this matcher against another
+    # @param [Matcher] other
+    # @return [Fixnum] -1 = smaller, 0 = equal to, 1 = greater than
     def <=>(other)
       [:path, :parameters, :fragment].inject(0) do |result, component|
         result == 0 ? compare(send(component), other.send(component)) : result
       end
     end
 
+    # check equality
+    # @param [Matcher] other
+    # @return [Boolean]
     def ==(other)
       return false unless other.is_a?(Matcher)
       path == other.path && parameters == other.parameters && fragment == other.fragment
