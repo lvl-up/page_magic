@@ -31,6 +31,8 @@ Give it a try and let us know what you think! There will undoubtedly be things t
   - [Dynamic Selectors](#dynamic-selectors)
 - [Starting a session](#starting-a-session)
 - [Page mapping](#page-mapping)
+  - [Mapping against query string parameters](#mapping-against-query-string-parameters)
+  - [Mapping against fragment identifiers](#mapping-against-fragment-identifiers)
 - [Watchers](#watchers)
   - [Method watchers](#method-watchers)
   - [Simple watchers](#simple-watchers)
@@ -266,17 +268,32 @@ Under the hood, PageMagic is using [Capybara](https://github.com/jnicklas/capyba
 **Note:** We don't want to impose particular driver versions so PageMagic does not list any as dependencies. Therefore you will need add the requiste gem to your Gemfile.
 
 # Page mapping
-With PageMagic you can map which pages should be used to handle which URLs. This is a pretty killer feature that will remove a lot of the juggling and bring back fluency to your code!
+With PageMagic you can map which pages should be used to handle which resouces. This feature removes a lot of the juggling and bring back fluency to your code!
+
+**Note:** By default mappings are matched against a URL's path. In addition, PageMagic supports mapping against both query string parameters
+and the fragement identifer (see below).
+
 ```ruby
 # define what pages map to what
 browser.define_page_mappings %r{/messages/\d+} => MessagePage,
                              '/login' => LoginPage,
                              '/' => MailBox
 ```
-## Matching request parameters
-## Matching fragments
 
 You can use even use regular expressions to map multiple paths to the same page. In the above example we are mapping paths that that starts with '/messages/' and are followed by one ore more digits to the `MessagePage` class.
+
+## Mapping against query string parameters
+```ruby
+browser.define_page_mappings PageMagic.mapping(parameters: {parameter_name: string_or_regex}) => ResultsPage,                             
+```
+
+## Mapping against fragment identifiers
+JavaScript MVC frameworks allow different resources to be mapped against the value received through the fragment portion
+of URLs. That is the part of the URL that follows 
+the [Fragement identififer](https://en.wikipedia.org/wiki/Fragment_identifier). PageMagic supports mapping page_objects against URL fragments.
+```ruby
+browser.define_page_mappings PageMagic.mapping(fragment: string_or_regex) => ResultsPage,                             
+```
 
 # Watchers
 PageMagic lets you set a watcher on any of the elements that you have defined on your pages. Use watchers to decide when
