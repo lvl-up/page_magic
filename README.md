@@ -94,7 +94,7 @@ class Github
 end
 ```
 ## Elements
-Defining elements is easy see the example below.
+Defining elements is easy. The following example defines a text field called 'search_field' that can be found using its name which is 'q'
 
 ```ruby
 class Github
