@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 
 gem 'capybara', '>= 2.5'
 gem 'activesupport', '~> 4'
-gem 'wait', '~> 0'
 
 group :test do
   gem 'watir-webdriver'

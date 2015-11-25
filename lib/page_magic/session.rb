@@ -1,4 +1,3 @@
-require 'wait'
 require 'forwardable'
 require 'page_magic/matcher'
 module PageMagic
