@@ -14,6 +14,14 @@ require 'page_magic/drivers'
 
 # module PageMagic - PageMagic is an api for modelling pages in a website.
 module PageMagic
+  extend SingleForwardable
+
+  # @!method matcher
+  # define match critera for loading a page object class
+  # @see Matcher#initialize
+  # @return [Matcher]
+  def_delegator Matcher, :new, :matcher
+
   class << self
     # @return [Drivers] registered drivers
     def drivers
