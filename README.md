@@ -84,7 +84,7 @@ defined on it as well as use the [helper method](Helpers) we defined.
 
 You can do lots with PageMagic including [mapping pages](#page-mapping) to a [session](#starting-a-session) so that 
 they are fluidly switched in for you. You can even define [hooks](#hooks) to run when ever a element is interacted 
-with. So what are you wating for? there' no place better to start than the [beginning](#defining-pages). Have fun! :)
+with. So what are you wating for? there's no place better to start than the [beginning](#defining-pages). Have fun! :)
 
 # Defining Pages
 To define something that PageMagic can work with, simply include PageMagic in to a class.
