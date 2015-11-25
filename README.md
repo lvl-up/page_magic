@@ -284,7 +284,7 @@ You can use even use regular expressions to map multiple paths to the same page.
 
 ## Mapping against query string parameters
 ```ruby
-browser.define_page_mappings PageMagic.mapping(parameters: {parameter_name: string_or_regex}) => ResultsPage,                             
+browser.define_page_mappings PageMagic.mapping(parameters: {parameter_name: string_or_regex}) => ResultsPage                             
 ```
 
 ## Mapping against fragment identifiers
@@ -292,7 +292,7 @@ JavaScript MVC frameworks allow different resources to be mapped against the val
 of URLs. That is the part of the URL that follows 
 the [Fragement identififer](https://en.wikipedia.org/wiki/Fragment_identifier). PageMagic supports mapping page_objects against URL fragments.
 ```ruby
-browser.define_page_mappings PageMagic.mapping(fragment: string_or_regex) => ResultsPage,                             
+browser.define_page_mappings PageMagic.mapping(fragment: string_or_regex) => ResultsPage                            
 ```
 
 # Watchers
