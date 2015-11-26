@@ -4,6 +4,13 @@ module PageMagic
     # Default block to be run when a page is loaded. This is used if a specific handler is not registered
     DEFAULT_ON_LOAD = proc {}
 
+    # create an new page object instance based on top of the source supplied
+    # @param [String] source html source code
+    # @return [Object<InstanceMethods>] instance of class with all the same methods as normal PageMagic page objects.
+    def load(source)
+      new(Session.new(Capybara::Node::Simple.new(source)))
+    end
+
     # sets block to run when page has loaded
     # if one has not been set on the page object class it will return a default block that does nothing
     def on_load(&block)

@@ -39,6 +39,7 @@ we are not aware of so your feedback/pull requests are greatly appreciated!
 - [Page mapping](#page-mapping)
   - [Mapping against query string parameters](#mapping-against-query-string-parameters)
   - [Mapping against fragment identifiers](#mapping-against-fragment-identifiers)
+- [Loading pages from source](#loading-pages-from-source)
 - [Watchers](#watchers)
   - [Method watchers](#method-watchers)
   - [Simple watchers](#simple-watchers)
@@ -314,6 +315,18 @@ against URL fragments.
 
 ```ruby
 browser.define_page_mappings PageMagic.mapping(fragment: string_or_regex) => ResultsPage                            
+```
+
+# Loading pages from source
+PageMagic supports loading page objects using html source. This technique can be useful for getting quick feedback that 
+your templates correctly render based on your view objects. I.e you can test your templates in isolation.
+```ruby
+class MyPage
+  include PageMagic
+  #element definitions
+end
+
+page_instance = Page.load(html_string)
 ```
 
 # Watchers
