@@ -7,6 +7,21 @@ module PageMagic
       end
     end
 
+    describe '#load' do
+      let(:page_title) { 'page title' }
+      let(:page_source) do
+        <<-HTML
+          <html>
+            <head><title>#{page_title}</title></head>
+          </html>
+        HTML
+      end
+
+      it 'returns an instance using that source' do
+        expect(subject.load(page_source).title).to eq(page_title)
+      end
+    end
+
     describe 'on_load' do
       context 'block not set' do
         it 'returns a default block' do
