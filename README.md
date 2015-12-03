@@ -74,7 +74,7 @@ class Github
     search_field.set "#{project_name}\n"
   end
 end
-github = Github.visit(browser: chrome)
+github = Github.visit(browser: :chrome)
 github.search('page_magic')
 ```
 
