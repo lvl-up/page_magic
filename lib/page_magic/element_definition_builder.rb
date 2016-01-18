@@ -1,7 +1,7 @@
 module PageMagic
   # Builder for creating ElementDefinitions
   class ElementDefinitionBuilder
-    INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'
+    INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'.freeze
     attr_reader :definition_class, :options, :selector, :type, :element
 
     def initialize(definition_class:, selector:, type:, options:{}, element: nil)

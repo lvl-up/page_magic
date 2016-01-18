@@ -19,7 +19,7 @@ module PageMagic
 
     # @return [String] uri represented by this mapping
     def compute_uri
-      "#{path}".tap do |uri|
+      path.to_s.tap do |uri|
         uri << "?#{parameters.to_query}" if parameters
         uri << "##{fragment}" if fragment
       end
@@ -54,7 +54,7 @@ module PageMagic
       path == other.path && parameters == other.parameters && fragment == other.fragment
     end
 
-    alias_method :eql?, :==
+    alias eql? ==
 
     private
 

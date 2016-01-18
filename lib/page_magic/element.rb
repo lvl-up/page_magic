@@ -6,7 +6,7 @@ require 'page_magic/element/query'
 module PageMagic
   # class Element - represents an element in a html page.
   class Element
-    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
+    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click].freeze
     DEFAULT_HOOK = proc {}.freeze
 
     include SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators

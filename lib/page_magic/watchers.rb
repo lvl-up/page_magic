@@ -3,7 +3,7 @@ require 'page_magic/watcher'
 module PageMagic
   # module Watchers - contains methods for adding watchers and checking them
   module Watchers
-    ELEMENT_MISSING_MSG = 'Unable to defined watcher: Element or method with the name %s can not be found'
+    ELEMENT_MISSING_MSG = 'Unable to defined watcher: Element or method with the name %s can not be found'.freeze
 
     # @param [Symbol] name - the name of the watcher
     # @return [Boolean] true if a change is detected

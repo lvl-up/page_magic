@@ -12,9 +12,9 @@ module PageMagic
       end
     end
 
-    INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
+    INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'.freeze
 
-    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea]
+    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea].freeze
 
     class << self
       def extended(clazz)
@@ -59,7 +59,7 @@ module PageMagic
       add_element_definition(options.delete(:name)) do |parent_element, *e_args|
         definition_class = Class.new(section_class) do
           parent_element(parent_element)
-          class_exec(*e_args, &(block))
+          class_exec(*e_args, &block)
         end
         ElementDefinitionBuilder.new(options.merge(definition_class: definition_class))
       end

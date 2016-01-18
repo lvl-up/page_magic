@@ -3,9 +3,9 @@ require 'page_magic/matcher'
 module PageMagic
   # class Session - coordinates access to the browser though page objects.
   class Session
-    URL_MISSING_MSG = 'a path must be mapped or a url supplied'
-    REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'
-    INVALID_MAPPING_MSG = 'mapping must be a string or regexp'
+    URL_MISSING_MSG = 'a path must be mapped or a url supplied'.freeze
+    REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'.freeze
+    INVALID_MAPPING_MSG = 'mapping must be a string or regexp'.freeze
 
     extend Forwardable
 
@@ -86,14 +86,16 @@ module PageMagic
     # @raise [InvalidURLException] if neither a page or url are supplied
     # @raise [InvalidURLException] if the mapped path for a page is a Regexp
     def visit(page = nil, url: nil)
-      if url
-        raw_session.visit(url)
-      elsif (mapping = transitions.key(page))
-        fail InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
-        raw_session.visit(url(base_url, mapping.compute_uri))
-      else
-        fail InvalidURLException, URL_MISSING_MSG
+      target_url = url || begin
+        if (mapping = transitions.key(page))
+          fail InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
+          url(base_url, mapping.compute_uri)
+        end
       end
+
+      fail InvalidURLException, URL_MISSING_MSG unless target_url
+
+      raw_session.visit(target_url)
       @current_page = initialize_page(page) if page
       self
     end
