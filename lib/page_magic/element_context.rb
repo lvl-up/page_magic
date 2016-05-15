@@ -2,7 +2,7 @@ module PageMagic
   # class ElementContext - resolves which element definition to use when accessing the browser.
   class ElementContext
     # Message template for execptions raised as a result of calling method_missing
-    ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'
+    ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'.freeze
 
     attr_reader :page_element
 

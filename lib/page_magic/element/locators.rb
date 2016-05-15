@@ -4,7 +4,7 @@ module PageMagic
     # contains method for finding element definitions
     module Locators
       # message used when raising {ElementMissingException} from methods within this module
-      ELEMENT_NOT_DEFINED_MSG = 'Element not defined: %s'
+      ELEMENT_NOT_DEFINED_MSG = 'Element not defined: %s'.freeze
 
       # find an element definition based on its name
       # @param [Symbol] name name of the element

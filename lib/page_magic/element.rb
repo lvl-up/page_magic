@@ -6,8 +6,9 @@ require 'page_magic/element/query'
 module PageMagic
   # class Element - represents an element in a html page.
   class Element
-    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click]
+    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click].freeze
     DEFAULT_HOOK = proc {}.freeze
+    EVENT_NOT_SUPPORTED_MSG = '%s event not supported'.freeze
 
     include SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
     extend Elements, SelectorMethods, Forwardable
@@ -68,12 +69,22 @@ module PageMagic
       wrap_events(browser_element)
     end
 
+    # @!method click
+    # @!method set
+    # @!method select
+    # @!method select_option
+    # @!method unselect_option
+    # calls method of the same name on the underlying Capybara element
+    # @raise [NotSupportedException] if the wrapped Capybara element does not support the method
     EVENT_TYPES.each do |method|
       define_method method do |*args|
+        unless browser_element.respond_to?(method)
+          fail NotSupportedException, EVENT_NOT_SUPPORTED_MSG % method
+        end
+
         browser_element.send(method, *args)
       end
     end
-
     def method_missing(method, *args, &block)
       ElementContext.new(self).send(method, *args, &block)
     rescue ElementMissingException

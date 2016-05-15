@@ -11,7 +11,7 @@ module PageMagic
         # @param [Symbol] type the name of the required query in snakecase format
         # @return [Query] returns the predefined query with the given name
         def find(type)
-          query = constants.find { |constant| constant.to_s.downcase == type.to_s.downcase }
+          query = constants.find { |constant| constant.to_s.casecmp(type.to_s).zero? }
           return ELEMENT unless query
           const_get(query)
         end

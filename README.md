@@ -74,7 +74,7 @@ class Github
     search_field.set "#{project_name}\n"
   end
 end
-github = Github.visit(browser: chrome)
+github = Github.visit(browser: :chrome)
 github.search('page_magic')
 ```
 
@@ -115,7 +115,7 @@ After visiting a page you are will get a `Session` object. Elements can be acces
 page.search_field.set 'page_magic'
 ```
 
-#### Multple Results
+#### Multiple Results
 Where an element has been scoped to return multple results, these will be returned in an array. 
 ```ruby
 class ResultsPage

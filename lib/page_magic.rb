@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift("#{File.dirname(__FILE__)}")
+$LOAD_PATH.unshift(File.dirname(__FILE__).to_s)
 require 'capybara'
 require 'page_magic/exceptions'
 require 'page_magic/wait_methods'

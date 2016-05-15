@@ -8,7 +8,7 @@ module PageMagic
         #  selectors
         # @return [Selector] returns the predefined selector with the given name
         def find(name)
-          selector = constants.find { |constant| constant.to_s.downcase == name.to_s.downcase }
+          selector = constants.find { |constant| constant.to_s.casecmp(name.to_s).zero? }
           fail UnsupportedCriteriaException unless selector
           const_get(selector)
         end
