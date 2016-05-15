@@ -4,10 +4,10 @@ module PageMagic
     INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'.freeze
     attr_reader :definition_class, :options, :selector, :type, :element
 
-    def initialize(definition_class:, selector:, type:, options:{}, element: nil)
+    def initialize(definition_class:, selector:, type:, options: {}, element: nil)
       unless element
         selector ||= definition_class.selector
-        fail UndefinedSelectorException, INVALID_SELECTOR_MSG if selector.nil? || selector.empty?
+        raise UndefinedSelectorException, INVALID_SELECTOR_MSG if selector.nil? || selector.empty?
       end
 
       @definition_class = definition_class

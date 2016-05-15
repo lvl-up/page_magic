@@ -79,7 +79,7 @@ module PageMagic
     EVENT_TYPES.each do |method|
       define_method method do |*args|
         unless browser_element.respond_to?(method)
-          fail NotSupportedException, EVENT_NOT_SUPPORTED_MSG % method
+          raise NotSupportedException, EVENT_NOT_SUPPORTED_MSG % method
         end
 
         browser_element.send(method, *args)

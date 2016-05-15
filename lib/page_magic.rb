@@ -43,7 +43,7 @@ module PageMagic
     # @return [Session] configured sessoin
     def session(application: nil, browser: :rack_test, url:, options: {})
       driver = drivers.find(browser)
-      fail UnspportedBrowserException unless driver
+      raise UnspportedBrowserException unless driver
 
       Capybara.register_driver browser do |app|
         driver.build(app, browser: browser, options: options)

@@ -23,7 +23,7 @@ module PageMagic
     #   # more complicated code to get value
     # end
     def watch(name, method = nil, &block)
-      fail ElementMissingException, (ELEMENT_MISSING_MSG % name) unless block || respond_to?(name)
+      raise ElementMissingException, (ELEMENT_MISSING_MSG % name) unless block || respond_to?(name)
       watched_element = block ? Watcher.new(name, &block) : Watcher.new(name, method)
       watchers.delete_if { |w| w.name == name }
       watchers << watched_element.check(self)

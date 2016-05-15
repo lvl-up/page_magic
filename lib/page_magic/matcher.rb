@@ -6,7 +6,7 @@ module PageMagic
 
     # @raise [MatcherInvalidException] if at least one component is not specified
     def initialize(path = nil, parameters: nil, fragment: nil)
-      fail MatcherInvalidException unless path || parameters || fragment
+      raise MatcherInvalidException unless path || parameters || fragment
       @path = path
       @parameters = parameters
       @fragment = fragment

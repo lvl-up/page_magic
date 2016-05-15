@@ -36,9 +36,9 @@ module PageMagic
       query_args = builder.build_query
       result = page_element.browser_element.all(*query_args)
 
-      if result.size == 0
+      if result.empty?
         query = Capybara::Query.new(*query_args)
-        fail ElementMissingException, ELEMENT_NOT_FOUND_MSG % query.description
+        raise ElementMissingException, ELEMENT_NOT_FOUND_MSG % query.description
       end
 
       result.to_a.collect { |e| builder.build(e) }

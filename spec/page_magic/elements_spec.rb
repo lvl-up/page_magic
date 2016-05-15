@@ -142,7 +142,7 @@ module PageMagic
         it 'should not evaluate the elements when applying naming checks' do
           subject.class_eval do
             link(:link1, :selector) do
-              fail('should not have been evaluated')
+              raise('should not have been evaluated')
             end
             link(:link2, :selector)
           end
