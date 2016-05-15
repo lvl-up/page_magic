@@ -28,4 +28,7 @@ module PageMagic
 
   class UndefinedSelectorException < Exception
   end
+
+  class NotSupportedException < Exception
+  end
 end

@@ -6,6 +6,7 @@ module PageMagic
     URL_MISSING_MSG = 'a path must be mapped or a url supplied'.freeze
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'.freeze
     INVALID_MAPPING_MSG = 'mapping must be a string or regexp'.freeze
+    UNSUPPORTED_OPERATION_MSG = 'execute_script not supported by driver'.freeze
 
     extend Forwardable
 
@@ -54,11 +55,15 @@ module PageMagic
       end.to_h
     end
 
-    # @!method execute_script
     #  execute javascript on the browser
     #  @param [String] script the script to be executed
     #  @return [Object] object returned by the capybara execute_script method
-    def_delegator :raw_session, :execute_script
+    # @raise [NotSupportedException] if the capybara driver in use does not support execute script
+    def execute_script(script)
+      raw_session.execute_script(script)
+    rescue Capybara::NotSupportedByDriverError
+      raise NotSupportedException, UNSUPPORTED_OPERATION_MSG
+    end
 
     # proxies unknown method calls to the currently loaded page object
     # @return [Object] returned object from the page object method call
