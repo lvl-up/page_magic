@@ -75,6 +75,14 @@ module PageMagic
         expect(browser).to receive(:execute_script).with(:script).and_return(:result)
         expect(subject.execute_script(:script)).to be(:result)
       end
+
+      context 'Capybara session does not support #execute_script' do
+        let(:browser) { Capybara::Driver::Base.new }
+        it 'raises an error' do
+          expected_message = described_class::UNSUPPORTED_OPERATION_MSG
+          expect { subject.execute_script(:script) }.to raise_error(NotSupportedException, expected_message)
+        end
+      end
     end
 
     describe '#find_mapped_page' do

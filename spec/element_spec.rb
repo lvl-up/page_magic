@@ -126,6 +126,13 @@ module PageMagic
             subject.select :args
           end
         end
+
+        context 'Capybara element does not respond to the method' do
+          it 'raises an error' do
+            expected_message = (described_class::EVENT_NOT_SUPPORTED_MSG % 'click')
+            expect { subject.click }.to raise_error(NotSupportedException, expected_message)
+          end
+        end
       end
     end
 
