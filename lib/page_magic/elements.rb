@@ -85,10 +85,10 @@ module PageMagic
     end
 
     def add_element_definition(name, &block)
-      fail InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
+      raise InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
       methods = respond_to?(:instance_methods) ? instance_methods : methods()
-      fail InvalidElementNameException, INVALID_METHOD_NAME_MSG if methods.find { |method| method == name }
+      raise InvalidElementNameException, INVALID_METHOD_NAME_MSG if methods.find { |method| method == name }
 
       element_definitions[name] = block
     end
@@ -104,7 +104,7 @@ module PageMagic
     end
 
     def method_added(method)
-      fail InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
+      raise InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
     end
 
     def compute_argument(args, clazz)

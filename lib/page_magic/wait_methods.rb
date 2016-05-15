@@ -12,7 +12,7 @@ module PageMagic
         return true if yield == true
         sleep retry_every
       end
-      fail TimeoutException, 'Action took to long'
+      raise TimeoutException, 'Action took to long'
     end
   end
 end

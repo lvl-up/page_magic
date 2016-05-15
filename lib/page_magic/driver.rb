@@ -25,7 +25,7 @@ module PageMagic
     # @param [Symbol] browser name of required browser
     # @param [Hash] options driver specific options
     # @return [Object] Capybara compliant driver instance
-    def build(app, browser:, options:{})
+    def build(app, browser:, options: {})
       handler.call(app, options, browser)
     end
 

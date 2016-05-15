@@ -8,7 +8,7 @@ module PageMagic
 
     describe '#build' do
       it 'returns the result of the block passed to the driver class constructor' do
-        subject = described_class.new(:custom_browser)do
+        subject = described_class.new(:custom_browser) do
           :driver
         end
         expect(subject.build(:rack_app, browser: :custom_browser, options: :options)).to eq(:driver)

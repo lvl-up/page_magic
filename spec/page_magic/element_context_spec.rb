@@ -42,7 +42,7 @@ module PageMagic
         it 'does not evaluate any of the other definitions' do
           elements_page.class_eval do
             link(:another_link, :selector) do
-              fail('should not have been evaluated')
+              raise('should not have been evaluated')
             end
           end
 

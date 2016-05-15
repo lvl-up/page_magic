@@ -12,7 +12,7 @@ module PageMagic
       # @raise [ElementMissingException] raised when element with the given name is not found
       def element_by_name(name, *args)
         defintion = element_definitions[name]
-        fail ElementMissingException, (ELEMENT_NOT_DEFINED_MSG % name) unless defintion
+        raise ElementMissingException, (ELEMENT_NOT_DEFINED_MSG % name) unless defintion
         defintion.call(self, *args)
       end
 

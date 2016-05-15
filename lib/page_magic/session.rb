@@ -93,12 +93,12 @@ module PageMagic
     def visit(page = nil, url: nil)
       target_url = url || begin
         if (mapping = transitions.key(page))
-          fail InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
+          raise InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
           url(base_url, mapping.compute_uri)
         end
       end
 
-      fail InvalidURLException, URL_MISSING_MSG unless target_url
+      raise InvalidURLException, URL_MISSING_MSG unless target_url
 
       raw_session.visit(target_url)
       @current_page = initialize_page(page) if page
