@@ -11,6 +11,7 @@ group :test do
   gem 'poltergeist'
   gem 'codeclimate-test-reporter', group: :test, require: nil
   gem 'pullreview-coverage', require: false
+  gem 'arbre'
 end
 
 group :development do
