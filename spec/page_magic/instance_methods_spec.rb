@@ -40,7 +40,7 @@ module PageMagic
         expect(subject.respond_to?(:visit)).to eq(true)
       end
 
-      it 'checks the current page' do
+      it 'checks element definitions' do
         expect(subject.respond_to?(:next_page)).to eq(true)
       end
     end

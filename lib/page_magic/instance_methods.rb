@@ -33,7 +33,7 @@ module PageMagic
     end
 
     def respond_to?(*args)
-      super || element_context.respond_to?(*args)
+      contains_element?(args.first) || super
     end
 
     # @return the current page title
@@ -54,6 +54,10 @@ module PageMagic
     end
 
     private
+
+    def contains_element?(method)
+      element_definitions.keys.include?(method)
+    end
 
     def element_context
       ElementContext.new(self)

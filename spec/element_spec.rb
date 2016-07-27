@@ -196,7 +196,10 @@ module PageMagic
       before do
         page_class.class_eval do
           element :form_by_css, css: '.form' do
-            link(:link_in_form, text: 'a in a form')
+            def parent_method
+              :parent_method_called
+            end
+            link(:link_in_form, text: 'link in a form')
           end
         end
       end
@@ -206,8 +209,14 @@ module PageMagic
       end
 
       context 'no element definition and not a capybara method' do
-        it 'throws and exception' do
-          expect { page.form_by_css.bobbins }.to raise_exception NoMethodError
+        it 'calls method on parent element' do
+          expect(page.form_by_css.link_in_form.parent_method).to eq(:parent_method_called)
+        end
+
+        context 'method not found on parent' do
+          it 'throws and exception' do
+            expect { page.form_by_css.link_in_a_form.bobbins }.to raise_exception ElementMissingException
+          end
         end
       end
     end

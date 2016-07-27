@@ -84,14 +84,35 @@ module PageMagic
           described_class.new(page).prefetched
         end
       end
+
+      context 'method not found on page_element or as a element definition' do
+        it 'raises an error' do
+          expect { elements_page.missing_method }.to raise_error(NoMethodError)
+        end
+      end
     end
 
     describe '#respond_to?' do
-      subject do
-        described_class.new(elements_page.new(session))
+      let(:page_element) do
+        Class.new(Element) do
+          link(:a_link, css: '.link')
+        end
       end
-      it 'checks against the names of the elements passed in' do
-        expect(subject.respond_to?(:a_link)).to eq(true)
+
+      subject do
+        described_class.new(page_element.new(session))
+      end
+
+      context 'page_element responds to method name' do
+        it 'returns true' do
+          expect(subject.respond_to?(:a_link)).to eq(true)
+        end
+      end
+
+      context 'method is not on page_element' do
+        it 'calls super' do
+          expect(subject.respond_to?(:methods)).to eq(true)
+        end
       end
     end
   end

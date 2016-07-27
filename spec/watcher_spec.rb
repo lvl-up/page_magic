@@ -35,13 +35,25 @@ module PageMagic
       end
 
       context 'block supplied to constructor' do
+        def method_on_self(value = nil)
+          return @value unless value
+          @value = value
+        end
+
         subject do
           described_class.new(:custom_watcher) do
+            method_on_self(:called)
             :result
           end
         end
+
+        it 'is called on self' do
+          subject.check(self)
+          expect(method_on_self).to be(:called)
+        end
+
         it 'assigns last to the resut of the block' do
-          expect(subject.check.last).to eq(:result)
+          expect(subject.check(self).last).to eq(:result)
         end
       end
     end
