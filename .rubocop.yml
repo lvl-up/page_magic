@@ -15,3 +15,6 @@ Metrics/ParameterLists:
 
 Metrics/MethodLength:
   Max: 11
+
+Style/MethodMissing:
+  Enabled: false

@@ -4,6 +4,9 @@ module PageMagic
   class Matcher
     attr_reader :path, :parameters, :fragment
 
+    # @param [Object] path String or Regular expression to match with
+    # @param [Hash] parameters mapping of parameter name to literal or regex to match with
+    # @param [Object] fragment String or Regular expression to match with
     # @raise [MatcherInvalidException] if at least one component is not specified
     def initialize(path = nil, parameters: nil, fragment: nil)
       raise MatcherInvalidException unless path || parameters || fragment
@@ -41,9 +44,10 @@ module PageMagic
     # @param [Matcher] other
     # @return [Fixnum] -1 = smaller, 0 = equal to, 1 = greater than
     def <=>(other)
-      [:path, :parameters, :fragment].inject(0) do |result, component|
-        result == 0 ? compare(send(component), other.send(component)) : result
+      results = [:path, :parameters, :fragment].collect do |component|
+        compare(send(component), other.send(component))
       end
+      results.find { |result| !result.zero? } || 0
     end
 
     # check equality
