@@ -85,15 +85,20 @@ module PageMagic
         browser_element.send(method, *args)
       end
     end
+
     def method_missing(method, *args, &block)
       ElementContext.new(self).send(method, *args, &block)
     rescue ElementMissingException
-      return super unless browser_element.respond_to?(method)
-      browser_element.send(method, *args, &block)
+      begin
+        return browser_element.send(method, *args, &block) if browser_element.respond_to?(method)
+        return parent_element.send(method, *args, &block)
+      rescue NoMethodError
+        super
+      end
     end
 
     def respond_to?(*args)
-      super || element_context.respond_to?(*args) || browser_element.respond_to?(*args)
+      super || contains_element?(args.first) || browser_element.respond_to?(*args) || parent_element.respond_to?(*args)
     end
 
     # @!method session
@@ -113,6 +118,10 @@ module PageMagic
         original_method.call(*arguments, &block)
         after_events.each { |event| this.instance_exec(&event) }
       end
+    end
+
+    def contains_element?(name)
+      element_definitions.keys.include?(name)
     end
 
     def element_context

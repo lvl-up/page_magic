@@ -21,7 +21,7 @@ module PageMagic
     # @param [Object] subject - subject to run watcher against
     def check(subject = nil)
       @last = if block
-                block.call
+                subject.instance_eval(&block)
               else
                 object = subject.send(name)
                 attribute ? object.send(attribute) : object

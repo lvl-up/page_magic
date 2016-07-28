@@ -19,6 +19,8 @@ module PageMagic
 
       builder = page_element.element_by_name(method, *args)
 
+      super unless builder
+
       prefecteched_element = builder.element
       return builder.build(prefecteched_element) if prefecteched_element
 
@@ -27,7 +29,7 @@ module PageMagic
     end
 
     def respond_to?(*args)
-      page_element.element_definitions.keys.include?(args.first)
+      page_element.respond_to?(*args) || super
     end
 
     private
