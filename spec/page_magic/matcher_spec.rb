@@ -206,28 +206,129 @@ module PageMagic
     end
 
     describe '<=>' do
-      it 'compares paths' do
-        subject = described_class.new('/')
-        expect(subject).to receive(:compare).with('/', nil).and_return(:result)
-        expect(subject <=> described_class.new(parameters: {})).to eq(:result)
-      end
+      let(:literal_path_matcher) { '/' }
+      let(:fuzzy_path_matcher) { // }
+      let(:literal_parameter_matchers) { { param: 'value' } }
+      let(:fuzzy_parameter_matchers) { { param: // } }
 
-      context 'paths are equal' do
-        it 'compares parameters' do
-          subject = described_class.new('/', parameters: :params1)
-          expect(subject).to receive(:compare).with('/', '/').and_call_original
-          expect(subject).to receive(:compare).with(:params1, :params2).and_return(:params_result)
-          expect(subject <=> described_class.new('/', parameters: :params2)).to eq(:params_result)
+      let(:literal_fragment_matcher) { 'fragment' }
+      let(:fuzzy_fragment_matcher) { // }
+
+      context 'path' do
+        context 'path is of same class as path on other' do
+          subject(:a) { described_class.new('/a') }
+          subject(:b) { described_class.new('/b') }
+          it 'returns self and other as equivalent' do
+            expect(a <=> b).to eq(0)
+          end
+        end
+
+        context 'path on other is fuzzy' do
+          subject(:a) { described_class.new(literal_path_matcher) }
+          subject(:b) { described_class.new(fuzzy_path_matcher) }
+          it 'returns other as lesser' do
+            expect(a <=> b).to eq(-1)
+          end
         end
       end
 
-      context 'parameters are equal' do
-        it 'compares fragments' do
-          subject = described_class.new('/', parameters: :params, fragment: :frag1)
-          expect(subject).to receive(:compare).with('/', '/').and_call_original
-          expect(subject).to receive(:compare).with(:params, :params).and_call_original
-          expect(subject).to receive(:compare).with(:frag1, :frag2).and_return(:fragment_result)
-          expect(subject <=> described_class.new('/', parameters: :params, fragment: :frag2)).to eq(:fragment_result)
+      context 'parameters' do
+        context 'parameters on self and other contain literal values' do
+          subject(:a) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers)
+          end
+          subject(:b) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers)
+          end
+          it 'returns self and other as equivalent' do
+            expect(a <=> b).to eq(0)
+          end
+        end
+
+        context 'parameters on self literal values and other has fuzzy values' do
+          subject(:a) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers)
+          end
+          subject(:b) do
+            described_class.new(literal_path_matcher,
+                                parameters: fuzzy_parameter_matchers)
+          end
+          it 'returns other as lesser' do
+            expect(a <=> b).to eq(-1)
+          end
+        end
+        context 'parameters on self fuzzy values and other has literal values' do
+          subject(:a) do
+            described_class.new(literal_path_matcher,
+                                parameters: fuzzy_parameter_matchers)
+          end
+
+          subject(:b) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers)
+          end
+
+          it 'returns other as greater' do
+            expect(a <=> b).to eq(1)
+          end
+        end
+      end
+
+      context 'fragment' do
+        context 'fragment is of same class as path on other' do
+          subject(:a) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers,
+                                fragment: literal_fragment_matcher)
+          end
+
+          subject(:b) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers,
+                                fragment: literal_fragment_matcher)
+          end
+
+          it 'returns self and other as equivalent' do
+            expect(a <=> b).to eq(0)
+          end
+        end
+
+        context 'fragment is literal on self and fuzzy on other' do
+          subject(:a) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers,
+                                fragment: literal_fragment_matcher)
+          end
+
+          subject(:b) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers,
+                                fragment: fuzzy_fragment_matcher)
+          end
+
+          it 'returns other as lesser' do
+            expect(a <=> b).to eq(-1)
+          end
+        end
+
+        context 'fragment is fuzzy on self and literal on other' do
+          subject(:a) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers,
+                                fragment: fuzzy_fragment_matcher)
+          end
+
+          subject(:b) do
+            described_class.new(literal_path_matcher,
+                                parameters: literal_parameter_matchers,
+                                fragment: literal_fragment_matcher)
+          end
+          it 'returns other as lesser' do
+            expect(a <=> b).to eq(1)
+          end
         end
       end
     end

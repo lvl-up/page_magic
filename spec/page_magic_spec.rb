@@ -48,6 +48,13 @@ describe PageMagic do
     end
   end
 
+  describe '#mapping' do
+    it 'returns a matcher' do
+      mapping = described_class.mapping('/', parameters: {}, fragment: '')
+      expect(mapping).to eq(PageMagic::Matcher.new('/', parameters: {}, fragment: ''))
+    end
+  end
+
   describe '.session' do
     let(:url) { 'http://url.com/' }
     let(:application) { rack_application.new }

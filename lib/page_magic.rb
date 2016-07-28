@@ -35,6 +35,14 @@ module PageMagic
       end
     end
 
+    # Create a more complex mapping to identify when a page should be loaded
+    # @example
+    #   PageMagic.mapping '/', parameters: {project: 'page_magic'}, fragment: 'display'
+    # @see Matchers#initialize
+    def mapping(path = nil, parameters: nil, fragment: nil)
+      Matcher.new(path, parameters: parameters, fragment: fragment)
+    end
+
     # Visit this page based on the class level registered url
     # @param [Object] application rack application (optional)
     # @param [Symbol] browser name of browser
