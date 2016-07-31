@@ -2,8 +2,8 @@ module PageMagic
   class Element
     describe QueryBuilder do
       it 'has a predefined query for each element type' do
-        missing = PageMagic::Elements::TYPES.find_all do |type|
-          !described_class.constants.include?(type.upcase.to_sym)
+        missing = PageMagic::Elements::TYPES.dup.delete_if { |type| type.to_s.end_with?('s') }.find_all do |type|
+          described_class.constants.include?(type)
         end
         expect(missing).to be_empty
       end
@@ -75,7 +75,7 @@ module PageMagic
         end
 
         it 'the same as all form field types' do
-          expect(described_class).to eq(CHECKBOX).and eq(SELECT_LIST).and eq(RADIOS).and eq(TEXTAREA)
+          expect(described_class).to eq(CHECKBOX).and eq(SELECT_LIST).and eq(RADIO).and eq(TEXTAREA)
         end
       end
     end

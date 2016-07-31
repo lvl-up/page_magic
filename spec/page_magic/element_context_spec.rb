@@ -31,7 +31,7 @@ module PageMagic
         end
 
         it 'passes arguments through to the element definition' do
-          elements_page.link :pass_through, css: 'a' do |args|
+          elements_page.links :pass_through, css: 'a' do |args|
             args[:passed_through] = true
           end
           args = {}
@@ -51,7 +51,7 @@ module PageMagic
 
         context 'more than one match found in the browser' do
           it 'returns an array of element definitions' do
-            elements_page.link :links, css: 'a'
+            elements_page.links :links, css: 'a'
             links = described_class.new(page).links
             expect(links.find_all { |e| e.class == Element }.size).to eq(2)
             expect(links.collect(&:text)).to eq(['a link', 'link in a form'])

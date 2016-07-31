@@ -18,8 +18,19 @@ module PageMagic
           end
 
           it 'raises an error' do
-            expected_message = Element::Query::ELEMENT_NOT_FOUND_MSG % 'css "wrong"'
+            expected_message = 'Unable to find css "wrong"'
             expect { subject.execute(page.browser) }.to raise_exception(ElementMissingException, expected_message)
+          end
+        end
+
+        context 'to many results returned' do
+          subject do
+            QueryBuilder.find(:link).build(css: 'a')
+          end
+
+          it 'raises an error' do
+            expected_message = 'Ambiguous match, found 2 elements matching css "a"'
+            expect { subject.execute(page.browser) }.to raise_error AmbiguousQueryException, expected_message
           end
         end
 

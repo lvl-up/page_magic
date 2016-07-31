@@ -5,20 +5,25 @@ module PageMagic
       # Message template for execptions raised as a result of calling method_missing
       ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'.freeze
 
-      attr_reader :args
-      def initialize(args)
+      attr_reader :args, :multiple_results
+
+      def initialize(args, multiple_results: false)
         @args = args
+        @multiple_results = multiple_results
       end
 
       def execute(capybara_element)
-        result = capybara_element.all(*args)
-
-        if result.empty?
-          capybara_query = Capybara::Query.new(*args)
-          raise ElementMissingException, ELEMENT_NOT_FOUND_MSG % capybara_query.description
+        if multiple_results
+          capybara_element.all(*args).tap do |result|
+            raise Capybara::ElementNotFound if result.empty?
+          end
+        else
+          [capybara_element.find(*args)]
         end
-
-        result
+      rescue Capybara::Ambiguous => e
+        raise AmbiguousQueryException, e.message
+      rescue Capybara::ElementNotFound => e
+        raise ElementMissingException, e.message
       end
 
       def ==(other)
