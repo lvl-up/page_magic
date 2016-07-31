@@ -2,7 +2,7 @@ require 'forwardable'
 require 'page_magic/element/selector_methods'
 require 'page_magic/element/locators'
 require 'page_magic/element/selector'
-require 'page_magic/element/query'
+require 'page_magic/element/query_builder'
 module PageMagic
   # class Element - represents an element in a html page.
   class Element

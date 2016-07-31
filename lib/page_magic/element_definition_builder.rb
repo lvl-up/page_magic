@@ -19,7 +19,7 @@ module PageMagic
 
     # @return [Capybara::Query] query to find this element in the browser
     def build_query
-      Element::Query.find(type).build(selector, options)
+      Element::QueryBuilder.find(type).build(selector, options)
     end
 
     # Create new instance of the ElementDefinition modeled by this builder

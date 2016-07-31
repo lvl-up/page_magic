@@ -1,6 +1,6 @@
 module PageMagic
   class Element
-    describe Query do
+    describe QueryBuilder do
       it 'has a predefined query for each element type' do
         missing = PageMagic::Elements::TYPES.find_all do |type|
           !described_class.constants.include?(type.upcase.to_sym)
@@ -10,12 +10,12 @@ module PageMagic
 
       describe '.find' do
         it 'finds the constant with the given name' do
-          expect(Query.find(:button)).to be(described_class::BUTTON)
+          expect(described_class.find(:button)).to be(described_class::BUTTON)
         end
 
         context 'constant not found' do
           it 'returns a default' do
-            expect(Query.find(:billy)).to be(described_class::ELEMENT)
+            expect(described_class.find(:billy)).to be(described_class::ELEMENT)
           end
         end
       end
@@ -48,7 +48,7 @@ module PageMagic
       end
     end
 
-    class Query
+    class QueryBuilder
       describe BUTTON do
         it 'has an element type' do
           expect(described_class.type).to eq(:button)
@@ -82,19 +82,19 @@ module PageMagic
       include_context :webapp_fixture
       let(:capybara_session) { Capybara::Session.new(:rack_test, rack_app).tap { |s| s.visit('/elements') } }
       it 'finds fields' do
-        expect(capybara_session.all(*Query.find(:text_field).build(name: 'field_name')).size).to eq(1)
+        expect(capybara_session.all(*QueryBuilder.find(:text_field).build(name: 'field_name')).size).to eq(1)
       end
 
       it 'finds buttons' do
-        expect(capybara_session.all(*Query.find(:button).build(text: 'a button')).size).to eq(1)
+        expect(capybara_session.all(*QueryBuilder.find(:button).build(text: 'a button')).size).to eq(1)
       end
 
       it 'finds links' do
-        expect(capybara_session.all(*Query.find(:link).build(text: 'a link')).size).to eq(1)
+        expect(capybara_session.all(*QueryBuilder.find(:link).build(text: 'a link')).size).to eq(1)
       end
 
       it 'finds elements' do
-        expect(capybara_session.all(*Query.find(:element).build(name: 'field_name')).size).to eq(1)
+        expect(capybara_session.all(*QueryBuilder.find(:element).build(name: 'field_name')).size).to eq(1)
       end
     end
   end

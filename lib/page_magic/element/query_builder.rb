@@ -5,11 +5,11 @@ module PageMagic
     #  - requirements on element type
     #  - selection criteria, modeled through the Selector class
     #  - options
-    class Query
+    class QueryBuilder
       class << self
         # Find a query using it's name
         # @param [Symbol] type the name of the required query in snakecase format
-        # @return [Query] returns the predefined query with the given name
+        # @return [QueryBuilder] returns the predefined query with the given name
         def find(type)
           query = constants.find { |constant| constant.to_s.casecmp(type.to_s).zero? }
           return ELEMENT unless query
@@ -36,10 +36,10 @@ module PageMagic
         end.flatten
       end
 
-      ELEMENT = Query.new
-      TEXT_FIELD = CHECKBOX = SELECT_LIST = RADIOS = TEXTAREA = Query.new(:field)
-      LINK = Query.new(:link)
-      BUTTON = Query.new(:button)
+      ELEMENT = QueryBuilder.new
+      TEXT_FIELD = CHECKBOX = SELECT_LIST = RADIOS = TEXTAREA = QueryBuilder.new(:field)
+      LINK = QueryBuilder.new(:link)
+      BUTTON = QueryBuilder.new(:button)
     end
   end
 end
