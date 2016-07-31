@@ -1,22 +1,8 @@
 require 'capybara/query'
+require 'page_magic/element/query'
 module PageMagic
   class Element
-    class Query
-      attr_reader :args
-      def initialize(args)
-        @args = args
-      end
-
-      def execute(capybara_element)
-        capybara_element.all(*args)
-      end
-
-      def ==(other)
-        other.respond_to?(:args) && args == other.args
-      end
-    end
-
-    # class QueryBuilder - models overall queries for Capybara, queries can include:
+    # class QueryBuilder - builds query to be executed on capybara driver, queries can include:
     #  - requirements on element type
     #  - selection criteria, modeled through the Selector class
     #  - options
