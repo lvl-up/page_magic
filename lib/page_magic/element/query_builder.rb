@@ -1,7 +1,22 @@
 require 'capybara/query'
 module PageMagic
   class Element
-    # class Query - models overall queries for Capybara, queries can include:
+    class Query
+      attr_reader :args
+      def initialize(args)
+        @args = args
+      end
+
+      def execute(capybara_element)
+        capybara_element.all(*args)
+      end
+
+      def ==(other)
+        other.respond_to?(:args) && args == other.args
+      end
+    end
+
+    # class QueryBuilder - models overall queries for Capybara, queries can include:
     #  - requirements on element type
     #  - selection criteria, modeled through the Selector class
     #  - options
@@ -29,11 +44,13 @@ module PageMagic
       # @param [Hash] options additional options to be provided to Capybara. e.g. count: 3
       # @return [Array] list of compatible capybara query parameters.
       def build(locator, options = {})
-        [].tap do |array|
+        args = [].tap do |array|
           selector = Selector.find(locator.keys.first)
           array << selector.build(type, locator.values.first)
           array << options unless options.empty?
         end.flatten
+
+        Query.new(args)
       end
 
       ELEMENT = QueryBuilder.new

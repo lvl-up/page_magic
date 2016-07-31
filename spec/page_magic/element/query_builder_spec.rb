@@ -27,12 +27,14 @@ module PageMagic
         end
         let(:locator) { { css: '.css' } }
 
-        it 'uses the locator to find the correct selector builder' do
-          expect(subject.build(locator)).to eq(locator.values)
+        it 'builds a query using the correct selector' do
+          expected = Query.new(locator.values)
+          expect(subject.build(locator)).to eq(expected)
         end
 
         it 'adds options to the result' do
-          expect(subject.build(locator, :options)).to eq(locator.values.concat([:options]))
+          expected = Query.new(locator.values.concat([:options]))
+          expect(subject.build(locator, :options)).to eq(expected)
         end
 
         context 'selector support element type' do
@@ -81,20 +83,25 @@ module PageMagic
     context 'integration' do
       include_context :webapp_fixture
       let(:capybara_session) { Capybara::Session.new(:rack_test, rack_app).tap { |s| s.visit('/elements') } }
+
       it 'finds fields' do
-        expect(capybara_session.all(*QueryBuilder.find(:text_field).build(name: 'field_name')).size).to eq(1)
+        query = QueryBuilder.find(:text_field).build(name: 'field_name')
+        expect(query.execute(capybara_session).size).to eq(1)
       end
 
       it 'finds buttons' do
-        expect(capybara_session.all(*QueryBuilder.find(:button).build(text: 'a button')).size).to eq(1)
+        query = QueryBuilder.find(:button).build(text: 'a button')
+        expect(query.execute(capybara_session).size).to eq(1)
       end
 
       it 'finds links' do
-        expect(capybara_session.all(*QueryBuilder.find(:link).build(text: 'a link')).size).to eq(1)
+        query = QueryBuilder.find(:link).build(text: 'a link')
+        expect(query.execute(capybara_session).size).to eq(1)
       end
 
       it 'finds elements' do
-        expect(capybara_session.all(*QueryBuilder.find(:element).build(name: 'field_name')).size).to eq(1)
+        query = QueryBuilder.find(:element).build(name: 'field_name')
+        expect(query.execute(capybara_session).size).to eq(1)
       end
     end
   end

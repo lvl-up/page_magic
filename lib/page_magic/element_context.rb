@@ -35,12 +35,13 @@ module PageMagic
     private
 
     def find(builder)
-      query_args = builder.build_query
-      result = page_element.browser_element.all(*query_args)
+      query = builder.build_query
+      result = query.execute(page_element.browser_element)
 
+      # TODO: encapsulate inside PageMagic::Element::Query#execute
       if result.empty?
-        query = Capybara::Query.new(*query_args)
-        raise ElementMissingException, ELEMENT_NOT_FOUND_MSG % query.description
+        capybara_query = Capybara::Query.new(*query.args)
+        raise ElementMissingException, ELEMENT_NOT_FOUND_MSG % capybara_query.description
       end
 
       result.to_a.collect { |e| builder.build(e) }

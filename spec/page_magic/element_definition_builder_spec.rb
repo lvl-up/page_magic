@@ -69,7 +69,7 @@ module PageMagic
                                       element: Object.new,
                                       options: options)
 
-        expect(builder.build_query).to eq([:xpath, '//xpath', options])
+        expect(builder.build_query).to eq(Element::Query.new([:xpath, '//xpath', options]))
       end
     end
   end
