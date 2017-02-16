@@ -21,7 +21,7 @@ shared_context :webapp_fixture do
             <label>enter text
               <input id='field_id' name='field_name' class='input_class' type='text' value='filled in'/>
             </label>
-            <input id='form_button' type='submit' value='a button'/>
+            <button id='form_button' type='submit' value='a button'/>
           </form>
 
         ELEMENTS

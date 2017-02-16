@@ -34,11 +34,22 @@ module PageMagic
           end
         end
 
+        context 'multiple results found' do
+          subject do
+            QueryBuilder.find(:link).build({ css: 'a' }, {}, multiple_results: true)
+          end
+
+          it 'returns an array' do
+            result = subject.execute(page.browser)
+            expect(result).to be_a(Array)
+            expect(result.size).to eq(2)
+          end
+        end
+
         it 'returns the result of the capybara query' do
           query = QueryBuilder.find(:link).build(id: 'form_link')
           result = query.execute(page.browser)
-          expect(result.size).to eq(1)
-          expect(result.first.text).to eq('link in a form')
+          expect(result.text).to eq('link in a form')
         end
       end
     end

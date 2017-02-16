@@ -21,8 +21,7 @@ module PageMagic
       prefecteched_element = builder.element
       return builder.build(prefecteched_element) if prefecteched_element
 
-      elements = find(builder)
-      elements.size == 1 ? elements.first : elements
+      find(builder)
     end
 
     def respond_to?(*args)
@@ -32,8 +31,14 @@ module PageMagic
     private
 
     def find(builder)
-      result = builder.build_query.execute(page_element.browser_element)
-      result.to_a.collect { |e| builder.build(e) }
+      query = builder.build_query
+      result = query.execute(page_element.browser_element)
+
+      if query.multiple_results?
+        result.collect { |e| builder.build(e) }
+      else
+        builder.build(result)
+      end
     end
   end
 end

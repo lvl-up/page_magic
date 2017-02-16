@@ -86,22 +86,22 @@ module PageMagic
 
       it 'finds fields' do
         query = QueryBuilder.find(:text_field).build(name: 'field_name')
-        expect(query.execute(capybara_session).size).to eq(1)
+        expect(query.execute(capybara_session).tag_name).to eq('input')
       end
 
       it 'finds buttons' do
         query = QueryBuilder.find(:button).build(text: 'a button')
-        expect(query.execute(capybara_session).size).to eq(1)
+        expect(query.execute(capybara_session).tag_name).to eq('button')
       end
 
       it 'finds links' do
         query = QueryBuilder.find(:link).build(text: 'a link')
-        expect(query.execute(capybara_session).size).to eq(1)
+        expect(query.execute(capybara_session).tag_name).to eq('a')
       end
 
       it 'finds elements' do
         query = QueryBuilder.find(:element).build(name: 'field_name')
-        expect(query.execute(capybara_session).size).to eq(1)
+        expect(query.execute(capybara_session).tag_name).to eq('input')
       end
     end
   end

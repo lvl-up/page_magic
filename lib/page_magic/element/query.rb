@@ -7,6 +7,8 @@ module PageMagic
 
       attr_reader :args, :multiple_results
 
+      alias multiple_results? multiple_results
+
       def initialize(args, multiple_results: false)
         @args = args
         @multiple_results = multiple_results
@@ -14,11 +16,11 @@ module PageMagic
 
       def execute(capybara_element)
         if multiple_results
-          capybara_element.all(*args).tap do |result|
+          capybara_element.all(*args).to_a.tap do |result|
             raise Capybara::ElementNotFound if result.empty?
           end
         else
-          [capybara_element.find(*args)]
+          capybara_element.find(*args)
         end
       rescue Capybara::Ambiguous => e
         raise AmbiguousQueryException, e.message
