@@ -283,13 +283,13 @@ end
 In the above example the selector looks for an element that has a link containing text that includes that organisation.
 The example uses a named parameter and is invoked as follows.
 ```ruby
-page.results(organisation: 'Ladtech')
+page.results(organisation: 'lvlup')
 ```
 
 # Starting a session
 To start a PageMagic session simply decide what browser you want to use and pass it to PageMagic's `.session` method
 ```ruby
-session = PageMagic.session(browser: :chrome, url: 'https://www.github.com)
+session = PageMagic.session(browser: :chrome, url: 'https://www.github.com')
 ```
 
 Your session won't do much besides navigating to the given url until you have [mapped pages](#page-mapping) to it, so 
