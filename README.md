@@ -20,6 +20,25 @@ Well PageMagic might just be the answer!
 
 Give it a try and let us know what you think! There will undoubtedly be things that can be improved and issues that 
 we are not aware of so your feedback/pull requests are greatly appreciated!
+
+##Under the hood
+Under the hood PageMagic uses the totally brilliant [Capybara](https://github.com/teamcapybara/capybara) to benefit from its amazing cross browser support.
+ 
+PageMagic builds on top of Capybara to build resuable models for webpages and website structure.
+ 
+##What about the other PageObject frameworks out there?
+PageMagic isn't the first [PageObject](https://martinfowler.com/bliki/PageObject.html) framework to be written, indeed there are others out there that are totaly awesome e.g:
+- [PageObject](https://github.com/cheezy/page-object)
+- [SitePrism](https://github.com/natritmeyer/site_prism)
+
+Whilst these APIs are great, PageMagic goes much further in the power it provides for:
+ - [modelling pages](defining-pages) and page components 
+ - defining the [wait logic](#hooks) and [watchers](#watchers) that are required to build robust page objects that work reliably with javascript rich webpages.
+ - Supporting [page transitions](#page-mapping)
+ 
+Check it out :)
+
+ 
 # Contents
 
 - [Installation](#installation)
@@ -154,9 +173,29 @@ the text field was defined with the id `:search_field`.
 
 After visiting a page you are will get a `Session` object. Elements can be accessed through the session itself.
 
+methods to set elements
+
+ element    | method 
+ ---        | --- 
+ text_field | set
+  
+
 ```ruby
 page.search_field.set 'page_magic'
 ```
+PageMagic sits on top of [Capybara](https://github.com/teamcapybara/capybara) and ultimately returns capybara elements elements for you interact with. Interacting with the element types above is done by calling the following methods:
+
+ element     | method 
+ ---         | --- 
+ text_field  | set(String)
+ checkbox    | set(Boolean)
+ radio       | choose(String)
+ link        | click
+ text_area   | set(String)
+ select_list | select(String)
+ 
+Typically you will not need to know much about Capybara itself but there will be times when you want to interact with elements at a lower level.In this case please see Capybara's [API](http://www.rubydoc.info/github/jnicklas/capybara/Capybara/Node/Element) For more information.
+ 
 
 ### Sub Elements
 If your pages are complex you can use PageMagic to compose pages, their elements and subelements to as many levels as 
