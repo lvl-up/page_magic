@@ -173,13 +173,6 @@ the text field was defined with the id `:search_field`.
 
 After visiting a page you are will get a `Session` object. Elements can be accessed through the session itself.
 
-methods to set elements
-
- element    | method 
- ---        | --- 
- text_field | set
-  
-
 ```ruby
 page.search_field.set 'page_magic'
 ```
