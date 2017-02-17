@@ -125,12 +125,12 @@ PageMagic is very powerful and provides a number of different ways to define a p
 ### Singular Results
 The element types written above are the method names you need to use in order to define elements of those types on your pages.
 
-Using them as they are written above will tell PageMagic to expect to find only one element using the selector your supply. Finding more than one will cause PageMagic to raise an `AmbiguousQueryException` 
+Using them as they are written above will tell PageMagic to expect to find only one element using the selector you supply. Finding more than one result will cause PageMagic to raise an `AmbiguousQueryException` 
 
 ### Multiple Results
 Applying an 's' to the end of the element definition method name will tell PageMagic that more than one result can be returned using the given selector.
 
-Where an element has been scoped to return multiple results, these will be returned in an `Array`.
+results are returned in an `Array`.
 ```ruby
 class ResultsPage
   include PageMagic
