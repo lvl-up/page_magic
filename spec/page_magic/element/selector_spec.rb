@@ -128,23 +128,28 @@ module PageMagic
       let(:capybara_session) { Capybara::Session.new(:rack_test, rack_app).tap { |s| s.visit('/elements') } }
 
       it 'finds elements by name' do
-        expect(capybara_session.all(*Query.find(:text_field).build(name: 'field_name')).size).to eq(1)
+        query = QueryBuilder.find(:text_field).build(name: 'field_name')
+        expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
 
       it 'finds elements by xpath' do
-        expect(capybara_session.all(*Query.find(:element).build(xpath: '//div/input')).size).to eq(1)
+        query = QueryBuilder.find(:element).build(xpath: '//div/label/input')
+        expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
 
       it 'finds elements by id' do
-        expect(capybara_session.all(*Query.find(:text_field).build(id: 'field_id')).size).to eq(1)
+        query = QueryBuilder.find(:text_field).build(id: 'field_id')
+        expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
 
       it 'finds elements by label' do
-        expect(capybara_session.all(*Query.find(:text_field).build(label: 'enter text')).size).to eq(1)
+        query = QueryBuilder.find(:text_field).build(label: 'enter text')
+        expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
 
       it 'finds elements by text' do
-        expect(capybara_session.all(*Query.find(:link).build(text: 'a link')).size).to eq(1)
+        query = QueryBuilder.find(:link).build(text: 'a link')
+        expect(query.execute(capybara_session).text).to eq('a link')
       end
     end
   end

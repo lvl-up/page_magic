@@ -14,7 +14,9 @@ module PageMagic
 
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'.freeze
 
-    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radios, :textarea].freeze
+    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radio, :textarea].collect do |type|
+      [type, :"#{type}s"]
+    end.flatten.freeze
 
     class << self
       def extended(clazz)
@@ -52,8 +54,8 @@ module PageMagic
     #  @param [Hash] selector a key value pair defining the method for locating this element. See above for details
     def element(*args, &block)
       block ||= proc {}
-      options = compute_options(args.dup)
-      options[:type] = __callee__
+      options = compute_options(args.dup, __callee__)
+
       section_class = options.delete(:section_class)
 
       add_element_definition(options.delete(:name)) do |parent_element, *e_args|
@@ -75,13 +77,17 @@ module PageMagic
 
     private
 
-    def compute_options(args)
+    def compute_options(args, type)
       section_class = remove_argument(args, Class) || Element
+
       { name: compute_name(args, section_class),
+        type: type,
         selector: compute_selector(args, section_class),
         options: compute_argument(args, Hash),
         element: args.delete_at(0),
-        section_class: section_class }
+        section_class: section_class }.tap do |hash|
+        hash[:options][:multiple_results] = type.to_s.end_with?('s')
+      end
     end
 
     def add_element_definition(name, &block)

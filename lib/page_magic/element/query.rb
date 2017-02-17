@@ -1,45 +1,36 @@
-require 'capybara/query'
 module PageMagic
   class Element
-    # class Query - models overall queries for Capybara, queries can include:
-    #  - requirements on element type
-    #  - selection criteria, modeled through the Selector class
-    #  - options
+    # class Query - executes query on capybara driver
     class Query
-      class << self
-        # Find a query using it's name
-        # @param [Symbol] type the name of the required query in snakecase format
-        # @return [Query] returns the predefined query with the given name
-        def find(type)
-          query = constants.find { |constant| constant.to_s.casecmp(type.to_s).zero? }
-          return ELEMENT unless query
-          const_get(query)
+      # Message template for execptions raised as a result of calling method_missing
+      ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'.freeze
+
+      attr_reader :args, :multiple_results
+
+      alias multiple_results? multiple_results
+
+      def initialize(args, multiple_results: false)
+        @args = args
+        @multiple_results = multiple_results
+      end
+
+      def execute(capybara_element)
+        if multiple_results
+          capybara_element.all(*args).to_a.tap do |result|
+            raise Capybara::ElementNotFound if result.empty?
+          end
+        else
+          capybara_element.find(*args)
         end
+      rescue Capybara::Ambiguous => e
+        raise AmbiguousQueryException, e.message
+      rescue Capybara::ElementNotFound => e
+        raise ElementMissingException, e.message
       end
 
-      attr_reader :type
-
-      # @param type -
-      def initialize(type = nil)
-        @type = type
+      def ==(other)
+        other.respond_to?(:args) && args == other.args
       end
-
-      # Build query parameters for Capybara's find method
-      # @param [Hash] locator the location method e.g. text: 'button text'
-      # @param [Hash] options additional options to be provided to Capybara. e.g. count: 3
-      # @return [Array] list of compatible capybara query parameters.
-      def build(locator, options = {})
-        [].tap do |array|
-          selector = Selector.find(locator.keys.first)
-          array << selector.build(type, locator.values.first)
-          array << options unless options.empty?
-        end.flatten
-      end
-
-      ELEMENT = Query.new
-      TEXT_FIELD = CHECKBOX = SELECT_LIST = RADIOS = TEXTAREA = Query.new(:field)
-      LINK = Query.new(:link)
-      BUTTON = Query.new(:button)
     end
   end
 end

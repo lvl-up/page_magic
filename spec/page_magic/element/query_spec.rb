@@ -1,100 +1,56 @@
 module PageMagic
   class Element
     describe Query do
-      it 'has a predefined query for each element type' do
-        missing = PageMagic::Elements::TYPES.find_all do |type|
-          !described_class.constants.include?(type.upcase.to_sym)
-        end
-        expect(missing).to be_empty
-      end
-
-      describe '.find' do
-        it 'finds the constant with the given name' do
-          expect(Query.find(:button)).to be(described_class::BUTTON)
-        end
-
-        context 'constant not found' do
-          it 'returns a default' do
-            expect(Query.find(:billy)).to be(described_class::ELEMENT)
-          end
-        end
-      end
-
-      describe '#build' do
-        let(:selector) { Selector.new }
-        before do
-          expect(Selector).to receive(:find).with(:css).and_return(selector)
-        end
-        let(:locator) { { css: '.css' } }
-
-        it 'uses the locator to find the correct selector builder' do
-          expect(subject.build(locator)).to eq(locator.values)
-        end
-
-        it 'adds options to the result' do
-          expect(subject.build(locator, :options)).to eq(locator.values.concat([:options]))
-        end
-
-        context 'selector support element type' do
-          subject do
-            described_class.new(:field)
-          end
-
-          it 'passes element type through to the selector' do
-            expect(selector).to receive(:build).with(:field, '.css').and_call_original
-            subject.build(locator)
-          end
-        end
-      end
-    end
-
-    class Query
-      describe BUTTON do
-        it 'has an element type' do
-          expect(described_class.type).to eq(:button)
-        end
-      end
-
-      describe ELEMENT do
-        it ' does not has an element type' do
-          expect(described_class.type).to be_nil
-        end
-      end
-
-      describe LINK do
-        it 'has an element type' do
-          expect(described_class.type).to eq(:link)
-        end
-      end
-
-      describe TEXT_FIELD do
-        it 'has an element type' do
-          expect(described_class.type).to eq(:field)
-        end
-
-        it 'the same as all form field types' do
-          expect(described_class).to eq(CHECKBOX).and eq(SELECT_LIST).and eq(RADIOS).and eq(TEXTAREA)
-        end
-      end
-    end
-
-    context 'integration' do
       include_context :webapp_fixture
-      let(:capybara_session) { Capybara::Session.new(:rack_test, rack_app).tap { |s| s.visit('/elements') } }
-      it 'finds fields' do
-        expect(capybara_session.all(*Query.find(:text_field).build(name: 'field_name')).size).to eq(1)
+
+      let(:page) do
+        elements_page = Class.new do
+          include PageMagic
+          url '/elements'
+        end
+        elements_page.visit(application: rack_app).current_page
       end
 
-      it 'finds buttons' do
-        expect(capybara_session.all(*Query.find(:button).build(text: 'a button')).size).to eq(1)
-      end
+      describe '#execute' do
+        context 'no results found' do
+          subject do
+            QueryBuilder.find(:link).build(css: 'wrong')
+          end
 
-      it 'finds links' do
-        expect(capybara_session.all(*Query.find(:link).build(text: 'a link')).size).to eq(1)
-      end
+          it 'raises an error' do
+            expected_message = 'Unable to find css "wrong"'
+            expect { subject.execute(page.browser) }.to raise_exception(ElementMissingException, expected_message)
+          end
+        end
 
-      it 'finds elements' do
-        expect(capybara_session.all(*Query.find(:element).build(name: 'field_name')).size).to eq(1)
+        context 'to many results returned' do
+          subject do
+            QueryBuilder.find(:link).build(css: 'a')
+          end
+
+          it 'raises an error' do
+            expected_message = 'Ambiguous match, found 2 elements matching css "a"'
+            expect { subject.execute(page.browser) }.to raise_error AmbiguousQueryException, expected_message
+          end
+        end
+
+        context 'multiple results found' do
+          subject do
+            QueryBuilder.find(:link).build({ css: 'a' }, {}, multiple_results: true)
+          end
+
+          it 'returns an array' do
+            result = subject.execute(page.browser)
+            expect(result).to be_a(Array)
+            expect(result.size).to eq(2)
+          end
+        end
+
+        it 'returns the result of the capybara query' do
+          query = QueryBuilder.find(:link).build(id: 'form_link')
+          result = query.execute(page.browser)
+          expect(result.text).to eq('link in a form')
+        end
       end
     end
   end
