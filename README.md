@@ -36,7 +36,7 @@ Whilst these APIs are great, PageMagic goes much further in the power it provide
  - defining the [wait logic](#hooks) and [watchers](#watchers) that are required to build robust page objects that work reliably with javascript rich webpages.
  - Supporting [page transitions](#page-mapping)
  
- Check it out :)
+Check it out :)
 
  
 # Contents
