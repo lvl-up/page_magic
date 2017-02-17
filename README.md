@@ -26,8 +26,9 @@ we are not aware of so your feedback/pull requests are greatly appreciated!
 - [Quick Start](#quick-start)
 - [Defining Pages](#defining-pages)
   - [Elements](#elements)
+    - [Singlular Results](#singular-results)
+    - [Multiple Results](#multiple-results)
     - [Interacting with elements](#interacting-with-elements)
-      -  [Multple Results](#multiple-results)
     - [Sub elements](#sub-elements)
     - [Custom elements](#custom-elements)
   - [Hooks](#hooks)
@@ -95,7 +96,12 @@ class Github
 end
 ```
 ## Elements
-Defining elements is easy. The following example defines a text field called 'search_field' that can be found using its name which is 'q'
+Defining elements is easy. Just give the:
+- element_type
+- id to refer to it by
+- selector to find it in the page
+
+The following example defines a text field called 'search_field' that can be found using its name which is 'q'
 
 ```ruby
 class Github
@@ -105,25 +111,51 @@ class Github
 end
 ```
 
+Element types supported by PageMagic are:
+- text_field
+- button
+- link
+- checkbox
+- select_list
+- radio
+- textarea
+
+PageMagic is very powerful and provides a number of different ways to define a page element so for more details please look at the [API](http://www.rubydoc.info/gems/page_magic/PageMagic%2FElements:element)
+
+### Singular Results
+The element types written above are the method names you need to use in order to define elements of those types on your pages.
+
+Using them as they are written above will tell PageMagic to expect to find only one element using the selector your supply. Finding more than one will cause PageMagic to raise an `AmbiguousQueryException` 
+
+### Multiple Results
+Applying an 's' to the end of the element definition method name will tell PageMagic that more than one result can be returned using the given selector.
+
+Where an element has been scoped to return multiple results, these will be returned in an `Array`.
+```ruby
+class ResultsPage
+  include PageMagic
+  elements :results, css: '.repo-list-item'
+end
+
+page.results #=> Array<Element> 
+```
+
+
 ### Interacting with elements
+```ruby
+class Github
+  include PageMagic
+  
+  text_field :search_field, name: 'q'
+end
+```
 Elements are defined with an id which is the name of the method you will use to reference it. In the above example, 
-the text field was defined with the ide `:search_field`.
+the text field was defined with the id `:search_field`.
 
 After visiting a page you are will get a `Session` object. Elements can be accessed through the session itself.
 
 ```ruby
 page.search_field.set 'page_magic'
-```
-
-#### Multiple Results
-Where an element has been scoped to return multple results, these will be returned in an array. 
-```ruby
-class ResultsPage
-  include PageMagic
-  element :results, css: '.repo-list-item'
-end
-
-page.results #=> Array<Element> 
 ```
 
 ### Sub Elements
@@ -251,13 +283,13 @@ end
 In the above example the selector looks for an element that has a link containing text that includes that organisation.
 The example uses a named parameter and is invoked as follows.
 ```ruby
-page.results(organisation: 'Ladtech')
+page.results(organisation: 'lvlup')
 ```
 
 # Starting a session
 To start a PageMagic session simply decide what browser you want to use and pass it to PageMagic's `.session` method
 ```ruby
-session = PageMagic.session(browser: :chrome, url: 'https://www.github.com)
+session = PageMagic.session(browser: :chrome, url: 'https://www.github.com')
 ```
 
 Your session won't do much besides navigating to the given url until you have [mapped pages](#page-mapping) to it, so 

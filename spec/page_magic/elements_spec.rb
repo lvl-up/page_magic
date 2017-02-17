@@ -22,7 +22,7 @@ module PageMagic
         expected_definition = ElementDefinitionBuilder.new(definition_class: Element,
                                                            type: :text_field,
                                                            selector: child_selector,
-                                                           options: {})
+                                                           options: { multiple_results: false })
         subject.text_field :alias, child_selector
         expect(instance.element_by_name(:alias)).to eq(expected_definition)
       end

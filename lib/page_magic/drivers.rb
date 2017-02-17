@@ -35,7 +35,7 @@ module PageMagic
     # @param [Object] other subject of equality check
     # @return [Boolean] true if the object is a match
     def ==(other)
-      other.is_a?(Drivers) && all == other.all
+      other.respond_to?(:all) && all == other.all
     end
   end
 end
