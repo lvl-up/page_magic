@@ -157,6 +157,19 @@ After visiting a page you are will get a `Session` object. Elements can be acces
 ```ruby
 page.search_field.set 'page_magic'
 ```
+PageMagic sits on top of [Capybara](https://github.com/teamcapybara/capybara) and ultimately returns capybara elements elements for you interact with. Interacting with the element types above is done by calling the following methods:
+
+ element     | method 
+ ---         | --- 
+ text_field  | set(String)
+ checkbox    | set(Boolean)
+ radio       | choose(String)
+ link        | click
+ text_area   | set(String)
+ select_list | select(String)
+ 
+Typically you will not need to know much about Capybara itself but there will be times when you want to interact with elements at a lower level.In this case please see Capybara's [API](http://www.rubydoc.info/github/jnicklas/capybara/Capybara/Node/Element) For more information.
+ 
 
 ### Sub Elements
 If your pages are complex you can use PageMagic to compose pages, their elements and subelements to as many levels as 
