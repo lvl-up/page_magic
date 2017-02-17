@@ -20,6 +20,23 @@ Well PageMagic might just be the answer!
 
 Give it a try and let us know what you think! There will undoubtedly be things that can be improved and issues that 
 we are not aware of so your feedback/pull requests are greatly appreciated!
+
+##Under the hood
+Under the hood PageMagic uses the totally brilliant [Capybara](https://github.com/teamcapybara/capybara) to benefit from its amazing cross browser support.
+ 
+PageMagic builds on top of Capybara to build resuable models for webpages and website structure.
+ 
+##What about the other PageObject frameworks out there?
+PageMagic isn't the first [PageObject](https://martinfowler.com/bliki/PageObject.html) framework to be written, indeed there are others out there that are totaly awesome e.g:
+- [PageObject](https://github.com/cheezy/page-object)
+- [SitePrism](https://github.com/natritmeyer/site_prism)
+
+Whilst these APIs are great, PageMagic goes much further in the power it provides for:
+ - [modelling pages](defining-pages) and page components 
+ - defining the [wait logic](#hooks) and [watchers](#watchers) that are required to build robust page objects that work reliably with javascript rich webpages.
+ - Supporting [page transitions](#page-mapping)
+
+ 
 # Contents
 
 - [Installation](#installation)
@@ -153,6 +170,13 @@ Elements are defined with an id which is the name of the method you will use to 
 the text field was defined with the id `:search_field`.
 
 After visiting a page you are will get a `Session` object. Elements can be accessed through the session itself.
+
+methods to set elements
+
+ element    | method 
+ ---        | --- 
+ text_field | set
+  
 
 ```ruby
 page.search_field.set 'page_magic'
