@@ -17,8 +17,6 @@ module PageMagic
     # Loads drivers defined in files at the given path
     # @param [String] path where the drivers are located
     def load(path = "#{__dir__}/drivers")
-      require 'active_support/inflector'
-
       Dir["#{path}/*.rb"].each do |driver_file|
         require driver_file
         driver_name = File.basename(driver_file)[/(.*)\.rb$/, 1]
