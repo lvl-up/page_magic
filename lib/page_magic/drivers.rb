@@ -1,4 +1,5 @@
 require 'page_magic/driver'
+require 'page_magic/utils/string'
 module PageMagic
   # class Drivers - creates an object that can be used to hold driver definitions
   # These PageMagic gets the user's chosen driver from this object.
@@ -21,7 +22,7 @@ module PageMagic
       Dir["#{path}/*.rb"].each do |driver_file|
         require driver_file
         driver_name = File.basename(driver_file)[/(.*)\.rb$/, 1]
-        register self.class.const_get(driver_name.classify)
+        register self.class.const_get(Utils::String.classify(driver_name))
       end
     end
 
