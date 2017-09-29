@@ -4,6 +4,8 @@ Metrics/LineLength:
 AllCops:
   TargetRubyVersion: 2.1
   Exclude:
+    - 'lib/active_support/**/*'
+    - 'spec/lib/active_support/**/*'
     - 'pkg/**/*'
     - 'vendor/**/*'
     - 'coverage/**/*'
