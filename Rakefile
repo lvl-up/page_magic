@@ -19,4 +19,12 @@ end
 
 Jeweler::RubygemsDotOrgTasks.new
 
-task default: [:spec, 'rubocop:auto_correct']
+require 'rake/testtask'
+Rake::TestTask.new do |t|
+  t.libs << 'spec'
+  t.pattern = 'spec/**/*_test.rb'
+  t.warning = true
+  t.verbose = true
+end
+
+task default: [:spec, :test, 'rubocop:auto_correct']
