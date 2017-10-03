@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'activesupport', '~> 4'
+gem 'activesupport-inflector'
 gem 'capybara', '>= 2.5'
 
 group :test do
