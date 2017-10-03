@@ -20,3 +20,17 @@ Metrics/MethodLength:
 
 Style/MethodMissing:
   Enabled: false
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+   - 'spec/**/*'
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: ()
+    '%i': '[]'
+    '%I': '[]'
+    '%r': '{}'
+    '%w': '[]'
+    '%W': '[]'

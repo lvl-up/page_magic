@@ -113,8 +113,7 @@ module PageMagic
             subject.class_eval do
               link(:hello, text: 'world')
 
-              def hello
-              end
+              def hello; end
             end
           end.to raise_error(InvalidMethodNameException)
         end
@@ -122,8 +121,7 @@ module PageMagic
         it 'should not allow element names that match method names' do
           expect do
             subject.class_eval do
-              def hello
-              end
+              def hello; end
 
               link(:hello, text: 'world')
             end
@@ -147,6 +145,13 @@ module PageMagic
             link(:link2, :selector)
           end
         end
+      end
+    end
+
+    describe '#elements' do
+      it 'is an alias of #element allowing page_magic to find multiple results' do
+        expected = described_class.public_instance_method(:element)
+        expect(described_class.public_instance_method(:elements)).to eq(expected)
       end
     end
 

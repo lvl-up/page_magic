@@ -31,7 +31,8 @@ module PageMagic
     def included(clazz)
       clazz.class_eval do
         include(InstanceMethods)
-        extend(Elements, ClassMethods)
+        extend ClassMethods
+        extend Elements
       end
     end
 

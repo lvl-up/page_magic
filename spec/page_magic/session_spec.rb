@@ -124,7 +124,7 @@ module PageMagic
       context 'more than one match on path' do
         it 'orders the results by specificity ' do
           subject.define_page_mappings %r{/page} => :mapped_page_using_regex, '/page' => :mapped_page_using_string
-          expected_result = [:mapped_page_using_string, :mapped_page_using_regex]
+          expected_result = %i[mapped_page_using_string mapped_page_using_regex]
           expect(subject.instance_eval { matches('/page') }).to eq(expected_result)
         end
       end
@@ -155,8 +155,7 @@ module PageMagic
 
       it 'checks the current page' do
         page.class_eval do
-          def my_method
-          end
+          def my_method; end
         end
         expect(subject.respond_to?(:my_method)).to eq(true)
       end
