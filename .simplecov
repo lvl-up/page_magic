@@ -4,4 +4,5 @@ SimpleCov.formatters  = [SimpleCov::Formatter::HTMLFormatter,PullReview::Coverag
 
 SimpleCov.start do
   add_filter '/spec/'
+  add_filter '/lib/active_support/core_ext/object/to_query.rb'
 end
