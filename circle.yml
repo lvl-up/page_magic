@@ -4,3 +4,5 @@ machine:
 test:
   override:
     - bundle exec rake
+  post:
+    - CODECLIMATE_REPO_TOKEN=$CODECLIMATE_REPO_TOKEN bundle exec codeclimate-test-reporter

@@ -14,7 +14,7 @@ module PageMagic
 
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'.freeze
 
-    TYPES = [:text_field, :button, :link, :checkbox, :select_list, :radio, :textarea].collect do |type|
+    TYPES = %i[text_field button link checkbox select_list radio textarea].collect do |type|
       [type, :"#{type}s"]
     end.flatten.freeze
 
