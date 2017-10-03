@@ -28,8 +28,8 @@ GEM
     cliver (0.3.2)
     codeclimate-engine-rb (0.4.0)
       virtus (~> 1.0)
-    codeclimate-test-reporter (1.0.7)
-      simplecov
+    codeclimate-test-reporter (1.0.8)
+      simplecov (<= 0.13)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     descendants_tracker (0.0.4)
@@ -133,7 +133,7 @@ GEM
       childprocess (~> 0.5)
       rubyzip (~> 1.0)
     semver2 (3.4.2)
-    simplecov (0.15.1)
+    simplecov (0.13.0)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
@@ -177,7 +177,7 @@ DEPENDENCIES
   reek
   rspec
   rubocop (~> 0.34)
-  simplecov (>= 0.15.1)
+  simplecov
   sinatra
   watir-webdriver
   yard (~> 0.8)

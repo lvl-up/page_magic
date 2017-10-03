@@ -10,7 +10,7 @@ group :test do
   gem 'pullreview-coverage', require: false
   gem 'reek'
   gem 'rspec', require: 'rspec/core/rake_task'
-  gem 'simplecov', '>= 0.15.1', require: false
+  gem 'simplecov', require: false
   gem 'sinatra'
   gem 'watir-webdriver'
 end
