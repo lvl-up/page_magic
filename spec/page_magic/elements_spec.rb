@@ -150,6 +150,13 @@ module PageMagic
       end
     end
 
+    describe '#elements' do
+      it 'is an alias of #element allowing page_magic to find multiple results' do
+        expected = described_class.public_instance_method(:element)
+        expect(described_class.public_instance_method(:elements)).to eq(expected)
+      end
+    end
+
     describe '#element_definitions' do
       it 'should return your a copy of the core definition' do
         subject.text_field :alias, child_selector

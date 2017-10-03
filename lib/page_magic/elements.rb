@@ -67,6 +67,7 @@ module PageMagic
       end
     end
 
+    alias elements element
     TYPES.each { |type| alias_method type, :element }
 
     # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
