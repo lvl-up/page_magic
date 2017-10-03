@@ -6,12 +6,18 @@ require 'page_magic/element/query_builder'
 module PageMagic
   # class Element - represents an element in a html page.
   class Element
-    EVENT_TYPES = [:set, :select, :select_option, :unselect_option, :click].freeze
+    EVENT_TYPES = %i[set select select_option unselect_option click].freeze
     DEFAULT_HOOK = proc {}.freeze
     EVENT_NOT_SUPPORTED_MSG = '%s event not supported'.freeze
 
-    include SelectorMethods, Watchers, SessionMethods, WaitMethods, Locators
-    extend Elements, SelectorMethods, Forwardable
+    include Locators
+    include WaitMethods
+    include SessionMethods
+    include Watchers
+    include SelectorMethods
+    extend Forwardable
+    extend SelectorMethods
+    extend Elements
 
     attr_reader :type, :name, :parent_element, :browser_element, :before_events, :after_events
 
@@ -24,7 +30,7 @@ module PageMagic
       # @!method before_events
       # If a block is passed in, it adds it to be run before an event is triggered on an element.
       # @see .after_events
-      %i(after_events before_events).each do |method|
+      %i[after_events before_events].each do |method|
         define_method method do |&block|
           instance_variable_name = "@#{method}".to_sym
           instance_variable_value = instance_variable_get(instance_variable_name) || [DEFAULT_HOOK]

@@ -18,3 +18,8 @@ Metrics/MethodLength:
 
 Style/MethodMissing:
   Enabled: false
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+   - 'spec/**/*'

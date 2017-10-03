@@ -113,8 +113,7 @@ module PageMagic
             subject.class_eval do
               link(:hello, text: 'world')
 
-              def hello
-              end
+              def hello; end
             end
           end.to raise_error(InvalidMethodNameException)
         end
@@ -122,8 +121,7 @@ module PageMagic
         it 'should not allow element names that match method names' do
           expect do
             subject.class_eval do
-              def hello
-              end
+              def hello; end
 
               link(:hello, text: 'world')
             end

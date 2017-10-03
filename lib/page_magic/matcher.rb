@@ -44,7 +44,7 @@ module PageMagic
     # @param [Matcher] other
     # @return [Fixnum] -1 = smaller, 0 = equal to, 1 = greater than
     def <=>(other)
-      results = [:path, :parameters, :fragment].collect do |component|
+      results = %i[path parameters fragment].collect do |component|
         compare(send(component), other.send(component))
       end
       results.find { |result| !result.zero? } || 0
@@ -113,7 +113,7 @@ module PageMagic
 
     def query_string_valid?(string)
       return true unless parameters
-      !parameters.any? do |key, value|
+      parameters.none? do |key, value|
         !compatible?(parameters_hash(string)[key.downcase.to_s], value)
       end
     end

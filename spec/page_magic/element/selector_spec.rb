@@ -33,7 +33,7 @@ module PageMagic
             described_class.new(supports_type: true)
           end
           it 'includes the element type in the result' do
-            expect(subject.build(:field, :locator)).to eq([:field, :locator])
+            expect(subject.build(:field, :locator)).to eq(%i[field locator])
           end
         end
 
@@ -54,7 +54,7 @@ module PageMagic
           end
 
           it 'is added to the result' do
-            expect(subject.build(:field, :locator)).to eq([:css, :locator])
+            expect(subject.build(:field, :locator)).to eq(%i[css locator])
           end
         end
       end
