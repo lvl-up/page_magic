@@ -94,7 +94,7 @@ GEM
     pullreview-coverage (0.0.5)
       certifi
       simplecov (>= 0.7.1, < 1.0.0)
-    rack (1.6.8)
+    rack (1.6.12)
     rack-protection (1.5.3)
       rack
     rack-test (0.7.0)
