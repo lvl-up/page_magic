@@ -65,7 +65,7 @@ GEM
       rake
       rdoc
       semver2
-    json (2.1.0)
+    json (2.3.1)
     jwt (1.5.6)
     mime-types (2.99.3)
     mini_mime (0.1.4)
