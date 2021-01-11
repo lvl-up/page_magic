@@ -18,7 +18,7 @@ end
 group :development do
   gem 'github-markup', '~> 1.4'
   gem 'jeweler', '~> 2.0'
-  gem 'redcarpet', '~> 3.3'
+  gem 'redcarpet', '~> 3.5'
   gem 'rubocop', '~> 0.34', require: 'rubocop/rake_task'
   gem 'yard', '~> 0.8'
 end

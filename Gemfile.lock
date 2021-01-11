@@ -103,7 +103,7 @@ GEM
       rake
     rake (12.1.0)
     rdoc (5.1.0)
-    redcarpet (3.4.0)
+    redcarpet (3.5.1)
     reek (4.7.2)
       codeclimate-engine-rb (~> 0.4.0)
       parser (>= 2.4.0.0, < 2.5)
@@ -174,7 +174,7 @@ DEPENDENCIES
   jeweler (~> 2.0)
   poltergeist
   pullreview-coverage
-  redcarpet (~> 3.3)
+  redcarpet (~> 3.5)
   reek
   rspec
   rubocop (~> 0.34)
