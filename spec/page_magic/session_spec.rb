@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Session do
@@ -164,7 +162,7 @@ module PageMagic
     end
 
     describe '#url' do
-      let!(:base_url) { 'http://example.com' }
+      let!(:base_url) { "http://example.com" }
       let!(:path) { 'home' }
       let!(:expected_url) { "#{base_url}/#{path}" }
 

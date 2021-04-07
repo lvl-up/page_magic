@@ -20,7 +20,7 @@ module PageMagic
           end
 
           it 'raises an error' do
-            expected_message = 'Unable to find visible css "wrong"'
+            expected_message = 'Unable to find css "wrong"'
             expect { subject.execute(page.browser) }.to raise_exception(ElementMissingException, expected_message)
           end
         end
