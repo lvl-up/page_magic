@@ -22,7 +22,14 @@ module PageMagic
             raise Capybara::ElementNotFound if result.empty?
           end
         else
-          capybara_element.find(*args)
+          # TODO - make sure there is a test around this.
+          if args.last.is_a?(Hash)
+            capybara_element.find(*args[0...-1], **args.last)
+          else
+            capybara_element.find(*args)
+          end
+
+
         end
       rescue Capybara::Ambiguous => e
         raise AmbiguousQueryException, e.message

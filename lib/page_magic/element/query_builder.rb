@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'capybara/query'
 require 'page_magic/element/query'
 module PageMagic
   class Element

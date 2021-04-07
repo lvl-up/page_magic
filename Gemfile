@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'activesupport-inflector'
-gem 'capybara', '>= 2.5'
+gem 'capybara', ">=3.0"
 
 group :test do
   gem 'arbre'
@@ -22,7 +22,6 @@ group :development do
   gem 'jeweler', '~> 2.0'
   gem 'redcarpet', '~> 3.3'
   gem 'rubocop', '1.12.1', require: 'rubocop/rake_task'
-  gem 'ruby-debug-ide', require: false
   gem 'ruby-debug-ide', require: false
   gem 'yard', '~> 0.8'
 end
