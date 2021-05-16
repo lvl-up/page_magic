@@ -49,7 +49,7 @@ module PageMagic
     # @param [Symbol] browser name of browser
     # @param [String] url url to start the session on
     # @param [Hash] options browser driver specific options
-    # @return [Session] configured sessoin
+    # @return [Session] configured session
     def session(application: nil, browser: :rack_test, url:, options: {})
       driver = drivers.find(browser)
       raise UnspportedBrowserException unless driver

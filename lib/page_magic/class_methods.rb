@@ -34,7 +34,7 @@ module PageMagic
       session_options = { browser: browser, options: options, url: url }
       session_options[:application] = application if application
 
-      PageMagic.session(session_options).tap do |session|
+      PageMagic.session(**session_options).tap do |session|
         session.visit(self, url: url)
       end
     end

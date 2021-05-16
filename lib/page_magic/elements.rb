@@ -63,7 +63,8 @@ module PageMagic
           parent_element(parent_element)
           class_exec(*e_args, &block)
         end
-        ElementDefinitionBuilder.new(options.merge(definition_class: definition_class))
+
+        ElementDefinitionBuilder.new(**options.merge(definition_class: definition_class))
       end
     end
 
