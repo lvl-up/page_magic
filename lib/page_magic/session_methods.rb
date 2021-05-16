@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 module PageMagic
   # module SessionMethods - contains methods for interacting with the {Session}

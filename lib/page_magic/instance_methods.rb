@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   # module InstanceMethods - provides instance level methods for page objects
   module InstanceMethods

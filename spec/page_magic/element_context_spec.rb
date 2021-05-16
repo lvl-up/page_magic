@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   describe ElementContext do
     include_context :webapp_fixture
@@ -53,7 +55,7 @@ module PageMagic
           it 'returns an array of element definitions' do
             elements_page.links :links, css: 'a'
             links = described_class.new(page).links
-            expect(links.find_all { |e| e.class == Element }.size).to eq(2)
+            expect(links.find_all { |e| e.instance_of?(Element) }.size).to eq(2)
             expect(links.collect(&:text)).to eq(['a link', 'link in a form'])
           end
         end

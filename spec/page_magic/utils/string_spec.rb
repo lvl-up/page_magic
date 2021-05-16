@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'page_magic/utils/string'
 module PageMagic
   module Utils

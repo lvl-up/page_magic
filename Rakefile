@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Bundler.require :test, :development
 
 RuboCop::RakeTask.new

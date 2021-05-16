@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 gem 'activesupport-inflector'
@@ -19,8 +21,8 @@ group :development do
   gem 'github-markup', '~> 1.4'
   gem 'jeweler', '~> 2.0'
   gem 'redcarpet', '~> 3.3'
-  gem 'rubocop', '~> 0.34', require: 'rubocop/rake_task'
+  gem 'rubocop', '1.12.1', require: 'rubocop/rake_task'
+  gem 'ruby-debug-ide', require: false
   gem 'ruby-debug-ide', require: false
   gem 'yard', '~> 0.8'
-  gem 'ruby-debug-ide', require: false
 end

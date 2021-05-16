@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.unshift(File.dirname(__FILE__).to_s)
 require 'capybara'
 require 'page_magic/exceptions'
@@ -50,7 +52,7 @@ module PageMagic
     # @param [String] url url to start the session on
     # @param [Hash] options browser driver specific options
     # @return [Session] configured session
-    def session(application: nil, browser: :rack_test, url:, options: {})
+    def session(url:, application: nil, browser: :rack_test, options: {})
       driver = drivers.find(browser)
       raise UnspportedBrowserException unless driver
 

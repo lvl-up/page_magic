@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module PageMagic
   # class Driver - instances are factories for drivers used by PageMagic
   class Driver
     attr_reader :supported_browsers, :handler
+
     # Creates a driver definition
     # @example
     #  Driver.new do |rack_application, options|

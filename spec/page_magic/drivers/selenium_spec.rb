@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'page_magic/drivers/selenium'
 module PageMagic
   describe Drivers::Selenium do

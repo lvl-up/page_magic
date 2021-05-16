@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'page_magic/drivers/poltergeist'
 module PageMagic
   describe Drivers::Poltergeist do

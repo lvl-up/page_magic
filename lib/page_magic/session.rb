@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 require 'page_magic/matcher'
 module PageMagic
   # class Session - coordinates access to the browser though page objects.
   class Session
-    URL_MISSING_MSG = 'a path must be mapped or a url supplied'.freeze
-    REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'.freeze
-    INVALID_MAPPING_MSG = 'mapping must be a string or regexp'.freeze
-    UNSUPPORTED_OPERATION_MSG = 'execute_script not supported by driver'.freeze
+    URL_MISSING_MSG = 'a path must be mapped or a url supplied'
+    REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'
+    INVALID_MAPPING_MSG = 'mapping must be a string or regexp'
+    UNSUPPORTED_OPERATION_MSG = 'execute_script not supported by driver'
 
     extend Forwardable
 
@@ -94,6 +96,7 @@ module PageMagic
       target_url = url || begin
         if (mapping = transitions.key(page))
           raise InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
+
           url(base_url, mapping.compute_uri)
         end
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   describe SessionMethods do
     include_context :webapp_fixture

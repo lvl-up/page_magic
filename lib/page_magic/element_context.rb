@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   # class ElementContext - resolves which element definition to use when accessing the browser.
   class ElementContext

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Metrics/ModuleLength
 module PageMagic
   describe Matcher do
@@ -161,7 +163,7 @@ module PageMagic
 
         context 'parameter requirement is a regexp' do
           subject do
-            described_class.new(parameters: { foo: /b[a]r/ })
+            described_class.new(parameters: { foo: /bar/ })
           end
 
           it 'returns true for a match on the regexp' do

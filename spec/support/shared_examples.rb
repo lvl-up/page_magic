@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   shared_examples 'session accessor' do
     it 'includes session methods' do

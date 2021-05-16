@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 require 'page_magic/element/selector_methods'
 require 'page_magic/element/locators'
@@ -8,7 +10,7 @@ module PageMagic
   class Element
     EVENT_TYPES = %i[set select select_option unselect_option click].freeze
     DEFAULT_HOOK = proc {}.freeze
-    EVENT_NOT_SUPPORTED_MSG = '%s event not supported'.freeze
+    EVENT_NOT_SUPPORTED_MSG = '%s event not supported'
 
     include Locators
     include WaitMethods
@@ -44,6 +46,7 @@ module PageMagic
       # @return [Element]
       def parent_element(page_element = nil)
         return @parent_page_element unless page_element
+
         @parent_page_element = page_element
       end
 
@@ -84,9 +87,7 @@ module PageMagic
     # @raise [NotSupportedException] if the wrapped Capybara element does not support the method
     EVENT_TYPES.each do |method|
       define_method method do |*args|
-        unless browser_element.respond_to?(method)
-          raise NotSupportedException, EVENT_NOT_SUPPORTED_MSG % method
-        end
+        raise NotSupportedException, EVENT_NOT_SUPPORTED_MSG % method unless browser_element.respond_to?(method)
 
         browser_element.send(method, *args)
       end
@@ -97,7 +98,8 @@ module PageMagic
     rescue ElementMissingException
       begin
         return browser_element.send(method, *args, &block) if browser_element.respond_to?(method)
-        return parent_element.send(method, *args, &block)
+
+        parent_element.send(method, *args, &block)
       rescue NoMethodError
         super
       end
@@ -137,6 +139,7 @@ module PageMagic
     def wrap_events(raw_element)
       EVENT_TYPES.each do |action_method|
         next unless raw_element.respond_to?(action_method)
+
         apply_hooks(raw_element: raw_element,
                     capybara_method: action_method,
                     before_events: before_events,

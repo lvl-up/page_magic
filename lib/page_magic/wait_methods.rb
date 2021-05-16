@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   # module WaitMethods - contains methods for waiting
   module WaitMethods
@@ -10,6 +12,7 @@ module PageMagic
       start_time = Time.now
       until Time.now > start_time + timeout_after
         return true if yield == true
+
         sleep retry_every
       end
       raise TimeoutException, 'Action took to long'

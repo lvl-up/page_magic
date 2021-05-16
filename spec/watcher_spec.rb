@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   describe Watcher do
     describe '#initialize' do
@@ -37,6 +39,7 @@ module PageMagic
       context 'block supplied to constructor' do
         def method_on_self(value = nil)
           return @value unless value
+
           @value = value
         end
 

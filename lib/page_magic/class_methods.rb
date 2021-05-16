@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   # module ClassMethods - contains class level methods for PageObjects
   module ClassMethods
@@ -15,6 +17,7 @@ module PageMagic
     # if one has not been set on the page object class it will return a default block that does nothing
     def on_load(&block)
       return @on_load || DEFAULT_ON_LOAD unless block
+
       @on_load = block
     end
 
