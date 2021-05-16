@@ -16,3 +16,4 @@ bin
 .ruby-version
 .ruby-gemset
 .DS_store
+.pkg/
