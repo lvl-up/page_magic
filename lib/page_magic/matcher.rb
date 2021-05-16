@@ -22,7 +22,7 @@ module PageMagic
 
     # @return [String] uri represented by this mapping
     def compute_uri
-      path.to_s.tap do |uri|
+      path.to_s.dup.tap do |uri|
         uri << "?#{parameters.to_query}" if parameters
         uri << "##{fragment}" if fragment
       end
