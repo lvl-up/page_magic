@@ -22,7 +22,7 @@ module PageMagic
   class TimeoutException < RuntimeError
   end
 
-  class UnspportedBrowserException < RuntimeError
+  class UnsupportedBrowserException < RuntimeError
   end
 
   class UnsupportedCriteriaException < RuntimeError

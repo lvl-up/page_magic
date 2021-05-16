@@ -20,7 +20,6 @@ module PageMagic
     def initialize(capybara_session, base_url = nil)
       @raw_session = capybara_session
       @base_url = base_url
-      visit(url: base_url) if base_url
       @transitions = {}
     end
 

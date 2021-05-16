@@ -19,6 +19,13 @@ module PageMagic
 
     let(:child_selector) { { id: 'child' } }
 
+    context 'element types' do
+      it 'provides all of the type provided by capybara' do
+        capybara_elements = Capybara::Selector.all.except(*%i[element datalist_input datalist_option id xpath css]).keys
+        expect(described_class::TYPES).to include(*capybara_elements)
+      end
+    end
+
     describe '#element' do
       it 'sets the selector and type' do
         expected_definition = ElementDefinitionBuilder.new(definition_class: Element,
