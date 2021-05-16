@@ -14,7 +14,7 @@ module PageMagic
       describe '#execute' do
         context 'no results found' do
           subject do
-            QueryBuilder.find(:link).build(css: 'wrong')
+            QueryBuilder.find(:link).build({css: 'wrong'})
           end
 
           it 'raises an error' do
@@ -25,7 +25,7 @@ module PageMagic
 
         context 'to many results returned' do
           subject do
-            QueryBuilder.find(:link).build(css: 'a')
+            QueryBuilder.find(:link).build({css: 'a'})
           end
 
           it 'raises an error' do
@@ -47,7 +47,7 @@ module PageMagic
         end
 
         it 'returns the result of the capybara query' do
-          query = QueryBuilder.find(:link).build(id: 'form_link')
+          query = QueryBuilder.find(:link).build({id: 'form_link'})
           result = query.execute(page.browser)
           expect(result.text).to eq('link in a form')
         end
