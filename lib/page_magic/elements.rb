@@ -16,9 +16,42 @@ module PageMagic
 
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
 
-    TYPES = %i[text_field button link checkbox select_list radio textarea].collect do |type|
-      [type, :"#{type}s"]
-    end.flatten.freeze
+    # css
+    # datalist_input
+    # datalist_option
+    # field
+    # fieldset
+    # file_field
+    # fillable_field
+    # frame
+    # link_or_button
+    # option
+    # radio_button
+    # select
+    # table
+    # table_row
+    # xpath
+    #
+
+    TYPES = %i[field
+    fieldset
+    file_field
+    fillable_field
+    frame
+    link_or_button
+    option
+    radio_button
+    select
+    table
+    table_row
+    text_field
+    button
+    link
+    checkbox
+    select_list
+    radio
+    textarea
+    label].collect{ |type| [type, :"#{type}s"]}.flatten.freeze
 
     class << self
       def extended(clazz)

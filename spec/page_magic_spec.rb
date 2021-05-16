@@ -58,6 +58,8 @@ describe PageMagic do
   end
 
   describe '.session' do
+    include_context :rack_application
+
     let(:url) { 'http://url.com/' }
     let(:application) { rack_application.new }
 
@@ -75,12 +77,6 @@ describe PageMagic do
         session = described_class.session(application: rack_application.new, browser: :firefox, url: :url)
         expect(session.raw_session.driver).to be_a(Capybara::Selenium::Driver)
       end
-    end
-
-    include_context :rack_application
-    it 'sets the base url for the session' do
-      session = described_class.session(application: application, url: url)
-      expect(session.current_url).to eq(url)
     end
 
     context 'specifying a rack application' do
@@ -101,7 +97,7 @@ describe PageMagic do
 
     context 'driver for browser not found' do
       it 'raises an error' do
-        expected_exception = described_class::UnspportedBrowserException
+        expected_exception = described_class::UnsupportedBrowserException
         expect { described_class.session(browser: :invalid, url: url) }.to raise_exception expected_exception
       end
     end

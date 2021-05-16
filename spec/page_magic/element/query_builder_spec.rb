@@ -77,7 +77,7 @@ module PageMagic
         end
 
         it 'the same as all form field types' do
-          expect(described_class).to eq(CHECKBOX).and eq(SELECT_LIST).and eq(RADIO).and eq(TEXTAREA)
+          expect(described_class).to eq(CHECKBOX).and eq(SELECT_LIST).and eq(RADIO).and eq(TEXTAREA).and eq(FILE_FIELD).and eq(FILLABLE_FIELD).and eq(RADIO_BUTTON)
         end
       end
     end
