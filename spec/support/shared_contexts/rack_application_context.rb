@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_context :rack_application do
   let(:rack_application) do
     Class.new do

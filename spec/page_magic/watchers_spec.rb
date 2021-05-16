@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   describe Watchers do
     let(:element) { OpenStruct.new(text: :current_value) }

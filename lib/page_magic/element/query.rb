@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module PageMagic
   class Element
     # class Query - executes query on capybara driver
     class Query
       # Message template for execptions raised as a result of calling method_missing
-      ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'.freeze
+      ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'
 
       attr_reader :args, :multiple_results
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_context :nested_elements_html do
   require 'sinatra/base'
 

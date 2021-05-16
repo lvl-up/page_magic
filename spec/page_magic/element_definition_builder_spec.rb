@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   describe ElementDefinitionBuilder do
     describe '#initialize' do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'capybara/query'
 require 'page_magic/element/query'
 module PageMagic
@@ -14,6 +16,7 @@ module PageMagic
         def find(type)
           query = constants.find { |constant| constant.to_s.casecmp(type.to_s).zero? }
           return ELEMENT unless query
+
           const_get(query)
         end
       end

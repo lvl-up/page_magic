@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   class Element
     # class Selector - models the selection criteria understood by Capybara
@@ -10,6 +12,7 @@ module PageMagic
         def find(name)
           selector = constants.find { |constant| constant.to_s.casecmp(name.to_s).zero? }
           raise UnsupportedCriteriaException unless selector
+
           const_get(selector)
         end
       end

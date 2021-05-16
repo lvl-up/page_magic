@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'page_magic/drivers/rack_test'
 module PageMagic
   class Drivers

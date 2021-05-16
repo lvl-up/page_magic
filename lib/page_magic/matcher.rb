@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/object/to_query'
 module PageMagic
   # models mapping used to relate pages to uris
@@ -10,6 +12,7 @@ module PageMagic
     # @raise [MatcherInvalidException] if at least one component is not specified
     def initialize(path = nil, parameters: nil, fragment: nil)
       raise MatcherInvalidException unless path || parameters || fragment
+
       @path = path
       @parameters = parameters
       @fragment = fragment
@@ -55,6 +58,7 @@ module PageMagic
     # @return [Boolean]
     def ==(other)
       return false unless other.is_a?(Matcher)
+
       path == other.path && parameters == other.parameters && fragment == other.fragment
     end
 
@@ -64,11 +68,13 @@ module PageMagic
 
     def compare(this, other)
       return presence_comparison(this, other) unless this && other
+
       fuzzy_comparison(this, other)
     end
 
     def compatible?(string, comparitor)
       return true if comparitor.nil?
+
       if fuzzy?(comparitor)
         string =~ comparitor ? true : false
       else
@@ -82,6 +88,7 @@ module PageMagic
 
     def fuzzy?(component)
       return false unless component
+
       if component.is_a?(Hash)
         component.values.any? { |o| fuzzy?(o) }
       else
@@ -108,11 +115,13 @@ module PageMagic
     def presence_comparison(this, other)
       return 0 if this.nil? && other.nil?
       return 1 if this.nil? && other
+
       -1
     end
 
     def query_string_valid?(string)
       return true unless parameters
+
       parameters.none? do |key, value|
         !compatible?(parameters_hash(string)[key.downcase.to_s], value)
       end

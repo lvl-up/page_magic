@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module PageMagic
   # Builder for creating ElementDefinitions
   class ElementDefinitionBuilder
-    INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'.freeze
+    INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'
     attr_reader :definition_class, :options, :selector, :type, :element, :query_builder
 
     def initialize(definition_class:, selector:, type:, options: {}, element: nil)
@@ -34,6 +36,7 @@ module PageMagic
 
     def ==(other)
       return false unless other.is_a?(ElementDefinitionBuilder)
+
       this = [options, selector, type, element, definition_class]
       this == [other.options, other.selector, other.type, other.element, other.definition_class]
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   # class WatchedElementDefinition - Contains the specification the for checking if an subject has changed
   class Watcher

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/inflector'
 require 'page_magic/element_definition_builder'
 module PageMagic
@@ -12,7 +14,7 @@ module PageMagic
       end
     end
 
-    INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'.freeze
+    INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
 
     TYPES = %i[text_field button link checkbox select_list radio textarea].collect do |type|
       [type, :"#{type}s"]

@@ -2,7 +2,7 @@ Metrics/LineLength:
   Max: 120
 
 AllCops:
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: 2.7
   Exclude:
     - 'lib/active_support/**/*'
     - 'spec/lib/active_support/**/*'
@@ -18,8 +18,8 @@ Metrics/ParameterLists:
 Metrics/MethodLength:
   Max: 11
 
-Style/MethodMissing:
-  Enabled: false
+#Style/MethodMissing:
+#  Enabled: false
 
 Metrics/BlockLength:
   Enabled: true

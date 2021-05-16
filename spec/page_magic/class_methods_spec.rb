@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   describe ClassMethods do
     subject do
