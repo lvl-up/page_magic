@@ -12,7 +12,7 @@ group :test do
   gem 'rspec', require: 'rspec/core/rake_task'
   gem 'simplecov', require: false
   gem 'sinatra'
-  gem 'watir-webdriver'
+  gem 'watir'
 end
 
 group :development do
@@ -21,4 +21,5 @@ group :development do
   gem 'redcarpet', '~> 3.3'
   gem 'rubocop', '~> 0.34', require: 'rubocop/rake_task'
   gem 'yard', '~> 0.8'
+  gem 'ruby-debug-ide', require: false
 end
