@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+alias bundle="docker run -v $(pwd):/page_magic -t lvl-up/page-magic bundle"
+alias ruby="bundle exec ruby"
+alias rake="bundle exec rake"
+alias rubocop="bundle exec rubocop"
+alias gem="docker run -v $(pwd):/page_magic -t lvl-up/page-magic gem"
