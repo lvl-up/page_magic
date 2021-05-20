@@ -1,41 +1,39 @@
 # frozen_string_literal: true
 
-require 'page_magic/drivers'
-module PageMagic
-  describe Drivers do
-    subject { described_class.new }
-    let(:expected_driver) { Driver.new(:browser_driver) }
+RSpec.describe PageMagic::Drivers do
+  subject { described_class.new }
 
-    describe '#find' do
-      it 'returns the registered driver' do
-        subject.register expected_driver
-        expect(subject.find(:browser_driver)).to eq(expected_driver)
-      end
+  let(:expected_driver) { PageMagic::Driver.new(:browser_driver) }
+
+  describe '#find' do
+    it 'returns the registered driver' do
+      subject.register expected_driver
+      expect(subject.find(:browser_driver)).to eq(expected_driver)
     end
+  end
 
-    describe '#load' do
-      include_context :files
-      it 'loads the drivers in the specified path' do
-        class_definition = <<-RUBY
+  describe '#load' do
+    include_context 'files'
+    it 'loads the drivers in the specified path' do
+      class_definition = <<-RUBY
           class CustomDriver;
             def self.support? browser
               true
             end
           end
-        RUBY
+      RUBY
 
-        File.write("#{scratch_dir}/custom_driver.rb", class_definition)
+      File.write("#{scratch_dir}/custom_driver.rb", class_definition)
 
-        subject.load(scratch_dir)
-        expect(subject.find(:custom_browser)).to be(::CustomDriver)
-      end
+      subject.load(scratch_dir)
+      expect(subject.find(:custom_browser)).to be(::CustomDriver)
     end
+  end
 
-    describe '#register' do
-      it 'stores the driver' do
-        subject.register expected_driver
-        expect(subject.all).to eq([expected_driver])
-      end
+  describe '#register' do
+    it 'stores the driver' do
+      subject.register expected_driver
+      expect(subject.all).to eq([expected_driver])
     end
   end
 end

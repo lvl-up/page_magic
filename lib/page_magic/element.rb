@@ -105,9 +105,13 @@ module PageMagic
       end
     end
 
-    def respond_to?(*args)
+    def respond_to_missing?(*args)
       super || contains_element?(args.first) || browser_element.respond_to?(*args) || parent_element.respond_to?(*args)
     end
+
+    # def respond_to_missing?(*args)
+    #   respond_to?(*args)
+    # end
 
     # @!method session
     # get the current session

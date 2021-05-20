@@ -37,7 +37,7 @@ module PageMagic
       element_context.send(method, *args)
     end
 
-    def respond_to?(*args)
+    def respond_to_missing?(*args)
       contains_element?(args.first) || super
     end
 

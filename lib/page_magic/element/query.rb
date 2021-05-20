@@ -18,18 +18,12 @@ module PageMagic
 
       def execute(capybara_element)
         if multiple_results
-          capybara_element.all(*args).to_a.tap do |result|
-            raise Capybara::ElementNotFound if result.empty?
-          end
+          get_results(capybara_element)
+        elsif args.last.is_a?(Hash)
+          # TODO: - make sure there is a test around this.
+          capybara_element.find(*args[0...-1], **args.last)
         else
-          # TODO - make sure there is a test around this.
-          if args.last.is_a?(Hash)
-            capybara_element.find(*args[0...-1], **args.last)
-          else
-            capybara_element.find(*args)
-          end
-
-
+          capybara_element.find(*args)
         end
       rescue Capybara::Ambiguous => e
         raise AmbiguousQueryException, e.message
@@ -39,6 +33,14 @@ module PageMagic
 
       def ==(other)
         other.respond_to?(:args) && args == other.args
+      end
+
+      private
+
+      def get_results(capybara_element)
+        capybara_element.all(*args).to_a.tap do |result|
+          raise Capybara::ElementNotFound if result.empty?
+        end
       end
     end
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_context :nested_elements_html do
+RSpec.shared_context 'nested elements html' do
   require 'sinatra/base'
 
   let(:nested_elements_html) do

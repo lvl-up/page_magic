@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_context :webapp_fixture do
+RSpec.shared_context 'webapp fixture' do
   require 'sinatra/base'
 
   let(:rack_app) do
@@ -31,7 +31,7 @@ shared_context :webapp_fixture do
     end
   end
 
-  before :each do
+  before do
     Capybara.app = rack_app
   end
 

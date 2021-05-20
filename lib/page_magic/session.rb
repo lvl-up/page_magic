@@ -74,7 +74,7 @@ module PageMagic
 
     # @param args see {::Object#respond_to?}
     # @return [Boolean] true if self or the current page object responds to the give method name
-    def respond_to?(*args)
+    def respond_to_missing?(*args)
       super || current_page.respond_to?(*args)
     end
 
