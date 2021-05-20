@@ -10,6 +10,7 @@ module PageMagic
       # Copies parent element definitions on to subclass
       # @param [Class] clazz - inheritting class
       def inherited(clazz)
+        super
         clazz.element_definitions.merge!(element_definitions)
       end
     end
@@ -34,24 +35,24 @@ module PageMagic
     #
 
     TYPES = %i[field
-    fieldset
-    file_field
-    fillable_field
-    frame
-    link_or_button
-    option
-    radio_button
-    select
-    table
-    table_row
-    text_field
-    button
-    link
-    checkbox
-    select_list
-    radio
-    textarea
-    label].collect{ |type| [type, :"#{type}s"]}.flatten.freeze
+               fieldset
+               file_field
+               fillable_field
+               frame
+               link_or_button
+               option
+               radio_button
+               select
+               table
+               table_row
+               text_field
+               button
+               link
+               checkbox
+               select_list
+               radio
+               textarea
+               label].collect { |type| [type, :"#{type}s"] }.flatten.freeze
 
     class << self
       def extended(clazz)
@@ -147,6 +148,7 @@ module PageMagic
     end
 
     def method_added(method)
+      super
       raise InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
     end
 

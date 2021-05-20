@@ -26,7 +26,7 @@ module PageMagic
       find(builder)
     end
 
-    def respond_to?(*args)
+    def respond_to_missing?(*args)
       page_element.respond_to?(*args) || super
     end
 

@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'activesupport'
-gem 'capybara', ">=3.0"
+gem 'capybara', '>=3.0'
 
 group :test do
   gem 'poltergeist'

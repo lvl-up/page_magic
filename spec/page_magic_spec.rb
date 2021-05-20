@@ -2,7 +2,7 @@
 
 require 'page_magic'
 
-describe PageMagic do
+RSpec.describe PageMagic do
   subject do
     Class.new { include PageMagic }
   end
@@ -39,11 +39,11 @@ describe PageMagic do
     end
 
     context 'children' do
-      it 'should inherit elements defined on the parent class' do
+      it 'inherits elements defined on the parent class' do
         expect(child_page.element_definitions).to include(:next)
       end
 
-      it 'should pass on element definitions to their children' do
+      it 'passes on element definitions to their children' do
         grand_child_class = Class.new(child_page)
         expect(grand_child_class.element_definitions).to include(:next)
       end
@@ -58,7 +58,7 @@ describe PageMagic do
   end
 
   describe '.session' do
-    include_context :rack_application
+    include_context 'rack application'
 
     let(:url) { 'http://url.com/' }
     let(:application) { rack_application.new }

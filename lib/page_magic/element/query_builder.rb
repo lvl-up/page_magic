@@ -43,15 +43,15 @@ module PageMagic
 
       ELEMENT = QueryBuilder.new
       TEXT_FIELD =
-      CHECKBOX =
-      SELECT_LIST =
-      RADIO =
-      TEXTAREA =
-      FIELD =
-      FILE_FIELD =
-      FILLABLE_FIELD =
-      RADIO_BUTTON =
-      SELECT = QueryBuilder.new(:field)
+        CHECKBOX =
+          SELECT_LIST =
+            RADIO =
+              TEXTAREA =
+                FIELD =
+                  FILE_FIELD =
+                    FILLABLE_FIELD =
+                      RADIO_BUTTON =
+                        SELECT = QueryBuilder.new(:field)
 
       LINK = QueryBuilder.new(:link)
       LABEL = QueryBuilder.new(:label)

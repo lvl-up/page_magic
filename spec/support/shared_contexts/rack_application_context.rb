@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_context :rack_application do
+RSpec.shared_context 'rack application' do
   let(:rack_application) do
     Class.new do
       def call(_env)
