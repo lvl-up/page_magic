@@ -29,16 +29,11 @@ module PageMagic
 
       # Build query parameters for Capybara's find method
       # @param [Hash] locator the location method e.g. text: 'button text'
-      # @param [Hash] capybara_options additional options to be provided to Capybara. e.g. count: 3
+      # @param [Hash] options additional options to be provided to Capybara. e.g. count: 3
       # @return [Array] list of compatible capybara query parameters.
-      def build(locator, capybara_options = {}, multiple_results: false)
-        args = [].tap do |array|
-          selector = Selector.find(locator.keys.first)
-          array << selector.build(type, locator.values.first)
-          array << capybara_options unless capybara_options.empty?
-        end.flatten
-
-        Query.new(args, multiple_results: multiple_results)
+      def build(locator, options: {}, multiple_results: false)
+        selector = Selector.find(locator.keys.first).build(type, locator.values.first, options: options)
+        Query.for(selector.args, options: selector.options, multiple_results: multiple_results)
       end
 
       ELEMENT = QueryBuilder.new

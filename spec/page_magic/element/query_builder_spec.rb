@@ -34,8 +34,9 @@ RSpec.describe PageMagic::Element::QueryBuilder do
     end
 
     it 'adds options to the result' do
-      expected = PageMagic::Element::Query.new(locator.values.concat([:options]))
-      expect(subject.build(locator, :options)).to eq(expected)
+      options = {exact: true}
+      expected = PageMagic::Element::Query.new(locator.values, options: options)
+      expect(subject.build(locator, options: options)).to eq(expected)
     end
 
     context 'selector support element type' do
@@ -44,7 +45,7 @@ RSpec.describe PageMagic::Element::QueryBuilder do
       end
 
       it 'passes element type through to the selector' do
-        expect(selector).to receive(:build).with(:field, '.css').and_call_original
+        expect(selector).to receive(:build).with(:field, '.css', options: {}).and_call_original
         subject.build(locator)
       end
     end
