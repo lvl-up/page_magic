@@ -4,27 +4,44 @@ module PageMagic
   class Element
     # class Query - executes query on capybara driver
     class Query
+
+      class Multi < Query
+        def find(capybara_element)
+          capybara_element.all(*selector_args, **options).to_a.tap do |result|
+            raise Capybara::ElementNotFound if result.empty?
+          end
+        end
+      end
+
+      class Single < Query
+        def find(capybara_element)
+          capybara_element.find(*selector_args, **options)
+        end
+      end
+
+      QUERY_TYPES = Hash.new(Single).tap do |hash|
+        hash[true] = Multi
+      end
+
+      class << self
+        def for(selector_args, multiple_results: false, options: {})
+          # TODO convert args? I.e. Element type or Blank?
+          QUERY_TYPES[multiple_results].new(selector_args, options: options)
+        end
+      end
+
       # Message template for execptions raised as a result of calling method_missing
       ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'
 
-      attr_reader :args, :multiple_results
+      attr_reader :selector_args, :options
 
-      alias multiple_results? multiple_results
-
-      def initialize(args, multiple_results: false)
-        @args = args
-        @multiple_results = multiple_results
+      def initialize(selector_args, options: {})
+        @selector_args = selector_args
+        @options = options
       end
 
       def execute(capybara_element)
-        if multiple_results
-          get_results(capybara_element)
-        elsif args.last.is_a?(Hash)
-          # TODO: - make sure there is a test around this.
-          capybara_element.find(*args[0...-1], **args.last)
-        else
-          capybara_element.find(*args)
-        end
+        find(capybara_element)
       rescue Capybara::Ambiguous => e
         raise AmbiguousQueryException, e.message
       rescue Capybara::ElementNotFound => e
@@ -32,15 +49,8 @@ module PageMagic
       end
 
       def ==(other)
-        other.respond_to?(:args) && args == other.args
-      end
-
-      private
-
-      def get_results(capybara_element)
-        capybara_element.all(*args).to_a.tap do |result|
-          raise Capybara::ElementNotFound if result.empty?
-        end
+        other.respond_to?(:selector_args) && selector_args == other.selector_args &&
+          other.respond_to?(:options) && options == other.options
       end
     end
   end

@@ -72,7 +72,7 @@ RSpec.describe PageMagic::ElementDefinitionBuilder do
                                     element: Object.new,
                                     options: options)
 
-      expect(builder.build_query).to eq(PageMagic::Element::Query.new([:xpath, '//xpath', options]))
+      expect(builder.build_query).to eq(PageMagic::Element::Query.new([:xpath, '//xpath'], options: options))
     end
   end
 end

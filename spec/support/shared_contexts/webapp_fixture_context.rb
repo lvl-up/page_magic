@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_context 'webapp fixture' do
+RSpec.shared_context 'webapp fixture' do |path: '/'|
   require 'sinatra/base'
 
   let(:rack_app) do
@@ -31,11 +31,11 @@ RSpec.shared_context 'webapp fixture' do
     end
   end
 
-  before do
-    Capybara.app = rack_app
-  end
+  let(:capybara_session) { Capybara::Session.new(:rack_test, rack_app).tap { |s| s.visit(path) } }
 
-  after do
+  around do |example|
+    Capybara.app = rack_app
+    example.call
     Capybara.reset!
   end
 end

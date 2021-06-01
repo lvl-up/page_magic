@@ -20,8 +20,8 @@ module PageMagic
 
       super unless builder
 
-      prefecteched_element = builder.element
-      return builder.build(prefecteched_element) if prefecteched_element
+      prefetched_element = builder.element
+      return builder.build(prefetched_element) if prefetched_element
 
       find(builder)
     end
@@ -36,7 +36,7 @@ module PageMagic
       query = builder.build_query
       result = query.execute(page_element.browser_element)
 
-      if query.multiple_results?
+      if result.respond_to?(:collect)
         result.collect { |e| builder.build(e) }
       else
         builder.build(result)
