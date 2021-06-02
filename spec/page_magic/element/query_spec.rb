@@ -38,7 +38,7 @@ RSpec.describe PageMagic::Element::Query do
 
     context 'multiple results found' do
       subject do
-        PageMagic::Element::QueryBuilder.find(:link).build({ css: 'a' }, options: {}, multiple_results: true)
+        PageMagic::Element::QueryBuilder.find(:link).build({ css: 'a' }, options: {}, multiple_results: PageMagic::Element::Query::Multi)
       end
 
       it 'returns an array' do

@@ -62,17 +62,16 @@ RSpec.describe PageMagic::ElementDefinitionBuilder do
     end
   end
 
-  describe 'build_query' do
+  describe '#query' do
     it 'returns a capybara query' do
       options = { count: 1 }
       selector = { xpath: '//xpath' }
       builder = described_class.new(definition_class: PageMagic::Element,
                                     type: :text_field,
                                     selector: selector,
-                                    element: Object.new,
                                     options: options)
 
-      expect(builder.build_query).to eq(PageMagic::Element::Query.new([:xpath, '//xpath'], options: options))
+      expect(builder.query).to eq(PageMagic::Element::Query.new([:xpath, '//xpath'], options: options))
     end
   end
 end
