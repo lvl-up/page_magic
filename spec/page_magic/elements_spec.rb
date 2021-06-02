@@ -28,16 +28,16 @@ RSpec.describe PageMagic::Elements do
       expected_definition = PageMagic::ElementDefinitionBuilder.new(definition_class: PageMagic::Element,
                                                                     type: :text_field,
                                                                     selector: child_selector,
-                                                                    options: { multiple_results: false })
+                                                                    options: { multiple_results: PageMagic::Element::Query::Single })
       subject.text_field :alias, child_selector
       expect(instance.element_by_name(:alias)).to eq(expected_definition)
     end
 
     context 'options' do
-      it 'puts them on the builder' do
+      it 'builds them in to the query used to find the defined element' do
         options = { my: :options }
         subject.text_field :alias, child_selector, options
-        expect(instance.element_by_name(:alias).options).to eq(options)
+        expect(instance.element_by_name(:alias).query.options).to eq(options)
       end
     end
 

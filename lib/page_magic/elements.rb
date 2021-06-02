@@ -124,7 +124,7 @@ module PageMagic
         options: compute_argument(args, Hash),
         element: args.delete_at(0),
         section_class: section_class }.tap do |hash|
-        hash[:options][:multiple_results] = type.to_s.end_with?('s')
+        hash[:options][:multiple_results] = type.to_s.end_with?('s') ?  PageMagic::Element::Query::Multi : PageMagic::Element::Query::Single
       end
     end
 

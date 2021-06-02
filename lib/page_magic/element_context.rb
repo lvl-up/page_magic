@@ -33,7 +33,7 @@ module PageMagic
     private
 
     def find(builder)
-      query = builder.build_query
+      query = builder.query
       result = query.execute(page_element.browser_element)
 
       if result.respond_to?(:collect)

@@ -23,13 +23,6 @@ module PageMagic
         hash[true] = Multi
       end
 
-      class << self
-        def for(selector_args, multiple_results: false, options: {})
-          # TODO convert args? I.e. Element type or Blank?
-          QUERY_TYPES[multiple_results].new(selector_args, options: options)
-        end
-      end
-
       # Message template for execptions raised as a result of calling method_missing
       ELEMENT_NOT_FOUND_MSG = 'Unable to find %s'
 

@@ -20,37 +20,6 @@ RSpec.describe PageMagic::Element::QueryBuilder do
     end
   end
 
-  describe '#build' do
-    let(:selector) { PageMagic::Element::Selector.new }
-    let(:locator) { { css: '.css' } }
-
-    before do
-      expect(PageMagic::Element::Selector).to receive(:find).with(:css).and_return(selector)
-    end
-
-    it 'builds a query using the correct selector' do
-      expected = PageMagic::Element::Query.new(locator.values)
-      expect(subject.build(locator)).to eq(expected)
-    end
-
-    it 'adds options to the result' do
-      options = {exact: true}
-      expected = PageMagic::Element::Query.new(locator.values, options: options)
-      expect(subject.build(locator, options: options)).to eq(expected)
-    end
-
-    context 'selector support element type' do
-      subject do
-        described_class.new(:field)
-      end
-
-      it 'passes element type through to the selector' do
-        expect(selector).to receive(:build).with(:field, '.css', options: {}).and_call_original
-        subject.build(locator)
-      end
-    end
-  end
-
   describe PageMagic::Element::QueryBuilder::BUTTON do
     it 'has an element type' do
       expect(described_class.type).to eq(:button)
