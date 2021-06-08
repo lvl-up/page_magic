@@ -26,9 +26,8 @@ RSpec.describe PageMagic::Elements do
   describe '#element' do
     it 'sets the selector and type' do
       expected_definition = PageMagic::ElementDefinitionBuilder.new(definition_class: PageMagic::Element,
-                                                                    type: :text_field,
-                                                                    selector: child_selector,
-                                                                    options: { multiple_results: PageMagic::Element::Query::Single })
+                                                                    type: :field,
+                                                                    selector: child_selector)
       subject.text_field :alias, child_selector
       expect(instance.element_by_name(:alias)).to eq(expected_definition)
     end
@@ -169,4 +168,12 @@ RSpec.describe PageMagic::Elements do
       expect(first).not_to equal(second)
     end
   end
+
+  # TODO - test that element type is support correctly
+  # it 'has a predefined query for each element type' do
+  #   missing = PageMagic::Elements::TYPES.dup.delete_if { |type| type.to_s.end_with?('s') }.find_all do |type|
+  #     described_class.constants.include?(type)
+  #   end
+  #   expect(missing).to be_empty
+  # end
 end

@@ -6,7 +6,7 @@ module PageMagic
     INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'
     attr_reader :definition_class, :selector, :type, :element, :query
 
-    def initialize(definition_class:, selector:, type:, options: {}, element: nil)
+    def initialize(definition_class:, selector:, type:, query_class: PageMagic::Element::Query::Single, options: {}, element: nil)
 
       unless element
         selector ||= definition_class.selector
@@ -20,11 +20,9 @@ module PageMagic
       if element
         @element = element
       else
-        query_class = options.delete(:multiple_results) || PageMagic::Element::Query::Single
-        # TODO - remove multiple queries variable name throughout code. Consider pulling up build method
         # TODO - maybe create two classes of element definition builder one for prefetched and seletor based
         selector = PageMagic::Element::Selector.find(selector.keys.first).build(type, selector.values.first, options: options)
-        @query = query_class.new(selector.args, options: selector.options)
+        @query = query_class.new(*selector.args, options: selector.options)
       end
     end
 

@@ -108,7 +108,8 @@ RSpec.describe PageMagic::Element::Selector do
       it_behaves_like 'a selector', named: :field, exact: true
 
       it 'finds elements by label' do
-        query = PageMagic::Element::QueryBuilder.find(:text_field).build({ label: 'enter text' })
+        selector = described_class.find(:label).build(:text_field, 'enter text')
+        query = PageMagic::Element::Query::Single.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -123,7 +124,8 @@ RSpec.describe PageMagic::Element::Selector do
       end
 
       it 'finds elements by name' do
-        query = PageMagic::Element::QueryBuilder.find(:text_field).build({ name: 'field_name' })
+        selector = described_class.find(:name).build(:text_field, 'field_name')
+        query = PageMagic::Element::Query::Single.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -132,7 +134,8 @@ RSpec.describe PageMagic::Element::Selector do
       it_behaves_like 'a selector', named: true
 
       it 'finds elements by xpath' do
-        query = PageMagic::Element::QueryBuilder.find(:element).build({ xpath: '//div/label/input' })
+        selector = described_class.find(:xpath).build(:element, '//div/label/input')
+        query = PageMagic::Element::Query::Single.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -141,7 +144,8 @@ RSpec.describe PageMagic::Element::Selector do
       it_behaves_like 'a selector', named: true
 
       it 'finds elements by id' do
-        query = PageMagic::Element::QueryBuilder.find(:text_field).build({ id: 'field_id' })
+        selector = described_class.find(:id).build(:text_field, 'field_id')
+        query = PageMagic::Element::Query::Single.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -154,7 +158,9 @@ RSpec.describe PageMagic::Element::Selector do
       it_behaves_like 'a selector', named: :element_type
 
       it 'finds elements by text' do
-        query = PageMagic::Element::QueryBuilder.find(:link).build({ text: 'a link' })
+
+        selector = described_class.find(:text).build(:link, 'a link')
+        query = PageMagic::Element::Query::Single.new(*selector.args)
         expect(query.execute(capybara_session).text).to eq('a link')
       end
     end
