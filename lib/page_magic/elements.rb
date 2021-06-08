@@ -52,7 +52,7 @@ module PageMagic
                select_list
                radio
                textarea
-               label].collect { |type| [type, :"#{type}s"] }.flatten.freeze
+               label].freeze
 
     class << self
       def extended(clazz)
@@ -88,9 +88,10 @@ module PageMagic
     #  @param [Symbol] name the name of the element.
     #  @param [ElementClass] element_class a custom class of element that inherits {Element}.
     #  @param [Hash] selector a key value pair defining the method for locating this element. See above for details
-    def element(*args, &block)
+    def element(*args, query_class: PageMagic::Element::Query::Single, **selector, &block)
       block ||= proc {}
-      options = compute_options(args.dup, __callee__)
+      args << selector unless selector.empty?
+      options = compute_options(args, __callee__)
 
       section_class = options.delete(:section_class)
 
@@ -100,12 +101,19 @@ module PageMagic
           class_exec(*e_args, &block)
         end
 
-        ElementDefinitionBuilder.new(**options.merge(definition_class: definition_class))
+        ElementDefinitionBuilder.new(query_class: query_class, **options.merge(definition_class: definition_class))
       end
     end
 
     alias elements element
     TYPES.each { |type| alias_method type, :element }
+    TYPES.collect { |type| "#{type}s" }.each do |type|
+      define_method(type) do |*args, &block|
+        options = compute_argument(args, Hash)
+        args << options
+        public_send(:element, *args, query_class: PageMagic::Element::Query::Multi, &block)
+      end
+    end
 
     # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
     #  and {Element} definitions
@@ -119,13 +127,11 @@ module PageMagic
       section_class = remove_argument(args, Class) || Element
 
       { name: compute_name(args, section_class),
-        type: type,
+        type: type_for(type),
         selector: compute_selector(args, section_class),
         options: compute_argument(args, Hash),
         element: args.delete_at(0),
-        section_class: section_class }.tap do |hash|
-        hash[:options][:multiple_results] = type.to_s.end_with?('s') ?  PageMagic::Element::Query::Multi : PageMagic::Element::Query::Single
-      end
+        section_class: section_class }
     end
 
     def add_element_definition(name, &block)
@@ -159,6 +165,25 @@ module PageMagic
     def remove_argument(args, clazz)
       argument = args.find { |arg| arg.is_a?(clazz) }
       args.delete(argument)
+    end
+
+    def type_for(type)
+      is_field?(type) ? :field : type
+    end
+
+    def is_field?(type)
+      %i{
+        text_field
+        checkbox
+        select_list
+        radio
+        textarea
+        field
+        file_field
+        fillable_field
+        radio_button
+        select
+      }.include?(type)
     end
   end
 end
