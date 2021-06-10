@@ -96,12 +96,12 @@ module PageMagic
       section_class = options.delete(:section_class)
 
       add_element_definition(options.delete(:name)) do |parent_element, *e_args|
-        definition_class = Class.new(section_class) do
+        options[:definition_class] = Class.new(section_class) do
           parent_element(parent_element)
           class_exec(*e_args, &block)
         end
 
-        ElementDefinitionBuilder.new(query_class: query_class, **options.merge(definition_class: definition_class))
+        ElementDefinitionBuilder.new(query_class: query_class, **options)
       end
     end
 

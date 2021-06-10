@@ -2,29 +2,35 @@
 
 module PageMagic
   class Element # Capybara::Finder
-    class SelectorInstance
-      attr_reader :args, :options
-      def initialize(args, options={})
-        @args = args
-        @options = options
-      end
-
-      def == other
-        other.args == self.args && other.options == self.options
-      end
-    end
     # class Selector - models the selection criteria understood by Capybara
     class Selector
+      class Instance
+        attr_reader :args, :options
+        def initialize(args, options={})
+          @args = args
+          @options = options
+        end
+
+        def ==(other)
+          other.args == self.args && other.options == self.options
+        end
+      end
+
       class << self
-        # Find a Selecor using it's name
+        # Find a Selector using it's name
         # @param [Symbol] name the name of the required Selector in snakecase format. See class constants for available
         #  selectors
         # @return [Selector] returns the predefined selector with the given name
         def find(name)
-          selector = constants.find { |constant| constant.to_s.casecmp(name.to_s).zero? }
-          raise UnsupportedCriteriaException unless selector
+          selector_name = selector_constant_name(name)
+          raise UnsupportedCriteriaException unless selector_name
 
-          const_get(selector)
+          const_get(selector_name)
+        end
+
+        private
+        def selector_constant_name(name)
+          constants.find { |constant| constant.to_s.casecmp(name.to_s).zero? }
         end
       end
 
@@ -42,14 +48,11 @@ module PageMagic
       # @param [Hash] locator the selection method and its parameter. E.g. text: 'click me'
       def build(element_type, locator, options:{})
         array = [type(element_type), selector, formatter.call(locator)].compact
-        SelectorInstance.new(array, self.options.merge(options))
+        Instance.new(array, self.options.merge(options))
       end
-
-
 
       private
       def type(element_type)
-        # supports_type ? Element::Type.new(element_type) : ElementType::Type::Nil
         supports_type ? element_type : nil
       end
 
