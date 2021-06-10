@@ -28,9 +28,12 @@ module PageMagic
 
     # Create new instance of the ElementDefinition modeled by this builder
     # @param [Object] browser_element capybara browser element corresponding to the element modelled by this builder
-    # @return [Element] element definition
+    # @return [Element] element definition TODO - change
     def build(browser_element)
-      definition_class.new(browser_element)
+      return construct(element) if element.present? #Specific query type for prefetched?
+      query.execute(browser_element) do |result|
+        construct(result)
+      end
     end
 
     def ==(other)
@@ -38,6 +41,11 @@ module PageMagic
 
       this = [selector, type, element, definition_class, query]
       this == [other.selector, other.type, other.element, other.definition_class, other.query]
+    end
+
+    private
+    def construct(element)
+      definition_class.new(element)
     end
   end
 end

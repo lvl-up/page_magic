@@ -12,9 +12,8 @@ module PageMagic
         @options = options
       end
 
-      def execute(capybara_element)
-        find(capybara_element)
-
+      def execute(capybara_element, &block)
+        find(capybara_element, &(block||proc{|arg|arg}))
       rescue Capybara::ElementNotFound => e
         raise ElementMissingException, e.message
       end
