@@ -8,19 +8,15 @@ module PageMagic
 
     def initialize(definition_class:, selector:, type:, query_class: PageMagic::Element::Query::Single, options: {}, element: nil)
 
-      unless element
-        selector ||= definition_class.selector
-        raise UndefinedSelectorException, INVALID_SELECTOR_MSG if selector.nil? || selector.empty?
-      end
-
       @definition_class = definition_class
-      @selector = selector
-      @type = type
 
       if element
-        @element = element
+        @query = PageMagic::Element::Query::Prefetched.new(element)
       else
-        # TODO - maybe create two classes of element definition builder one for prefetched and seletor based
+        selector ||= definition_class.selector
+        raise UndefinedSelectorException, INVALID_SELECTOR_MSG if selector.nil? || selector.empty?
+
+        # TODO - maybe create two classes of element definition builder one for prefetched and selector based
         selector = PageMagic::Element::Selector.find(selector.keys.first).build(type, selector.values.first, options: options)
         @query = query_class.new(*selector.args, options: selector.options)
       end
@@ -30,22 +26,16 @@ module PageMagic
     # @param [Object] browser_element capybara browser element corresponding to the element modelled by this builder
     # @return [Element] element definition TODO - change
     def build(browser_element)
-      return construct(element) if element.present? #Specific query type for prefetched?
       query.execute(browser_element) do |result|
-        construct(result)
+        definition_class.new(result)
       end
     end
 
     def ==(other)
       return false unless other.is_a?(ElementDefinitionBuilder)
 
-      this = [selector, type, element, definition_class, query]
-      this == [other.selector, other.type, other.element, other.definition_class, other.query]
-    end
-
-    private
-    def construct(element)
-      definition_class.new(element)
+      this = [query, definition_class]
+      this == [other.query, other.definition_class]
     end
   end
 end

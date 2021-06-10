@@ -25,7 +25,7 @@ RSpec.describe PageMagic::ElementDefinitionBuilder do
                                         type: :element,
                                         selector: nil)
 
-          expect(builder.selector).to eq(css: 'selector')
+          expect(builder.query.selector_args).to eq(['selector'])
         end
       end
 
@@ -57,7 +57,7 @@ RSpec.describe PageMagic::ElementDefinitionBuilder do
                                       type: :element,
                                       selector: expected_selector)
 
-        expect(builder.selector).to eq(expected_selector)
+        expect(builder.query.selector_args).to eq([:id, 'id'])
       end
     end
   end

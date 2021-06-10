@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require_relative 'query/multi'
 require_relative 'query/single'
+require_relative 'query/prefetched'
 module PageMagic
   class Element
     # class Query - executes query on capybara driver
@@ -12,6 +13,7 @@ module PageMagic
         @options = options
       end
 
+      # TODO - test for decoration?
       def execute(capybara_element, &block)
         find(capybara_element, &(block||proc{|arg|arg}))
       rescue Capybara::ElementNotFound => e
