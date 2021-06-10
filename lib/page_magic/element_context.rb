@@ -20,27 +20,11 @@ module PageMagic
 
       super unless builder
 
-      prefetched_element = builder.element
-      return builder.build(prefetched_element) if prefetched_element
-
-      find(builder)
+      builder.build(page_element.browser_element)
     end
 
     def respond_to_missing?(*args)
       page_element.respond_to?(*args) || super
-    end
-
-    private
-
-    def find(builder)
-      query = builder.query
-      result = query.execute(page_element.browser_element)
-
-      if result.respond_to?(:collect)
-        result.collect { |e| builder.build(e) }
-      else
-        builder.build(result)
-      end
     end
   end
 end
