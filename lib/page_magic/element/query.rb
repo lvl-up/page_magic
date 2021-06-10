@@ -7,6 +7,7 @@ module PageMagic
     # class Query - executes query on capybara driver
     class Query
       attr_reader :selector_args, :options
+      DEFAULT_DECORATOR = proc{|arg|arg}.freeze
 
       def initialize(*selector_args, options: {})
         @selector_args = selector_args
@@ -15,7 +16,7 @@ module PageMagic
 
       # TODO - test for decoration?
       def execute(capybara_element, &block)
-        find(capybara_element, &(block||proc{|arg|arg}))
+        find(capybara_element, &(block||DEFAULT_DECORATOR))
       rescue Capybara::ElementNotFound => e
         raise ElementMissingException, e.message
       end
