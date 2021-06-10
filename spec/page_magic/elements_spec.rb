@@ -61,7 +61,7 @@ RSpec.describe PageMagic::Elements do
             section_class.selector child_selector
             subject.element section_class, :alias
             element_definition_builder = instance.element_by_name(:alias)
-            expect(element_definition_builder.selector).to eq(child_selector)
+            expect(element_definition_builder.query.selector_args).to eq(child_selector.to_a.flatten)
           end
         end
 
@@ -99,9 +99,8 @@ RSpec.describe PageMagic::Elements do
       context 'a prefetched object' do
         it 'adds a section' do
           subject.element :page_section, :object
-
           element_defintion_builder = instance.element_by_name(:page_section)
-          expect(element_defintion_builder.element).to eq(:object)
+          expect(element_defintion_builder.build(:anything).browser_element).to eq(:object)
         end
       end
     end
