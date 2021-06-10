@@ -16,7 +16,6 @@ module PageMagic
         selector ||= definition_class.selector
         raise UndefinedSelectorException, INVALID_SELECTOR_MSG if selector.nil? || selector.empty?
 
-        # TODO - maybe create two classes of element definition builder one for prefetched and selector based
         selector = PageMagic::Element::Selector.find(selector.keys.first).build(type, selector.values.first, options: options)
         @query = query_class.new(*selector.args, options: selector.options)
       end
