@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe PageMagic::Driver do
-  subject do
-    described_class.new :custom_browser
-  end
-
   describe '#build' do
     it 'returns the result of the block passed to the driver class constructor' do
       subject = described_class.new(:custom_browser) do
@@ -25,6 +21,10 @@ RSpec.describe PageMagic::Driver do
   end
 
   describe '#supports?' do
+    subject do
+      described_class.new :custom_browser
+    end
+
     context 'browser is in supported browsers' do
       it 'returns true' do
         expect(subject.support?(:custom_browser)).to eq(true)

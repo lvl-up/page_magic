@@ -2,14 +2,6 @@
 RSpec.describe PageMagic::Element::Query do
   include_context 'webapp fixture'
 
-  let(:page) do
-    elements_page = Class.new do
-      include PageMagic
-      url '/elements'
-    end
-    elements_page.visit(application: rack_app).current_page
-  end
-
   describe '#execute' do
     it 'calls find' do
       subject = described_class.new
@@ -19,7 +11,24 @@ RSpec.describe PageMagic::Element::Query do
       expect(subject).to have_received(:find).with(:capybara_element)
     end
 
-    context 'no results found' do
+    context 'when a formatter supplied' do
+      it 'uses it' do
+        subject = described_class.new
+
+        allow(subject).to receive(:find) do |result, &formatter|
+          formatter.call(result)
+        end
+
+        result = subject.execute(:capybara_element) do |result|
+          expect(result).to eq(:result)
+          :formatter_called
+        end
+
+        expect(result).to eq(:formatter_called)
+      end
+    end
+
+    context 'when no results are found' do
       it 'raises an error' do
         subject = Class.new(described_class) do
           def find(element)

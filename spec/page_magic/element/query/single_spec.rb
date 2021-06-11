@@ -3,14 +3,6 @@ require 'page_magic/element/query/single'
 RSpec.describe PageMagic::Element::Query::Single do
   include_context 'webapp fixture'
 
-  let(:page) do
-    elements_page = Class.new do
-      include PageMagic
-      url '/elements'
-    end
-    elements_page.visit(application: rack_app).current_page
-  end
-
   describe '#find' do
     context 'to many results returned' do
       it 'raises an error' do
