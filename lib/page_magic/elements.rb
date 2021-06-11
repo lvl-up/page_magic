@@ -2,6 +2,8 @@
 
 require 'active_support/inflector'
 require 'page_magic/element_definition_builder'
+require 'page_magic/elements/inheritance_hooks'
+require 'page_magic/elements/options'
 module PageMagic
   # module Elements - contains methods that add element definitions to the objects it is mixed in to
   module Elements
@@ -16,23 +18,6 @@ module PageMagic
     end
 
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
-
-    # css
-    # datalist_input
-    # datalist_option
-    # field
-    # fieldset
-    # file_field
-    # fillable_field
-    # frame
-    # link_or_button
-    # option
-    # radio_button
-    # select
-    # table
-    # table_row
-    # xpath
-    #
 
     TYPES = %i[field
                fieldset
@@ -58,7 +43,27 @@ module PageMagic
       def extended(clazz)
         clazz.extend(InheritanceHooks)
       end
+
+      private
+
+      def define_pluralised_method_for(type)
+        define_method(type) do |*args, &block|
+          options = Options.compute_argument(args, Hash)
+          args << options
+          public_send(:element, *args, query_class: PageMagic::Element::Query::Multi, &block)
+        end
+      end
+
+      def define_element_methods(types)
+        types.each { |type| alias_method type, :element }
+      end
+
+      def define_pluralised_element_methods(types)
+        types.collect { |type| "#{type}s" }.each(&method(:define_pluralised_method_for))
+      end
     end
+
+
 
     # Creates an element defintion.
     # Element defintions contain specifications for locating them and other sub elements.
@@ -91,29 +96,14 @@ module PageMagic
     def element(*args, query_class: PageMagic::Element::Query::Single, **selector, &block)
       block ||= proc {}
       args << selector unless selector.empty?
-      options = compute_options(args, __callee__)
+      options = Options.build(args, __callee__)
 
-      section_class = options.delete(:section_class)
-
-      add_element_definition(options.delete(:name)) do |parent_element, *e_args|
-        options[:definition_class] = Class.new(section_class) do
-          parent_element(parent_element)
-          class_exec(*e_args, &block)
-        end
-
-        ElementDefinitionBuilder.new(query_class: query_class, **options)
-      end
+      build_element_definition(options, query_class, &block)
     end
 
     alias elements element
-    TYPES.each { |type| alias_method type, :element }
-    TYPES.collect { |type| "#{type}s" }.each do |type|
-      define_method(type) do |*args, &block|
-        options = compute_argument(args, Hash)
-        args << options
-        public_send(:element, *args, query_class: PageMagic::Element::Query::Multi, &block)
-      end
-    end
+    define_element_methods(TYPES)
+    define_pluralised_element_methods(TYPES)
 
     # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
     #  and {Element} definitions
@@ -123,67 +113,30 @@ module PageMagic
 
     private
 
-    def compute_options(args, type)
-      section_class = remove_argument(args, Class) || Element
+    def build_element_definition(options, query_class, &block)
+      options.validate!
+      validate!(options.name)
 
-      { name: compute_name(args, section_class),
-        type: type_for(type),
-        selector: compute_selector(args, section_class),
-        options: compute_argument(args, Hash),
-        element: args.delete_at(0),
-        section_class: section_class }
+      element_definitions[options.name] = proc do |parent_element, *e_args|
+        options.definition_class = Class.new(options.element_class) do
+          parent_element(parent_element)
+          class_exec(*e_args, &block)
+        end
+
+        ElementDefinitionBuilder.new(query_class: query_class, **options.element_options)
+      end
     end
 
-    def add_element_definition(name, &block)
+    def validate!(name)
       raise InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
       methods = respond_to?(:instance_methods) ? instance_methods : methods()
       raise InvalidElementNameException, INVALID_METHOD_NAME_MSG if methods.find { |method| method == name }
-
-      element_definitions[name] = block
-    end
-
-    def compute_name(args, section_class)
-      name = remove_argument(args, Symbol)
-      name || section_class.name.demodulize.underscore.to_sym unless section_class.is_a?(Element)
-    end
-
-    def compute_selector(args, section_class)
-      selector = remove_argument(args, Hash)
-      selector || section_class.selector if section_class.respond_to?(:selector)
     end
 
     def method_added(method)
       super
       raise InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
-    end
-
-    def compute_argument(args, clazz)
-      remove_argument(args, clazz) || clazz.new
-    end
-
-    def remove_argument(args, clazz)
-      argument = args.find { |arg| arg.is_a?(clazz) }
-      args.delete(argument)
-    end
-
-    def type_for(type)
-      is_field?(type) ? :field : type
-    end
-
-    def is_field?(type)
-      %i{
-        text_field
-        checkbox
-        select_list
-        radio
-        textarea
-        field
-        file_field
-        fillable_field
-        radio_button
-        select
-      }.include?(type)
     end
   end
 end
