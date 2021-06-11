@@ -24,20 +24,12 @@ RSpec.describe PageMagic::Elements do
   end
 
   describe '#element' do
-    it 'sets the selector and type' do
-      expected_definition = PageMagic::ElementDefinitionBuilder.new(definition_class: PageMagic::Element,
-                                                                    type: :field,
-                                                                    selector: child_selector)
+    it 'converts arguments in to options' do
+      allow(PageMagic::Elements::Options)
+        .to receive(:build)
+          .with([:alias, child_selector], :text_field)
+            .and_call_original
       subject.text_field :alias, child_selector
-      expect(instance.element_by_name(:alias)).to eq(expected_definition)
-    end
-
-    context 'options' do
-      it 'builds them in to the query used to find the defined element' do
-        options = { my: :options }
-        subject.text_field :alias, child_selector, options
-        expect(instance.element_by_name(:alias).query.options).to eq(options)
-      end
     end
 
     context 'complex elements' do
@@ -53,24 +45,7 @@ RSpec.describe PageMagic::Elements do
         it 'adds an element using that class section' do
           subject.element section_class, :page_section, child_selector
           element_definition_builder = instance.element_by_name(:page_section)
-          expect(element_definition_builder.definition_class).to be < section_class
-        end
-
-        context 'with no selector supplied' do
-          it 'defaults the selector to the one on the class' do
-            section_class.selector child_selector
-            subject.element section_class, :alias
-            element_definition_builder = instance.element_by_name(:alias)
-            expect(element_definition_builder.query.selector_args).to eq(child_selector.to_a.flatten)
-          end
-        end
-
-        context 'with no name supplied' do
-          it 'defaults to the name of the class if one is not supplied' do
-            subject.element section_class, child_selector
-            element_definition_builder = instance.element_by_name(:page_section)
-            expect(element_definition_builder.definition_class).to be < section_class
-          end
+          expect(element_definition_builder.send(:definition_class)).to be < section_class
         end
       end
     end
@@ -92,16 +67,6 @@ RSpec.describe PageMagic::Elements do
         end
 
         instance.element_by_name(:page_section, :arg1)
-      end
-    end
-
-    describe 'location' do
-      context 'a prefetched object' do
-        it 'adds a section' do
-          subject.element :page_section, :object
-          element_defintion_builder = instance.element_by_name(:page_section)
-          expect(element_defintion_builder.build(:anything).browser_element).to eq(:object)
-        end
       end
     end
 

@@ -15,8 +15,8 @@ RSpec.describe PageMagic::Element::Query do
       it 'uses it' do
         subject = described_class.new
 
-        allow(subject).to receive(:find) do |result, &formatter|
-          formatter.call(result)
+        allow(subject).to receive(:find) do |_result, &formatter|
+          formatter.call(:result)
         end
 
         result = subject.execute(:capybara_element) do |result|

@@ -1,82 +1,19 @@
 # frozen_string_literal: true
 
 RSpec.describe PageMagic::ElementDefinitionBuilder do
-  describe '#initialize' do
-    describe '`selector`' do
-      context 'when missing' do
-        context 'object prefetched' do
-          it 'does not raise an error' do
-            execution = proc do
-              described_class.new(definition_class: PageMagic::Element,
-                                  type: :element,
-                                  selector: nil,
-                                  element: Object.new)
-            end
-            expect(&execution).not_to raise_exception
-          end
-        end
-
-        context 'selector defined on the definition_class' do
-          it 'uses the selector on the class' do
-            definition_class = Class.new(PageMagic::Element) do
-              selector css: 'selector'
-            end
-
-            builder = described_class.new(definition_class: definition_class,
-                                          type: :element,
-                                          selector: nil)
-
-            expect(builder.query.selector_args).to eq(['selector'])
-          end
-        end
-
-        context 'when selector not defined on `definition_class`' do
-          context 'selector nil' do
-            it 'raises an error' do
-              execution = proc { described_class.new(definition_class: PageMagic::Element, type: :element, selector: nil) }
-              expect(&execution).to raise_exception PageMagic::UndefinedSelectorException,
-                                                    described_class::INVALID_SELECTOR_MSG
-            end
-          end
-
-          context 'selector empty' do
-            it 'raises an error' do
-              execution = proc { described_class.new(definition_class: PageMagic::Element, type: :element, selector: {}) }
-              expect(&execution).to raise_exception PageMagic::UndefinedSelectorException,
-                                                    described_class::INVALID_SELECTOR_MSG
-            end
-          end
-        end
-      end
-
-      context 'when defined on both class and as parameter' do
-        it 'uses the supplied selector' do
-          definition_class = Class.new(PageMagic::Element) do
-            selector css: 'selector'
-          end
-
-          expected_selector = { id: 'id' }
-          builder = described_class.new(definition_class: definition_class,
-                                        type: :element,
-                                        selector: expected_selector)
-
-          expect(builder.query.selector_args).to eq([:id, 'id'])
-        end
-      end
-    end
-
-  end
-
-  describe '#query' do
-    it 'returns a capybara query' do
+  describe '#build' do
+    it 'returns an instance of `definition_class`' do
       options = { count: 1 }
-      selector = { xpath: '//xpath' }
-      builder = described_class.new(definition_class: PageMagic::Element,
-                                    type: :text_field,
-                                    selector: selector,
-                                    options: options)
+      builder = described_class.new(
+        definition_class: PageMagic::Element,
+        selector: PageMagic::Element::Selector.find(:xpath).build(:text_field, '//xpath', options: options)
+      )
 
-      expect(builder.query).to eq(PageMagic::Element::Query.new(:xpath, '//xpath', options: options))
+      allow_any_instance_of(PageMagic::Element::Query::Single).to receive(:execute) do |_query, element, &block|
+        block.call(element)
+      end
+
+      expect(builder.build(:capybara_object)).to have_attributes(browser_element: :capybara_object)
     end
   end
 end

@@ -18,8 +18,7 @@ RSpec.describe PageMagic::Element::Locators do
 
       child_1_builder = PageMagic::ElementDefinitionBuilder.new(
         definition_class: PageMagic::Element,
-        type: :element,
-        selector: selector
+        selector: PageMagic::Element::Selector.find(:id).build(:element,'child')
       )
 
       expect(subject.element_by_name(:child1)).to eq(child_1_builder)
