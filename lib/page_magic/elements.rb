@@ -4,30 +4,12 @@ require 'active_support/inflector'
 require 'page_magic/element_definition_builder'
 require 'page_magic/elements/inheritance_hooks'
 require 'page_magic/elements/options'
+require 'page_magic/elements/types'
+
 module PageMagic
   # module Elements - contains methods that add element definitions to the objects it is mixed in to
   module Elements
     INVALID_METHOD_NAME_MSG = 'a method already exists with this method name'
-
-    TYPES = %i[field
-               fieldset
-               file_field
-               fillable_field
-               frame
-               link_or_button
-               option
-               radio_button
-               select
-               table
-               table_row
-               text_field
-               button
-               link
-               checkbox
-               select_list
-               radio
-               textarea
-               label].freeze
 
     class << self
       def extended(clazz)
