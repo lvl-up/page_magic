@@ -3,6 +3,14 @@
 RSpec.shared_context 'webapp fixture' do |path: '/'|
   require 'sinatra/base'
 
+  let(:page) do
+    elements_page = Class.new do
+      include PageMagic
+      url '/elements'
+    end
+    elements_page.visit(application: rack_app).current_page
+  end
+
   let(:rack_app) do
     Class.new(Sinatra::Base) do
       get '/page1' do
