@@ -25,7 +25,7 @@ RSpec.describe PageMagic::Elements do
 
   describe '#element' do
     it 'converts arguments in to options' do
-      allow(PageMagic::Elements::Options)
+      allow(PageMagic::Elements::Config)
         .to receive(:build)
           .with([:alias, child_selector,{visible:true }], :text_field)
             .and_call_original
