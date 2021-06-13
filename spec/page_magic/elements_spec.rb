@@ -27,9 +27,9 @@ RSpec.describe PageMagic::Elements do
     it 'converts arguments in to options' do
       allow(PageMagic::Elements::Options)
         .to receive(:build)
-          .with([:alias, child_selector], :text_field)
+          .with([:alias, child_selector,{visible:true }], :text_field)
             .and_call_original
-      subject.text_field :alias, child_selector
+      subject.text_fields :alias, child_selector, visible: true
     end
 
     context 'complex elements' do
@@ -114,13 +114,6 @@ RSpec.describe PageMagic::Elements do
           link(:link2, :selector)
         end
       end
-    end
-  end
-
-  describe '#elements' do
-    it 'is an alias of #element allowing page_magic to find multiple results' do
-      expected = described_class.public_instance_method(:element)
-      expect(described_class.public_instance_method(:elements)).to eq(expected)
     end
   end
 
