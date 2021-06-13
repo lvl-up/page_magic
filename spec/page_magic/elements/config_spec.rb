@@ -1,4 +1,4 @@
-RSpec.describe PageMagic::Elements::Options do
+RSpec.describe PageMagic::Elements::Config do
 
   # TODO - validate options here instead of in Elements?
 

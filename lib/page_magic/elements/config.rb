@@ -3,7 +3,7 @@ module PageMagic
 
   end
   module Elements
-    Options = Struct.new(:name, :definition_class, :type, :selector, :options, :element, :element_class, keyword_init: true) do
+    Config = Struct.new(:name, :definition_class, :type, :selector, :options, :element, :element_class, keyword_init: true) do
 
       class << self
 
@@ -73,6 +73,7 @@ module PageMagic
         raise PageMagic::InvalidConfigurationException unless element || valid_selector
         raise PageMagic::InvalidConfigurationException unless type
         raise PageMagic::InvalidConfigurationException unless element_class && (element_class == PageMagic::Element || element_class < PageMagic::Element)
+        self
       end
 
       private

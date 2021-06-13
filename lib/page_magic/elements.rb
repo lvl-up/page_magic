@@ -3,7 +3,7 @@
 require 'active_support/inflector'
 require 'page_magic/element_definition_builder'
 require 'page_magic/elements/inheritance_hooks'
-require 'page_magic/elements/options'
+require 'page_magic/elements/config'
 require 'page_magic/elements/types'
 
 module PageMagic
@@ -84,22 +84,21 @@ module PageMagic
     def define_element(*args, type:, query_class:, **capybara_options, &block)
       block ||= proc {}
       args << capybara_options unless capybara_options.empty?
-      options = Options.build(args, type)
+      config = Config.build(args, type).validate!
 
-      options.validate!
-      validate!(options.name)
+      validate_element_name(config.name)
 
-      element_definitions[options.name] = proc do |parent_element, *e_args|
-        options.definition_class = Class.new(options.element_class) do
+      element_definitions[config.name] = proc do |parent_element, *e_args|
+        config.definition_class = Class.new(config.element_class) do
           parent_element(parent_element)
           class_exec(*e_args, &block)
         end
 
-        ElementDefinitionBuilder.new(query_class: query_class, **options.element_options)
+        ElementDefinitionBuilder.new(query_class: query_class, **config.element_options)
       end
     end
 
-    def validate!(name)
+    def validate_element_name(name)
       raise InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
       methods = respond_to?(:instance_methods) ? instance_methods : methods()
