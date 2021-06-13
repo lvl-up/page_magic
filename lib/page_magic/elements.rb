@@ -17,27 +17,16 @@ module PageMagic
       end
 
       private
-
-      def define_pluralised_method_for(type)
-        define_method(type) do |*args, &block|
-          options = Options.compute_argument(args, Hash)
-          args << options
-          public_send(:element, *args, query_class: PageMagic::Element::Query::Multi, &block)
-        end
-      end
-
       def define_element_methods(types)
         types.each { |type| alias_method type, :element }
       end
 
       def define_pluralised_element_methods(types)
-        types.collect { |type| "#{type}s" }.each(&method(:define_pluralised_method_for))
+        types.each { |type| alias_method type.to_s.pluralize, :elements }
       end
     end
 
-
-
-    # Creates an element defintion.
+    # Creates an element defintion. TODO - re-write
     # Element defintions contain specifications for locating them and other sub elements.
     # if a block is specified then it will be executed against the element defintion.
     # This method is aliased to each of the names specified in {TYPES TYPES}
@@ -64,16 +53,23 @@ module PageMagic
     # @overload element(name, element_class, selector, &block)
     #  @param [Symbol] name the name of the element.
     #  @param [ElementClass] element_class a custom class of element that inherits {Element}.
-    #  @param [Hash] selector a key value pair defining the method for locating this element. See above for details
-    def element(*args, query_class: PageMagic::Element::Query::Single, **selector, &block)
-      block ||= proc {}
-      args << selector unless selector.empty?
-      options = Options.build(args, __callee__)
-
-      build_element_definition(options, query_class, &block)
+    #  @param [capybara_options]
+    def element(*args, **capybara_options, &block)
+      define_element(*args,
+                     type: __callee__,
+                     query_class: PageMagic::Element::Query::Single,
+                     **capybara_options,
+                     &block)
     end
 
-    alias elements element
+    def elements(*args, **capybara_options, &block)
+      define_element(*args,
+                     type: __callee__.to_s.singularize.to_sym,
+                     query_class: PageMagic::Element::Query::Multi,
+                     **capybara_options,
+                     &block)
+    end
+
     define_element_methods(TYPES)
     define_pluralised_element_methods(TYPES)
 
@@ -85,7 +81,11 @@ module PageMagic
 
     private
 
-    def build_element_definition(options, query_class, &block)
+    def define_element(*args, type:, query_class:, **capybara_options, &block)
+      block ||= proc {}
+      args << capybara_options unless capybara_options.empty?
+      options = Options.build(args, type)
+
       options.validate!
       validate!(options.name)
 
