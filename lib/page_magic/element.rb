@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'forwardable'
-require 'page_magic/element/selector_methods'
+require 'page_magic/element/selector/methods'
 require 'page_magic/element/locators'
 require 'page_magic/element/selector'
 require 'page_magic/element/query'
@@ -16,9 +16,9 @@ module PageMagic
     include WaitMethods
     include SessionMethods
     include Watchers
-    include SelectorMethods
+    include Selector::Methods
     extend Forwardable
-    extend SelectorMethods
+    extend Selector::Methods
     extend Elements
 
     attr_reader :type, :name, :parent_element, :browser_element, :before_events, :after_events
