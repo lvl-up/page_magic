@@ -22,6 +22,16 @@ module PageMagic
         end
       end
 
+      # Initialize a new selector
+      # a block can be supplied to decorate the query. E.g.
+      # @example
+      #  Selector.new(supports_type: false) do |arg|
+      #    "*[name='#{arg}']"
+      #  end
+      #
+      # @param [Symbol] selector the identifier for the selector
+      # @param [Boolean] supports_type whether the element type being searched for can be used as part of the query
+      # @param [Boolean] exact whether an exact match is required. E.g. element should include exactly the same text
       def initialize(selector = nil, supports_type: false, exact: false, &formatter)
         @selector = selector
         @formatter = formatter || proc { |arg| arg }
@@ -33,7 +43,7 @@ module PageMagic
 
       # Build selector query parameters for Capybara's find method
       # @param [Symbol] element_type the type of browser element being found. e.g :link
-      # @param [Hash] locator the selection method and its parameter. E.g. text: 'click me'
+      # @param [Hash<Symbol,String>] locator the selection method and its parameter. E.g. text: 'click me'
       def build(element_type, locator, options:{})
         array = [type(element_type), selector, formatter.call(locator)].compact
         Model.new(array, self.options.merge(options))

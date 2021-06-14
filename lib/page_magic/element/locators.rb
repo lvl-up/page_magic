@@ -19,7 +19,7 @@ module PageMagic
         definition.call(self, *args)
       end
 
-      # @return [Array] class level defined element definitions
+      # @return [Array<Element>] class level defined element definitions
       def element_definitions
         self.class.element_definitions
       end

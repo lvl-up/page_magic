@@ -15,6 +15,10 @@ module PageMagic
       end
 
       # TODO - test for decoration?
+      # Run query against the scope of the given element
+      # The supplied block will be used to decorate the results
+      # @param [Capybara::Node::Element] capybara_element the element to be searched within
+      # @return [Array<Capybara::Node::Element>] the results
       def execute(capybara_element, &block)
         find(capybara_element, &(block||DEFAULT_DECORATOR))
       rescue Capybara::ElementNotFound => e

@@ -6,6 +6,9 @@ module PageMagic
           @prefetched_element = prefetched_element
         end
 
+        # Returns the object provided to `initialize`
+        # The supplied block will be used to decorate the results
+        # @return [Capybara::Node::Element] the object supplied to `initialize`
         def find(_capybara_element, &block)
           block.call(prefetched_element)
         end

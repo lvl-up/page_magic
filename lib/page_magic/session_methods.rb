@@ -6,7 +6,7 @@ module PageMagic
   module SessionMethods
     extend Forwardable
 
-    # @!method execute_script
+    # @!method execute_script(script)
     #  execute javascript on the browser
     #  @param [String] script the script to be executed
     #  @return [Object] object returned by the {Session#execute_script}

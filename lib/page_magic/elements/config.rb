@@ -7,9 +7,11 @@ module PageMagic
 
       class << self
 
+        # Create `Config` used to build instances `PageMagic::Element` see `Page::Elements#element` for details
+        # @param [Args<Object>] args arguments passed to `Page::Elements#element`
+        # @return [Config]
         def build(args, type)
           element_class = remove_argument(args, Class) || Element
-
           new(
             name: compute_name(args, element_class),
             type: type_for(type),
@@ -20,6 +22,7 @@ module PageMagic
           )
         end
 
+        private
         def compute_name(args, element_class)
           name = remove_argument(args, Symbol)
           name || element_class.name.demodulize.underscore.to_sym unless element_class.is_a?(Element)
@@ -59,15 +62,22 @@ module PageMagic
         end
       end
 
+      # Options for the building of `PageMagic::Element` via `PageMagic::ElementDefinitionBuilder#new`
+      # @return [Hash<Symbol,Object>]
       def element_options
         to_h.except(:element_class, :name, :type, :options).update(selector: selector)
       end
 
+      # Selector built using supplied configuration
+      # @return [PageMagic::Element::Selector::Model]
       def selector
         selector = self[:selector]
-        PageMagic::Element::Selector.find(selector.keys.first).build(type, selector.values.first, options: options)
+        Element::Selector.find(selector.keys.first).build(type, selector.values.first, options: options)
       end
 
+      # Validate supplied configuration
+      # @raise [PageMagic::InvalidConfigurationException]
+      # @return [PageMagic::Elements::Config]
       def validate!
         # INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'
         raise PageMagic::InvalidConfigurationException unless element || valid_selector

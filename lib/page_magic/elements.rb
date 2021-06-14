@@ -26,34 +26,37 @@ module PageMagic
       end
     end
 
-    # Creates an element defintion. TODO - re-write
-    # Element defintions contain specifications for locating them and other sub elements.
-    # if a block is specified then it will be executed against the element defintion.
+    # Creates an Element definition
     # This method is aliased to each of the names specified in {TYPES TYPES}
+    # Element definitions contain specifications for locating them and other sub elements.
+    # @yield if a block is specified then it will be executed against the element definition.
     # @example
     #   element :widget, id: 'widget' do
     #     link :next, text: 'next'
     #   end
     # @overload element(name, selector, &block)
     #  @param [Symbol] name the name of the element.
-    #  @param [Hash] selector a key value pair defining the method for locating this element
+    #  @param [Hash<Symbol,String>] selector a key value pair defining the method for locating this element
     #  @option selector [String] :text text contained within the element
     #  @option selector [String] :css css selector
     #  @option selector [String] :id the id of the element
     #  @option selector [String] :name the value of the name attribute belonging to the element
     #  @option selector [String] :label value of the label tied to the require field
+    #  @param optional [Hash<Symbol,String>] capybara_options
     # @overload element(element_class, &block)
     #  @param [ElementClass] element_class a custom class of element that inherits {Element}.
     #   the name of the element is derived from the class name. the Class name coverted to snakecase.
     #   The selector must be defined on the class itself.
+    #  @param optional [Hash<Symbol,String>] capybara_options
     # @overload element(name, element_class, &block)
     #  @param [Symbol] name the name of the element.
     #  @param [ElementClass] element_class a custom class of element that inherits {Element}.
     #   The selector must be defined on the class itself.
+    #  @param optional [Hash<Symbol,String>] capybara_options
     # @overload element(name, element_class, selector, &block)
     #  @param [Symbol] name the name of the element.
     #  @param [ElementClass] element_class a custom class of element that inherits {Element}.
-    #  @param [capybara_options]
+    #  @param optional [Hash<Symbol,String>] capybara_options
     def element(*args, **capybara_options, &block)
       define_element(*args,
                      type: __callee__,
@@ -62,6 +65,7 @@ module PageMagic
                      &block)
     end
 
+    # see docs for {Elements#element}
     def elements(*args, **capybara_options, &block)
       define_element(*args,
                      type: __callee__.to_s.singularize.to_sym,
@@ -73,7 +77,7 @@ module PageMagic
     define_element_methods(TYPES)
     define_pluralised_element_methods(TYPES)
 
-    # @return [Hash] element definition names mapped to blocks that can be used to create unique instances of
+    # @return [Hash<Symbol,ElementDefinitionBuilder>] element definition names mapped to blocks that can be used to create unique instances of
     #  and {Element} definitions
     def element_definitions
       @element_definitions ||= {}
