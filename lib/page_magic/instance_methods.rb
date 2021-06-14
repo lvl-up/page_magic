@@ -19,7 +19,7 @@ module PageMagic
       @browser_element = browser
     end
 
-    # @return [Array] class level defined element definitions
+    # @return [Array<ElementDefinitionBuilder>] class level defined element definitions
     def element_definitions
       self.class.element_definitions
     end

@@ -30,7 +30,7 @@ module PageMagic
 
     # Visit this page based on the class level registered url
     # @param [Object] application rack application (optional)
-    # @param [Symbol] browser name of browser
+    # @param [Symbol] browser name of browser driver to use
     # @param [Hash] options browser driver specific options
     # @return [Session] active session configured to be using an instance of the page object modeled by this class
     def visit(application: nil, browser: :rack_test, options: {})

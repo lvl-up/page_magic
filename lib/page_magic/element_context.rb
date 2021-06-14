@@ -9,9 +9,9 @@ module PageMagic
       @page_element = page_element
     end
 
-    # acts as proxy to element defintions defined on @page_element
-    # @return [Object] result of callng method on page_element
-    # @return [Element] animated page element containing located browser element
+    # acts as proxy to element definitions defined on @page_element
+    # @return [Object] result of calling method on page_element
+    # @return [Element] page element containing located browser element
     # @return [Array<Element>] array of elements if more that one result was found the browser
     def method_missing(method, *args, &block)
       return page_element.send(method, *args, &block) if page_element.methods.include?(method)
