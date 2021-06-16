@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   module Elements
     TYPES = %i[field

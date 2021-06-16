@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 RSpec.describe PageMagic::Drivers::Selenium do
   subject do
     described_class.build(:app, browser: :selenium, options: {})

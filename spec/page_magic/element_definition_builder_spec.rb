@@ -9,7 +9,7 @@ RSpec.describe PageMagic::ElementDefinitionBuilder do
         selector: PageMagic::Element::Selector.find(:xpath).build(:text_field, '//xpath', options: options)
       )
 
-      allow_any_instance_of(PageMagic::Element::Query::Single).to receive(:execute) do |_query, element, &block|
+      allow_any_instance_of(PageMagic::Element::Query::SingleResult).to receive(:execute) do |_query, element, &block|
         block.call(element)
       end
 

@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
 module PageMagic
   class Element
     class Query
-      class Prefetched < Query
+      # class PrefetchedResult - used to return element that has already been retrieved
+      class PrefetchedResult < Query
         def initialize(prefetched_element)
+          super
           @prefetched_element = prefetched_element
         end
 
@@ -14,6 +18,7 @@ module PageMagic
         end
 
         private
+
         attr_reader :prefetched_element
       end
     end

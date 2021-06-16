@@ -9,7 +9,7 @@ require 'simplecov' if ENV['coverage']
 
 require 'page_magic'
 
-Dir["#{this_dir}/../lib/page_magic/drivers/*.rb"].each do |driver|
+Dir["#{this_dir}/../lib/page_magic/drivers/*.rb"].sort.each do |driver|
   require driver
 end
 Capybara.server = :webrick

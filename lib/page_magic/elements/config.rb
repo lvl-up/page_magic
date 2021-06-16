@@ -1,12 +1,23 @@
+# frozen_string_literal: true
+
 module PageMagic
   module Elements
-    class Config < Struct.new(:name, :definition_class, :type, :selector, :options, :element, :element_class, keyword_init: true)
+    CONFIG_STRUCT = Struct.new(:name,
+                               :definition_class,
+                               :type,
+                               :selector,
+                               :options,
+                               :element,
+                               :element_class,
+                               keyword_init: true)
+
+    # class Config - use to validate input to {PageMagic::Elements#elment}
+    class Config < CONFIG_STRUCT
       INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'
       INVALID_ELEMENT_CLASS_MSG = 'Element class must be of type `PageMagic::Element`'
       TYPE_REQUIRED_MESSAGE = 'element type required'
 
       class << self
-
         # Create `Config` used to build instances `PageMagic::Element` see `Page::Elements#element` for details
         # @param [Args<Object>] args arguments passed to `Page::Elements#element`
         # @return [Config]
@@ -23,6 +34,7 @@ module PageMagic
         end
 
         private
+
         def compute_name(args, element_class)
           name = remove_argument(args, Symbol)
           name || element_class.name.demodulize.underscore.to_sym unless element_class.is_a?(Element)
@@ -43,22 +55,12 @@ module PageMagic
         end
 
         def type_for(type)
-          is_field?(type) ? :field : type
+          field?(type) ? :field : type
         end
 
-        def is_field?(type)
-          %i{
-            text_field
-            checkbox
-            select_list
-            radio
-            textarea
-            field
-            file_field
-            fillable_field
-            radio_button
-            select
-          }.include?(type)
+        def field?(type)
+          %i[ text_field checkbox select_list radio textarea field file_field fillable_field
+              radio_button select].include?(type)
         end
       end
 
@@ -82,10 +84,12 @@ module PageMagic
         raise PageMagic::InvalidConfigurationException, INVALID_SELECTOR_MSG unless element || valid_selector?
         raise PageMagic::InvalidConfigurationException, 'element type required' unless type
         raise PageMagic::InvalidConfigurationException, INVALID_ELEMENT_CLASS_MSG unless valid_element_class?
+
         self
       end
 
       private
+
       def valid_selector?
         selector = self[:selector]
         selector.is_a?(Hash) && !selector.empty?
@@ -97,4 +101,3 @@ module PageMagic
     end
   end
 end
-

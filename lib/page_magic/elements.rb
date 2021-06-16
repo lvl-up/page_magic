@@ -17,6 +17,7 @@ module PageMagic
       end
 
       private
+
       def define_element_methods(types)
         types.each { |type| alias_method type, :element }
       end
@@ -60,7 +61,7 @@ module PageMagic
     def element(*args, **capybara_options, &block)
       define_element(*args,
                      type: __callee__,
-                     query_class: PageMagic::Element::Query::Single,
+                     query_class: PageMagic::Element::Query::SingleResult,
                      **capybara_options,
                      &block)
     end
@@ -69,7 +70,7 @@ module PageMagic
     def elements(*args, **capybara_options, &block)
       define_element(*args,
                      type: __callee__.to_s.singularize.to_sym,
-                     query_class: PageMagic::Element::Query::Multi,
+                     query_class: PageMagic::Element::Query::MultipleResults,
                      **capybara_options,
                      &block)
     end
@@ -77,8 +78,8 @@ module PageMagic
     define_element_methods(TYPES)
     define_pluralised_element_methods(TYPES)
 
-    # @return [Hash<Symbol,ElementDefinitionBuilder>] element definition names mapped to blocks that can be used to create unique instances of
-    #  and {Element} definitions
+    # @return [Hash<Symbol,ElementDefinitionBuilder>] element definition names mapped to
+    # blocks that can be used to create unique instances of {Element} definitions
     def element_definitions
       @element_definitions ||= {}
     end
@@ -88,9 +89,7 @@ module PageMagic
     def define_element(*args, type:, query_class:, **capybara_options, &block)
       block ||= proc {}
       args << capybara_options unless capybara_options.empty?
-      config = Config.build(args, type).validate!
-
-      validate_element_name(config.name)
+      config = validate!(args, type)
 
       element_definitions[config.name] = proc do |parent_element, *e_args|
         config.definition_class = Class.new(config.element_class) do
@@ -102,16 +101,22 @@ module PageMagic
       end
     end
 
+    def method_added(method)
+      super
+      raise InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
+    end
+
+    def validate!(args, type)
+      config = Config.build(args, type).validate!
+      validate_element_name(config.name)
+      config
+    end
+
     def validate_element_name(name)
       raise InvalidElementNameException, 'duplicate page element defined' if element_definitions[name]
 
       methods = respond_to?(:instance_methods) ? instance_methods : methods()
       raise InvalidElementNameException, INVALID_METHOD_NAME_MSG if methods.find { |method| method == name }
-    end
-
-    def method_added(method)
-      super
-      raise InvalidMethodNameException, 'method name matches element name' if element_definitions[method]
     end
   end
 end
