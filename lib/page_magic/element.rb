@@ -58,6 +58,10 @@ module PageMagic
         clazz.after_events.replace(after_events)
       end
 
+      def load(source)
+        new(Capybara::Node::Simple.new(source))
+      end
+
       # Defines watchers to be used by instances
       # @see Watchers#watch
       def watch(name, method = nil, &block)

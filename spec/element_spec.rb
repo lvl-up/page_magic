@@ -99,6 +99,25 @@ RSpec.describe PageMagic::Element do
     end
   end
 
+  describe '.load' do
+    let(:page_source) do
+      <<-HTML
+          <div id='links'>
+            <a class='cta'>link text</a>
+          </div>
+      HTML
+    end
+
+    it 'returns an instance that works against the supplied string' do
+      subject = Class.new(described_class) do
+        element(:links, id: 'links') do
+          link(:cta, css: '.cta')
+        end
+      end
+      expect(subject.load(page_source).links.cta.text).to eq('link text')
+    end
+  end
+
   describe '.watch' do
     let(:described_class) { Class.new(PageMagic::Element) }
 

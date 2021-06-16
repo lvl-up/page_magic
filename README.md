@@ -59,7 +59,7 @@ Check it out :)
 - [Page mapping](#page-mapping)
   - [Mapping against query string parameters](#mapping-against-query-string-parameters)
   - [Mapping against fragment identifiers](#mapping-against-fragment-identifiers)
-- [Loading pages from source](#loading-pages-from-source)
+- [Loading pages/elements from source](#loading-pages/elements-from-source)
 - [Watchers](#watchers)
   - [Method watchers](#method-watchers)
   - [Simple watchers](#simple-watchers)
@@ -381,16 +381,27 @@ against URL fragments.
 browser.define_page_mappings PageMagic.mapping(fragment: string_or_regex) => ResultsPage                            
 ```
 
-# Loading pages from source
+# Loading pages/elements from source
 PageMagic supports loading page objects using html source. This technique can be useful for getting quick feedback that 
-your templates correctly render based on your view objects. I.e you can test your templates in isolation.
+your templates correctly render based on your view objects. I.e you can test your templates and partials/fragments in isolation.
 ```ruby
 class MyPage
   include PageMagic
+  element(:link, id: 'link_id')
   #element definitions
 end
 
 page_instance = Page.load(html_string)
+page_instance.link.text # returns the link text
+
+
+class CustomElement < PageMagic::Element
+  element(:link, id: 'link_id')
+  #element definitions
+end
+
+page_element = CustomElement.load(html_string)
+page_element.link.text # returns the link text
 ```
 
 # Watchers
@@ -453,7 +464,8 @@ You can register any Capybara compliant driver as follows
 Webkit = PageMagic::Driver.new(:webkit) do |app, options, browser_alias_chosen|
   # Write the code necessary to initialise the driver you have chosen
   require 'capybara/webkit'
-  Capybara::Webkit::Driver.new(app, options)
+  Capybara::Webkit::Driver.new(app, 
+  )
 end
 
 #2. Register driver
