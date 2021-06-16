@@ -36,4 +36,7 @@ module PageMagic
 
   class NotSupportedException < RuntimeError
   end
+
+  class InvalidConfigurationException < StandardError
+  end
 end
