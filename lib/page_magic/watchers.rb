@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'page_magic/watcher'
+require_relative 'watcher'
 
 module PageMagic
   # module Watchers - contains methods for adding watchers and checking them

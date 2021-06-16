@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift(File.dirname(__FILE__).to_s)
 require 'capybara'
-require 'page_magic/exceptions'
-require 'page_magic/wait_methods'
-require 'page_magic/watchers'
-require 'page_magic/session'
-require 'page_magic/session_methods'
-require 'page_magic/elements'
-require 'page_magic/element_context'
-require 'page_magic/element'
-require 'page_magic/class_methods'
-require 'page_magic/instance_methods'
-require 'page_magic/drivers'
+require_relative 'page_magic/exceptions'
+require_relative 'page_magic/wait_methods'
+require_relative 'page_magic/watchers'
+require_relative 'page_magic/session'
+require_relative 'page_magic/session_methods'
+require_relative 'page_magic/elements'
+require_relative 'page_magic/element_context'
+require_relative 'page_magic/element'
+require_relative 'page_magic/class_methods'
+require_relative 'page_magic/instance_methods'
+require_relative 'page_magic/drivers'
 
 # module PageMagic - PageMagic is an api for modelling pages in a website.
 module PageMagic
