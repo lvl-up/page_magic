@@ -1,9 +1,9 @@
 module PageMagic
-  class InvalidConfigurationException < StandardError
-
-  end
   module Elements
-    Config = Struct.new(:name, :definition_class, :type, :selector, :options, :element, :element_class, keyword_init: true) do
+    class Config < Struct.new(:name, :definition_class, :type, :selector, :options, :element, :element_class, keyword_init: true)
+      INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'
+      INVALID_ELEMENT_CLASS_MSG = 'Element class must be of type `PageMagic::Element`'
+      TYPE_REQUIRED_MESSAGE = 'element type required'
 
       class << self
 
@@ -79,19 +79,21 @@ module PageMagic
       # @raise [PageMagic::InvalidConfigurationException]
       # @return [PageMagic::Elements::Config]
       def validate!
-        # INVALID_SELECTOR_MSG = 'Pass a locator/define one on the class'
-        raise PageMagic::InvalidConfigurationException unless element || valid_selector
-        raise PageMagic::InvalidConfigurationException unless type
-        raise PageMagic::InvalidConfigurationException unless element_class && (element_class == PageMagic::Element || element_class < PageMagic::Element)
+        raise PageMagic::InvalidConfigurationException, INVALID_SELECTOR_MSG unless element || valid_selector?
+        raise PageMagic::InvalidConfigurationException, 'element type required' unless type
+        raise PageMagic::InvalidConfigurationException, INVALID_ELEMENT_CLASS_MSG unless valid_element_class?
         self
       end
 
       private
-      def valid_selector
+      def valid_selector?
         selector = self[:selector]
         selector.is_a?(Hash) && !selector.empty?
       end
 
+      def valid_element_class?
+        element_class && (element_class == PageMagic::Element || element_class < PageMagic::Element)
+      end
     end
   end
 end

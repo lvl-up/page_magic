@@ -1,7 +1,4 @@
 RSpec.describe PageMagic::Elements::Config do
-
-  # TODO - validate options here instead of in Elements?
-
   describe '.build' do
     it 'sets of the type' do
       options = described_class.build([], :field)
@@ -130,7 +127,8 @@ RSpec.describe PageMagic::Elements::Config do
         context 'and prefetched `element` is nil' do
           it 'raise an error' do
             subject = described_class.new(options.except(:selector, :element))
-            expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException)
+            expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException,
+                                                         described_class::INVALID_SELECTOR_MSG)
           end
         end
 
@@ -145,7 +143,8 @@ RSpec.describe PageMagic::Elements::Config do
       context 'when is empty hash' do
         it 'raises an error' do
           subject = described_class.new(options.update(selector: {}).except(:element))
-          expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException)
+          expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException,
+                                                       described_class::INVALID_SELECTOR_MSG)
         end
       end
 
@@ -166,7 +165,8 @@ RSpec.describe PageMagic::Elements::Config do
     context 'when type nil' do
       it 'raise an error' do
         subject = described_class.new(options.except(:type))
-        expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException)
+        expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException,
+                                                     described_class::TYPE_REQUIRED_MESSAGE)
       end
     end
 
@@ -174,14 +174,16 @@ RSpec.describe PageMagic::Elements::Config do
       context 'when nil' do
         it 'raise and error' do
           subject = described_class.new(options.except(:element_class))
-          expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException)
+          expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException,
+                                                       described_class::INVALID_ELEMENT_CLASS_MSG)
         end
       end
 
       context 'not a type of `PageMagic::Element`' do
         it 'raise and error' do
           subject = described_class.new(options.update(element_class: Object))
-          expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException)
+          expect{subject.validate!}.to raise_exception(PageMagic::InvalidConfigurationException,
+                                                       described_class::INVALID_ELEMENT_CLASS_MSG)
         end
       end
     end
