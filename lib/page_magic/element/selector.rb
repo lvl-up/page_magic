@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require 'page_magic/element/selector/model'
+require_relative 'selector/model'
 module PageMagic
   class Element # Capybara::Finder
     # class Selector - models the selection criteria understood by Capybara

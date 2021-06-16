@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'page_magic/driver'
-require 'page_magic/utils/string'
+require_relative 'driver'
+require_relative 'utils/string'
 module PageMagic
   # class Drivers - creates an object that can be used to hold driver definitions
   # These PageMagic gets the user's chosen driver from this object.

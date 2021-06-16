@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/object/to_query'
+require_relative '../active_support/core_ext/object/to_query'
 module PageMagic
   # models mapping used to relate pages to uris
   class Matcher

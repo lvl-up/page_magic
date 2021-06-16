@@ -1,5 +1,3 @@
-require 'page_magic/element/query/single'
-
 RSpec.describe PageMagic::Element::Query::Single do
   include_context 'webapp fixture'
 

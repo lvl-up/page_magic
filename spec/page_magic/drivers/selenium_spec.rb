@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-
-require 'page_magic/drivers/selenium'
 RSpec.describe PageMagic::Drivers::Selenium do
   subject do
     described_class.build(:app, browser: :selenium, options: {})

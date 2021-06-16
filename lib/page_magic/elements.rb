@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'active_support/inflector'
-require 'page_magic/element_definition_builder'
-require 'page_magic/elements/inheritance_hooks'
-require 'page_magic/elements/config'
-require 'page_magic/elements/types'
+require_relative 'element_definition_builder'
+require_relative 'elements/inheritance_hooks'
+require_relative 'elements/config'
+require_relative 'elements/types'
 
 module PageMagic
   # module Elements - contains methods that add element definitions to the objects it is mixed in to

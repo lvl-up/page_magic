@@ -1,4 +1,3 @@
-require 'page_magic/element/query/multi'
 RSpec.describe PageMagic::Element::Query::Multi do
   include_context 'webapp fixture'
 

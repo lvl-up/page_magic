@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'forwardable'
-require 'page_magic/element/not_found'
-require 'page_magic/element/selector/methods'
-require 'page_magic/element/locators'
-require 'page_magic/element/selector'
-require 'page_magic/element/query'
+require_relative 'element/not_found'
+require_relative 'element/selector/methods'
+require_relative 'element/locators'
+require_relative 'element/selector'
+require_relative 'element/query'
 module PageMagic
   # class Element - represents an element in a html page.
   class Element

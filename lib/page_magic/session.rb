@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'forwardable'
-require 'page_magic/matcher'
+require_relative 'matcher'
 module PageMagic
   # class Session - coordinates access to the browser though page objects.
   class Session
