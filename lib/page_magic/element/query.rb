@@ -19,10 +19,12 @@ module PageMagic
       # The supplied block will be used to decorate the results
       # @param [Capybara::Node::Element] capybara_element the element to be searched within
       # @return [Array<Capybara::Node::Element>] the results
+      # @return [NullElement] when the element is not found
       def execute(capybara_element, &block)
         find(capybara_element, &(block||DEFAULT_DECORATOR))
       rescue Capybara::ElementNotFound => e
-        raise ElementMissingException, e.message
+        NotFound.new(e)
+        # raise ElementMissingException, e.message
       end
 
       def ==(other)
