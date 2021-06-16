@@ -8,9 +8,6 @@ RSpec.describe PageMagic::Elements do
     end
   end
 
-  include_context 'nested elements html'
-
-  let(:page) { double(init: nested_elements_node) }
   let(:instance) do
     subject.new
   end
@@ -125,12 +122,4 @@ RSpec.describe PageMagic::Elements do
       expect(first).not_to equal(second)
     end
   end
-
-  # TODO - test that element type is support correctly
-  # it 'has a predefined query for each element type' do
-  #   missing = PageMagic::Elements::TYPES.dup.delete_if { |type| type.to_s.end_with?('s') }.find_all do |type|
-  #     described_class.constants.include?(type)
-  #   end
-  #   expect(missing).to be_empty
-  # end
 end
