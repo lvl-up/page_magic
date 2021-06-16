@@ -1,4 +1,6 @@
-RSpec.describe PageMagic::Element::Query::Single do
+# frozen_string_literal: true
+
+RSpec.describe PageMagic::Element::Query::SingleResult do
   include_context 'webapp fixture'
 
   describe '#find' do
@@ -15,6 +17,5 @@ RSpec.describe PageMagic::Element::Query::Single do
       result = query.execute(page.browser)
       expect(result.text).to eq('link in a form')
     end
-
   end
 end

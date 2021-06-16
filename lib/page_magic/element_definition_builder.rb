@@ -3,15 +3,14 @@
 module PageMagic
   # Builder for creating ElementDefinitions
   class ElementDefinitionBuilder
-
-    def initialize(definition_class:, selector:, query_class: PageMagic::Element::Query::Single, element: nil)
+    def initialize(definition_class:, selector:, query_class: PageMagic::Element::Query::SingleResult, element: nil)
       @definition_class = definition_class
 
-      if element
-        @query = PageMagic::Element::Query::Prefetched.new(element)
-      else
-        @query = query_class.new(*selector.args, options: selector.options)
-      end
+      @query = if element
+                 PageMagic::Element::Query::PrefetchedResult.new(element)
+               else
+                 query_class.new(*selector.args, options: selector.options)
+               end
     end
 
     # Create new instance of the ElementDefinition modeled by this builder
@@ -32,6 +31,7 @@ module PageMagic
     end
 
     private
+
     attr_reader :query, :definition_class
   end
 end

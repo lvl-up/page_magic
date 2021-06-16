@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 module PageMagic
   class Element
     class Query
-      class Single < Query
+      # class SingleResult - use to query when only one result should be expected
+      class SingleResult < Query
         # Find an element
         # The supplied block will be used to decorate the results
         # @param [Capybara::Node::Element] capybara_element the element to be searched within

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 RSpec.describe PageMagic::Element::Query do
   include_context 'webapp fixture'
 
@@ -19,8 +20,8 @@ RSpec.describe PageMagic::Element::Query do
           formatter.call(:result)
         end
 
-        result = subject.execute(:capybara_element) do |result|
-          expect(result).to eq(:result)
+        result = subject.execute(:capybara_element) do |capybara_result|
+          expect(capybara_result).to eq(:result)
           :formatter_called
         end
 
@@ -35,8 +36,6 @@ RSpec.describe PageMagic::Element::Query do
             element.find('wrong')
           end
         end.new
-
-        expected_message = 'Unable to find css "wrong"'
 
         expect(subject.execute(page.browser)).to be_a(PageMagic::Element::NotFound)
       end

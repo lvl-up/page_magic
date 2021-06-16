@@ -125,6 +125,7 @@ module PageMagic
     def_delegator :parent_element, :session
 
     private
+
     def apply_hooks(raw_element:, capybara_method:, before_events:, after_events:)
       original_method = raw_element.method(capybara_method)
       this = self

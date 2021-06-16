@@ -18,7 +18,7 @@ RSpec.describe PageMagic::Element::Locators do
 
       child_1_builder = PageMagic::ElementDefinitionBuilder.new(
         definition_class: PageMagic::Element,
-        selector: PageMagic::Element::Selector.find(:id).build(:element,'child')
+        selector: PageMagic::Element::Selector.find(:id).build(:element, 'child')
       )
 
       expect(subject.element_by_name(:child1)).to eq(child_1_builder)
@@ -27,7 +27,9 @@ RSpec.describe PageMagic::Element::Locators do
     context 'element not found' do
       it 'raises an error' do
         expected_message = (described_class::ELEMENT_NOT_DEFINED_MSG % :child)
-        expect{subject.element_by_name(:child)}.to raise_exception PageMagic::ElementMissingException, expected_message
+        expect do
+          subject.element_by_name(:child)
+        end.to raise_exception PageMagic::ElementMissingException, expected_message
       end
     end
   end

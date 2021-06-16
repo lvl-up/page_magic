@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PageMagic
   module Elements
     # hooks for objects that inherit classes that include the Elements module

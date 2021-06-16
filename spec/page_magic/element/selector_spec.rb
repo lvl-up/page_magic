@@ -44,7 +44,7 @@ RSpec.describe PageMagic::Element::Selector do
       end
     end
 
-    # TODO - new class?
+    # TODO: - new class?
     context 'when selector formatter is provided' do
       subject do
         described_class.new do |param|
@@ -76,7 +76,7 @@ RSpec.describe PageMagic::Element::Selector do
     context 'when exact' do
       it 'sets the option' do
         subject = described_class.new(exact: true).build(:element_type, {})
-        expect(subject.options).to eq({ exact: true } )
+        expect(subject.options).to eq({ exact: true })
       end
     end
   end
@@ -109,7 +109,7 @@ RSpec.describe PageMagic::Element::Selector do
 
       it 'finds elements by label' do
         selector = described_class.find(:label).build(:text_field, 'enter text')
-        query = PageMagic::Element::Query::Single.new(*selector.args)
+        query = PageMagic::Element::Query::SingleResult.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -125,7 +125,7 @@ RSpec.describe PageMagic::Element::Selector do
 
       it 'finds elements by name' do
         selector = described_class.find(:name).build(:text_field, 'field_name')
-        query = PageMagic::Element::Query::Single.new(*selector.args)
+        query = PageMagic::Element::Query::SingleResult.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -135,7 +135,7 @@ RSpec.describe PageMagic::Element::Selector do
 
       it 'finds elements by xpath' do
         selector = described_class.find(:xpath).build(:element, '//div/label/input')
-        query = PageMagic::Element::Query::Single.new(*selector.args)
+        query = PageMagic::Element::Query::SingleResult.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -145,7 +145,7 @@ RSpec.describe PageMagic::Element::Selector do
 
       it 'finds elements by id' do
         selector = described_class.find(:id).build(:text_field, 'field_id')
-        query = PageMagic::Element::Query::Single.new(*selector.args)
+        query = PageMagic::Element::Query::SingleResult.new(*selector.args)
         expect(query.execute(capybara_session)[:name]).to eq('field_name')
       end
     end
@@ -158,9 +158,8 @@ RSpec.describe PageMagic::Element::Selector do
       it_behaves_like 'a selector', named: :element_type
 
       it 'finds elements by text' do
-
         selector = described_class.find(:text).build(:link, 'a link')
-        query = PageMagic::Element::Query::Single.new(*selector.args)
+        query = PageMagic::Element::Query::SingleResult.new(*selector.args)
         expect(query.execute(capybara_session).text).to eq('a link')
       end
     end

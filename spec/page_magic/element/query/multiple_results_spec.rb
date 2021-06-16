@@ -1,4 +1,6 @@
-RSpec.describe PageMagic::Element::Query::Multi do
+# frozen_string_literal: true
+
+RSpec.describe PageMagic::Element::Query::MultipleResults do
   include_context 'webapp fixture'
 
   describe '#find' do

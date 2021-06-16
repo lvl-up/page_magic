@@ -1,7 +1,9 @@
 # frozen_string_literal: true
+
 require_relative 'selector/model'
 module PageMagic
-  class Element # Capybara::Finder
+  # Capybara::Finder
+  class Element
     # class Selector - models the selection criteria understood by Capybara
     class Selector
       class << self
@@ -17,6 +19,7 @@ module PageMagic
         end
 
         private
+
         def selector_constant_name(name)
           constants.find { |constant| constant.to_s.casecmp(name.to_s).zero? }
         end
@@ -44,12 +47,13 @@ module PageMagic
       # Build selector query parameters for Capybara's find method
       # @param [Symbol] element_type the type of browser element being found. e.g :link
       # @param [Hash<Symbol,String>] locator the selection method and its parameter. E.g. text: 'click me'
-      def build(element_type, locator, options:{})
+      def build(element_type, locator, options: {})
         array = [type(element_type), selector, formatter.call(locator)].compact
         Model.new(array, self.options.merge(options))
       end
 
       private
+
       def type(element_type)
         supports_type ? element_type : nil
       end
