@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'forwardable'
+require 'page_magic/element/not_found'
 require 'page_magic/element/selector/methods'
 require 'page_magic/element/locators'
 require 'page_magic/element/selector'

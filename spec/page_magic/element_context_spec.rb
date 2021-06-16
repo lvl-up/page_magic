@@ -21,6 +21,7 @@ RSpec.describe PageMagic::ElementContext do
         page = visit(elements_page_class)
 
         element = described_class.new(page).a_link
+        expect(element).to be_visible
         expect(element.text).to eq('a link')
       end
 

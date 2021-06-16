@@ -29,7 +29,7 @@ RSpec.describe PageMagic::Element::Query do
     end
 
     context 'when no results are found' do
-      it 'raises an error' do
+      it 'Returns `NotFound`' do
         subject = Class.new(described_class) do
           def find(element)
             element.find('wrong')
@@ -38,9 +38,7 @@ RSpec.describe PageMagic::Element::Query do
 
         expected_message = 'Unable to find css "wrong"'
 
-        expect do
-          subject.execute(page.browser)
-        end.to raise_exception(PageMagic::ElementMissingException, expected_message)
+        expect(subject.execute(page.browser)).to be_a(PageMagic::Element::NotFound)
       end
     end
   end
