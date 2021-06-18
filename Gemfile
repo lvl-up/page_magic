@@ -18,6 +18,7 @@ group :development do
   gem 'jeweler'
   gem 'redcarpet'
   gem 'rubocop', require: 'rubocop/rake_task'
+  gem 'rubocop-rspec', require: false
   gem 'ruby-debug-ide', require: false
   gem 'yard', '~> 0.8'
 end
