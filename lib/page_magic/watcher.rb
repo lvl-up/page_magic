@@ -3,7 +3,7 @@
 module PageMagic
   # class WatchedElementDefinition - Contains the specification the for checking if an subject has changed
   class Watcher
-    attr_reader :name, :attribute, :last, :block
+    attr_reader :name, :attribute, :observed_value, :block
 
     # @param [Symbol] name the of the subject being checked
     # @param [Symbol] method the method that should be called on the subject being checked
@@ -22,7 +22,7 @@ module PageMagic
     # a block was specified then this will be executed.
     # @param [Object] subject - subject to run watcher against
     def check(subject = nil)
-      @last = if block
+      @observed_value = if block
                 subject.instance_eval(&block)
               else
                 object = subject.send(name)

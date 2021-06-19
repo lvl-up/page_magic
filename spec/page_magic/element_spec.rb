@@ -127,7 +127,7 @@ RSpec.describe PageMagic::Element do
 
       watcher_block = instance.before_events.last
       instance.instance_exec(&watcher_block)
-      expect(instance.watchers.first.last).to eq(instance.object_id)
+      expect(instance.watchers.first.observed_value).to eq(instance.object_id)
     end
   end
 
