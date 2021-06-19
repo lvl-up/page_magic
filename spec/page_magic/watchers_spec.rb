@@ -33,7 +33,7 @@ RSpec.describe PageMagic::Watchers do
   describe '#watch' do
     it 'stores the initial value of the watched element' do
       subject.watch(:my_watcher, :text)
-      expect(subject.watcher(:my_watcher).last).to eq(:current_value)
+      expect(subject.watcher(:my_watcher).observed_value).to eq(:current_value)
     end
 
     context 'element name/ method name supplied' do

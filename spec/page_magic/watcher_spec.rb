@@ -8,7 +8,7 @@ RSpec.describe PageMagic::Watcher do
       end
 
       it 'sets last to nil' do
-        expect(subject.last).to be_nil
+        expect(subject.observed_value).to be_nil
       end
     end
   end
@@ -21,7 +21,7 @@ RSpec.describe PageMagic::Watcher do
 
       it 'assigns last to be the result of calling the method' do
         subject.check(self)
-        expect(subject.last).to eq(object_id)
+        expect(subject.observed_value).to eq(object_id)
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe PageMagic::Watcher do
       it 'assigns last to the value of attribute definined in the constructor' do
         browser_element = double(text: :hello)
         page_element = double(my_button: browser_element)
-        expect(subject.check(page_element).last).to eq(:hello)
+        expect(subject.check(page_element).observed_value).to eq(:hello)
       end
     end
 
@@ -57,7 +57,7 @@ RSpec.describe PageMagic::Watcher do
       end
 
       it 'assigns last to the resut of the block' do
-        expect(subject.check(self).last).to eq(:result)
+        expect(subject.check(self).observed_value).to eq(:result)
       end
     end
   end

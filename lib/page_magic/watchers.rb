@@ -11,7 +11,7 @@ module PageMagic
     # @return [Boolean] true if a change is detected
     def changed?(name)
       watched_element = watcher(name)
-      watched_element.last != watched_element.check(self).last
+      watched_element.observed_value != watched_element.check(self).observed_value
     end
 
     # register a new watcher
