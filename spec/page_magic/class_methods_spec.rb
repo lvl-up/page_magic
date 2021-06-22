@@ -30,13 +30,13 @@ RSpec.describe PageMagic::ClassMethods do
       end
     end
 
-    context 'block not set' do
+    context 'when a block is not set' do
       it 'returns a default block' do
         expect(page_class.on_load).to be(described_class::DEFAULT_ON_LOAD)
       end
     end
 
-    context 'block set' do
+    context 'when a block is set' do
       it 'returns that block' do
         expected_block = proc {}
         page_class.on_load(&expected_block)
@@ -53,31 +53,40 @@ RSpec.describe PageMagic::ClassMethods do
     end
 
     it 'get/sets a value' do
-      subject.url(:url)
+      page_class.url(:url)
       expect(page_class.url).to eq(:url)
     end
   end
 
   describe '#visit' do
-    include_context 'webapp fixture'
-
     subject(:page_class) do
       Class.new.tap do |clazz|
         clazz.extend(described_class)
         clazz.include(PageMagic::InstanceMethods)
+        clazz.url ''
+      end
+    end
+
+    let(:rack_app) do
+      Class.new do
+        def self.call(_env)
+          [200, {}, ['<html><head><title>page1</title></head></html>']]
+        end
       end
     end
 
     it 'passes all options to create an active session on the registered url' do
-      page_class.url '/page1'
-      expect(PageMagic).to receive(:session).with(application: rack_app,
-                                                  options: {},
-                                                  browser: :rack_test,
-                                                  url: subject.url).and_call_original
+      allow(PageMagic).to receive(:session).and_call_original
 
+      page_class.visit(application: rack_app, options: {}, browser: :rack_test)
+
+      expected_option = { application: rack_app, options: {}, browser: :rack_test, url: page_class.url }
+      expect(PageMagic).to have_received(:session).with(expected_option)
+    end
+
+    it 'returns a session' do
       session = page_class.visit(application: rack_app, options: {}, browser: :rack_test)
-
-      expect(session.title).to eq('page1')
+      expect(session).to be_kind_of(PageMagic::Session)
     end
   end
 end

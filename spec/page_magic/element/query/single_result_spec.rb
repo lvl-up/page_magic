@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 RSpec.describe PageMagic::Element::Query::SingleResult do
-  include_context 'webapp fixture'
-
   describe '#find' do
-    context 'to many results returned' do
+    context 'when more than one result is returned' do
       it 'raises an error' do
-        subject = described_class.new('a')
+        element = PageMagic::Element.load('<a></a><a></a>')
+        query = described_class.new('a')
         expected_message = 'Ambiguous match, found 2 elements matching visible css "a"'
-        expect { subject.execute(page.browser) }.to raise_error PageMagic::AmbiguousQueryException, expected_message
+        expect { query.execute(element) }.to raise_error PageMagic::AmbiguousQueryException, expected_message
       end
     end
 
     it 'returns the result of the capybara query' do
-      query = described_class.new(:id, 'form_link')
-      result = query.execute(page.browser)
-      expect(result.text).to eq('link in a form')
+      element = PageMagic::Element.load('<a>link</a>')
+      query = described_class.new('a')
+      result = query.execute(element)
+      expect(result.text).to eq('link')
     end
   end
 end
