@@ -26,7 +26,7 @@ module PageMagic
       end
 
       # @return [Boolean] - always true
-      def respond_to_missing?(_args)
+      def respond_to_missing?(*_args)
         true
       end
 

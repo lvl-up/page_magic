@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe PageMagic::Element::Query do
-  include_context 'webapp fixture'
-
   describe '#execute' do
     it 'calls find' do
       subject = described_class.new
@@ -15,29 +13,25 @@ RSpec.describe PageMagic::Element::Query do
     context 'when a formatter supplied' do
       it 'uses it' do
         subject = described_class.new
+        allow(subject).to receive(:find) { |_r, &formatter| formatter.call(:result) }
 
-        allow(subject).to receive(:find) do |_result, &formatter|
-          formatter.call(:result)
-        end
-
-        result = subject.execute(:capybara_element) do |capybara_result|
-          expect(capybara_result).to eq(:result)
-          :formatter_called
-        end
-
-        expect(result).to eq(:formatter_called)
+        result = subject.execute(:capybara_element) { |capybara_result| "formatter_called_on_#{capybara_result}" }
+        expect(result).to eq('formatter_called_on_result')
       end
     end
 
     context 'when no results are found' do
-      it 'Returns `NotFound`' do
-        subject = Class.new(described_class) do
+      subject(:query_class) do
+        Class.new(described_class) do
           def find(element)
-            element.find('wrong')
+            element.find('missing')
           end
-        end.new
+        end
+      end
 
-        expect(subject.execute(page.browser)).to be_a(PageMagic::Element::NotFound)
+      it 'Returns `NotFound`' do
+        element = PageMagic::Element.load('<html></html>')
+        expect(query_class.new.execute(element)).to be_a(PageMagic::Element::NotFound)
       end
     end
   end

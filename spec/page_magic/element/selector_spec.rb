@@ -15,30 +15,22 @@ RSpec.describe PageMagic::Element::Selector do
 
   describe '#build' do
     it 'puts the locator and element type in to the result' do
-      expect(subject.build(:field, :locator)).to have_attributes(
+      expect(described_class.new.build(:field, :locator)).to have_attributes(
         args: [:locator]
       )
     end
 
     context 'when exact matching is required' do
-      subject do
-        described_class.new(exact: true)
-      end
-
       it 'is added to options' do
-        expect(subject.build(:field, :locator)).to have_attributes(
+        expect(described_class.new(exact: true).build(:field, :locator)).to have_attributes(
           options: { exact: true }
         )
       end
     end
 
     context 'when supports_type true' do
-      subject do
-        described_class.new(supports_type: true)
-      end
-
       it 'includes the element type' do
-        expect(subject.build(:field, :locator)).to have_attributes(
+        expect(described_class.new(supports_type: true).build(:field, :locator)).to have_attributes(
           args: %i[field locator]
         )
       end
@@ -46,26 +38,22 @@ RSpec.describe PageMagic::Element::Selector do
 
     # TODO: - new class?
     context 'when selector formatter is provided' do
-      subject do
+      subject(:selector) do
         described_class.new do |param|
           "formatted_#{param}".to_sym
         end
       end
 
       it 'uses the formatter' do
-        expect(subject.build(:field, :locator)).to have_attributes(
+        expect(selector.build(:field, :locator)).to have_attributes(
           args: [:formatted_locator]
         )
       end
     end
 
     context 'when type supplied' do
-      subject do
-        described_class.new(:css)
-      end
-
       it 'is added to the result' do
-        expect(subject.build(:field, :locator)).to have_attributes(
+        expect(described_class.new(:css).build(:field, :locator)).to have_attributes(
           args: %i[css locator]
         )
       end
@@ -92,17 +80,32 @@ RSpec.describe PageMagic::Element::Selector do
       end
 
       it 'contains the selector args' do
-        name_arg = if named
-                     named == true ? selector_name : named
-                   end
+        name_arg = named && (named == true ? selector_name : named)
 
         expected_args = [name_arg, :locator].compact
         expect(subject.args).to eq(expected_args)
+      end
+
+      it 'contains the options' do
         expect(subject.options).to eq(options)
       end
     end
 
-    include_context 'webapp fixture', path: '/elements'
+    let(:capybara_element) do
+      html_source = <<~HTML_SOURCE
+        <a href='#'>a link</a>
+
+
+          <div id='form' class="form">
+            <a id='form_link' href='/page2'>link in a form</a>
+            <label>enter text
+              <input id='field_id' name='field_name' class='input_class' type='text' value='filled in'/>
+            </label>
+            <button id='form_button' type='submit' value='a button'/>
+          </form>
+      HTML_SOURCE
+      PageMagic::Element.load(html_source)
+    end
 
     describe 'label' do
       it_behaves_like 'a selector', named: :field, exact: true
@@ -110,7 +113,7 @@ RSpec.describe PageMagic::Element::Selector do
       it 'finds elements by label' do
         selector = described_class.find(:label).build(:text_field, 'enter text')
         query = PageMagic::Element::Query::SingleResult.new(*selector.args)
-        expect(query.execute(capybara_session)[:name]).to eq('field_name')
+        expect(query.execute(capybara_element)[:name]).to eq('field_name')
       end
     end
 
@@ -126,17 +129,17 @@ RSpec.describe PageMagic::Element::Selector do
       it 'finds elements by name' do
         selector = described_class.find(:name).build(:text_field, 'field_name')
         query = PageMagic::Element::Query::SingleResult.new(*selector.args)
-        expect(query.execute(capybara_session)[:name]).to eq('field_name')
+        expect(query.execute(capybara_element)[:name]).to eq('field_name')
       end
     end
 
-    context 'xpath' do
+    describe 'xpath' do
       it_behaves_like 'a selector', named: true
 
       it 'finds elements by xpath' do
         selector = described_class.find(:xpath).build(:element, '//div/label/input')
         query = PageMagic::Element::Query::SingleResult.new(*selector.args)
-        expect(query.execute(capybara_session)[:name]).to eq('field_name')
+        expect(query.execute(capybara_element)[:name]).to eq('field_name')
       end
     end
 
@@ -146,12 +149,8 @@ RSpec.describe PageMagic::Element::Selector do
       it 'finds elements by id' do
         selector = described_class.find(:id).build(:text_field, 'field_id')
         query = PageMagic::Element::Query::SingleResult.new(*selector.args)
-        expect(query.execute(capybara_session)[:name]).to eq('field_name')
+        expect(query.execute(capybara_element)[:name]).to eq('field_name')
       end
-    end
-
-    describe 'label' do
-      it_behaves_like 'a selector', named: :field, exact: true
     end
 
     describe 'text' do
@@ -160,7 +159,7 @@ RSpec.describe PageMagic::Element::Selector do
       it 'finds elements by text' do
         selector = described_class.find(:text).build(:link, 'a link')
         query = PageMagic::Element::Query::SingleResult.new(*selector.args)
-        expect(query.execute(capybara_session).text).to eq('a link')
+        expect(query.execute(capybara_element).text).to eq('a link')
       end
     end
   end
