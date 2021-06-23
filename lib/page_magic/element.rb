@@ -66,7 +66,9 @@ module PageMagic
       # Defines watchers to be used by instances
       # @see Watchers#watch
       def watch(name, method = nil, &block)
-        before_events { watch(name, method, &block) }
+        before_events do
+          watch(name, method: method, &block)
+        end
       end
 
       def ==(other)
