@@ -12,20 +12,26 @@ RSpec.describe PageMagic::Drivers do
   end
 
   describe '#load' do
-    include_context 'files'
+    require 'tmpdir'
+
+    def scratch_dir
+      @scratch_dir ||= Dir.mktmpdir
+    end
+
+    let(:class_definition) do
+      <<-RUBY
+        class CustomDriver;
+          def self.support?(_browser)
+            true
+          end
+        end
+      RUBY
+    end
 
     it 'loads the drivers in the specified path' do
-      drivers = described_class.new
-      class_definition = <<-RUBY
-          class CustomDriver;
-            def self.support? browser
-              true
-            end
-          end
-      RUBY
-
       File.write("#{scratch_dir}/custom_driver.rb", class_definition)
 
+      drivers = described_class.new
       drivers.load(scratch_dir)
       expect(drivers.find(:custom_browser)).to be(::CustomDriver)
     end
