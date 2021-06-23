@@ -3,8 +3,10 @@
 require 'page_magic'
 
 RSpec.describe PageMagic do
-  subject do
-    Class.new { include PageMagic }
+  subject(:page_class) do
+    Class.new.tap do |klass|
+      klass.include(described_class)
+    end
   end
 
   describe '.drivers' do
@@ -17,12 +19,12 @@ RSpec.describe PageMagic do
 
   describe '.included' do
     it 'gives a method for defining the url' do
-      subject.url :url
-      expect(subject.url).to eq(:url)
+      page_class.url :url
+      expect(page_class.url).to eq(:url)
     end
 
     it 'lets you define elements' do
-      expect(subject).to be_a(PageMagic::Elements)
+      expect(page_class).to be_a(PageMagic::Elements)
     end
   end
 
@@ -38,7 +40,7 @@ RSpec.describe PageMagic do
       Class.new(parent_page)
     end
 
-    context 'children' do
+    describe 'children' do
       it 'inherits elements defined on the parent class' do
         expect(child_page.element_definitions).to include(:next)
       end
@@ -58,35 +60,36 @@ RSpec.describe PageMagic do
   end
 
   describe '.session' do
-    include_context 'rack application'
+    let(:rack_application) do
+      Class.new do
+        def self.call(_env)
+          [200, {}, ['hello world!!']]
+        end
+      end
+    end
 
     let(:url) { 'http://url.com/' }
-    let(:application) { rack_application.new }
-
-    before do
-      allow_any_instance_of(Capybara::Selenium::Driver).to receive(:visit)
-    end
 
     it "defaults to capybara's default session " do
       Capybara.default_driver = :rack_test
-      expect(subject.new.browser.mode).to eq(:rack_test)
+      expect(page_class.new.browser.mode).to eq(:rack_test)
     end
 
-    context 'specifying the browser' do
+    context 'when `:browser` is specified' do
       it 'loads the correct driver' do
-        session = described_class.session(application: rack_application.new, browser: :firefox, url: :url)
+        session = described_class.session(application: rack_application, browser: :firefox, url: :url)
         expect(session.raw_session.driver).to be_a(Capybara::Selenium::Driver)
       end
     end
 
-    context 'specifying a rack application' do
+    context 'when `:rack_application` is specified' do
       it 'configures capybara to run against the app' do
-        session = described_class.session(application: application, url: url)
-        expect(session.raw_session.app).to be(application)
+        session = described_class.session(application: rack_application, url: url)
+        expect(session.raw_session.app).to be(rack_application)
       end
     end
 
-    context 'specifying options' do
+    context 'when `:options` is specified' do
       it 'passes the options to the browser driver' do
         options = { option: :config }
         session = described_class.session(options: options, browser: :chrome, url: url)
@@ -95,7 +98,7 @@ RSpec.describe PageMagic do
       end
     end
 
-    context 'driver for browser not found' do
+    context 'when the driver assigned to `:browser` is not found' do
       it 'raises an error' do
         expected_exception = described_class::UnsupportedBrowserException
         expect { described_class.session(browser: :invalid, url: url) }.to raise_exception expected_exception
