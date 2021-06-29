@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require 'forwardable'
-require_relative 'matcher'
+require_relative 'transitions'
+
 module PageMagic
   # class Session - coordinates access to the browser though page objects.
   class Session
     URL_MISSING_MSG = 'a path must be mapped or a url supplied'
-    REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'
+
     INVALID_MAPPING_MSG = 'mapping must be a string or regexp'
     UNSUPPORTED_OPERATION_MSG = 'execute_script not supported by driver'
 
@@ -20,13 +21,13 @@ module PageMagic
     def initialize(capybara_session, base_url = nil)
       @raw_session = capybara_session
       @base_url = base_url
-      @transitions = {}
+      define_page_mappings({})
     end
 
     # @return [Object] returns page object representing the currently loaded page on the browser. If no mapping
     # is found then nil returned
     def current_page
-      mapping = find_mapped_page(current_url)
+      mapping = transitions.mapped_page(current_url)
       @current_page = initialize_page(mapping) if mapping
       @current_page
     end
@@ -50,10 +51,7 @@ module PageMagic
     # @option transitions [String] path as literal
     # @option transitions [Regexp] path as a regexp for dynamic matching.
     def define_page_mappings(transitions)
-      @transitions = transitions.collect do |key, value|
-        key = key.is_a?(Matcher) ? key : Matcher.new(key)
-        [key, value]
-      end.to_h
+      @transitions = Transitions.new(transitions)
     end
 
     #  execute javascript on the browser
@@ -92,13 +90,7 @@ module PageMagic
     # @raise [InvalidURLException] if neither a page or url are supplied
     # @raise [InvalidURLException] if the mapped path for a page is a Regexp
     def visit(page = nil, url: nil)
-      target_url = url || begin
-        if (mapping = transitions.key(page))
-          raise InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
-
-          url(base_url, mapping.compute_uri)
-        end
-      end
+      target_url = url || transitions.url_for(page, base_url: base_url)
 
       raise InvalidURLException, URL_MISSING_MSG unless target_url
 
@@ -109,22 +101,8 @@ module PageMagic
 
     private
 
-    def find_mapped_page(url)
-      matches(url).first
-    end
-
-    def matches(url)
-      transitions.keys.find_all { |matcher| matcher.match?(url) }.sort.collect { |match| transitions[match] }
-    end
-
     def initialize_page(page_class)
       page_class.new(self).execute_on_load
-    end
-
-    def url(base_url, path)
-      path = path.sub(%r{^/}, '')
-      base_url = base_url.sub(%r{/$}, '')
-      "#{base_url}/#{path}"
     end
   end
 end
