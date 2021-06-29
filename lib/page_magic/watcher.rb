@@ -16,8 +16,10 @@ module PageMagic
       @block = block
     end
 
-    # check current value of watched element. The result of the check is stored against {Watcher#last}
-    # a block was specified then this will be executed.
+    # check current value of watched element. The result of the check can be accessed
+    # by calling {PageMagic::Watcher#last}
+    # if a block was specified to the constructor then this will be executed.
+    # @return [PageMagic::Watcher]
     def check
       @observed_value = context.instance_eval(&block)
       self
