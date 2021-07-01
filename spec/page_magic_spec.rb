@@ -89,6 +89,13 @@ RSpec.describe PageMagic do
       end
     end
 
+    context 'when `session` is specified' do
+      it 'uses it' do
+        session = described_class.session(session: :custom_session)
+        expect(session.raw_session).to be(:custom_session)
+      end
+    end
+
     context 'when `:options` is specified' do
       it 'passes the options to the browser driver' do
         options = { option: :config }
