@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../active_support/core_ext/object/to_query'
-require_relative 'matcher/comparator'
-require_relative 'matcher/fuzzy'
-require_relative 'matcher/literal'
-require_relative 'matcher/map'
-require_relative 'matcher/null'
+require_relative 'comparator'
+
+
 module PageMagic
   # models mapping used to relate pages to uris
-  class Matcher
+  class Mapping
     attr_reader :path, :parameters, :fragment
 
     # @param [Object] path String or Regular expression to match with
@@ -49,23 +47,23 @@ module PageMagic
     end
 
     # compare this matcher against another
-    # @param [Matcher] other
+    # @param [Mapping] other
     # @return [Fixnum] -1 = smaller, 0 = equal to, 1 = greater than
     def <=>(other)
       path_comparison = path <=> other.path
-      return path_comparison unless path_comparison == 0
+      return path_comparison unless path_comparison.zero?
 
       parameter_comparison = parameters <=> other.parameters
-      return parameter_comparison unless parameter_comparison == 0
+      return parameter_comparison unless parameter_comparison.zero?
 
       fragment <=> other.fragment
     end
 
     # check equality
-    # @param [Matcher] other
+    # @param [Mapping] other
     # @return [Boolean]
     def ==(other)
-      return false unless other.is_a?(Matcher)
+      return false unless other.is_a?(Mapping)
 
       path == other.path && parameters == other.parameters && fragment == other.fragment
     end

@@ -1,4 +1,4 @@
-RSpec.describe PageMagic::Matcher::Map do
+RSpec.describe PageMagic::Comparator::ParameterMap do
   describe '#fuzzy?' do
     context 'when one value is fuzzy' do
       it 'returns true' do

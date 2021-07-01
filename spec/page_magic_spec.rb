@@ -55,7 +55,7 @@ RSpec.describe PageMagic do
   describe '#mapping' do
     it 'returns a matcher' do
       mapping = described_class.mapping('/', parameters: {}, fragment: '')
-      expect(mapping).to eq(PageMagic::Matcher.new('/', parameters: {}, fragment: ''))
+      expect(mapping).to eq(PageMagic::Mapping.new('/', parameters: {}, fragment: ''))
     end
   end
 

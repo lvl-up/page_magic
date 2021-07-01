@@ -1,18 +1,22 @@
+# frozen_string_literal: true
+
 module PageMagic
-  class Matcher
-    class Map < Comparator
+  class Comparator
+    # class Map - used to model parameter matching requirements
+    class ParameterMap < Comparator
       def initialize(map)
-        @comparator = normalise(map).keys.each_with_object({}) do |key, params|
+        comparator = normalise(map).keys.each_with_object({}) do |key, params|
           params[key] = Comparator.for(map[key])
         end
 
-        @fuzzy = @comparator.values.any? { |value| value.fuzzy? }
+        fuzzy = comparator.values.any?(&:fuzzy?)
+        super(comparator, fuzzy)
       end
 
       def <=>(other)
         return 0 if empty? && other.empty?
         return 1 if other.empty?
-        if (comparator.keys.size <=> other.comparator.keys.size) == 0
+        if (comparator.keys.size <=> other.comparator.keys.size).zero?
           return literal_matchers.size <=> other.literal_matchers.size
         end
 
@@ -31,7 +35,7 @@ module PageMagic
         params_copy = normalise(params)
         comparator.each do |key, value|
           param = params_copy[key]
-          return false unless value && value.match?(param)
+          return false unless value&.match?(param)
         end
         true
       end
@@ -44,6 +48,5 @@ module PageMagic
         end
       end
     end
-
   end
 end

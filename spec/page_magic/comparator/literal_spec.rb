@@ -1,4 +1,4 @@
-RSpec.describe PageMagic::Matcher::Literal do
+RSpec.describe PageMagic::Comparator::Literal do
   describe 'match?' do
     context 'when parameter is the same' do
       it 'returns true' do
@@ -22,13 +22,13 @@ RSpec.describe PageMagic::Matcher::Literal do
   describe '#<=>' do
     context 'when other is `Null`' do
       it 'is greater' do
-        expect(described_class.new('/') <=> PageMagic::Matcher::Null.new).to be 1
+        expect(described_class.new('/') <=> PageMagic::Comparator::Null.new).to be 1
       end
     end
 
     context 'when other is `Fuzzy`' do
       it 'is greater' do
-        expect(described_class.new('/') <=> PageMagic::Matcher::Fuzzy.new(//)).to be 1
+        expect(described_class.new('/') <=> PageMagic::Comparator::Fuzzy.new(//)).to be 1
       end
     end
 

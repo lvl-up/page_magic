@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module PageMagic
-  class Matcher
+  class Comparator
     # models mapping used to relate pages to uris
     class Null < Comparator
       def initialize(_comparator = nil)
