@@ -50,16 +50,21 @@ module PageMagic
     # @param [Symbol] browser name of browser
     # @param [String] url url to start the session on
     # @param [Hash] options browser driver specific options
+    # @param [Capybara::Session] session - use you own already configure capybara session e.g. Capybara.current_session
     # @return [Session] configured session
-    def session(url: nil, application: nil, browser: :rack_test, options: {})
-      driver = drivers.find(browser)
-      raise UnsupportedBrowserException unless driver
+    def session(session: nil, url: nil, application: nil, browser: :rack_test, options: {})
+      session ||= begin
+        driver = drivers.find(browser)
+        raise UnsupportedBrowserException unless driver
 
-      Capybara.register_driver browser do |app|
-        driver.build(app, browser: browser, options: options)
+        Capybara.register_driver browser do |app|
+          driver.build(app, browser: browser, options: options)
+        end
+
+        Capybara::Session.new(browser, application)
       end
 
-      Session.new(Capybara::Session.new(browser, application), url)
+      Session.new(session, url)
     end
   end
 end

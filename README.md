@@ -56,6 +56,8 @@ Check it out :)
   - [Helper Methods](#helper-methods)
   - [Dynamic Selectors](#dynamic-selectors)
 - [Starting a session](#starting-a-session)
+  - [Using an existing session](#using-an-existing-session)
+  - [Rack applications and Rack::Test](#rack-applications-and-racktest)
 - [Page mapping](#page-mapping)
   - [Mapping against query string parameters](#mapping-against-query-string-parameters)
   - [Mapping against fragment identifiers](#mapping-against-fragment-identifiers)
@@ -325,9 +327,16 @@ session = PageMagic.session(browser: :chrome, url: 'https://www.github.com')
 ```
 
 Your session won't do much besides navigating to the given url until you have [mapped pages](#page-mapping) to it, so 
-take a look at this next! 
+take a look at this next!
 
 **Note** PageMagic supports having multiple sessions using different browsers at the same time :)
+
+## Using an existing session
+If you are introducing PageMagic in to a test suite that already makes use of Capybara, PageMagic can be configured to 
+make use of the session that is already configure like this:
+```ruby
+session = PageMagic.session(session: Capybara.current_session)
+```
  
 ## Rack applications and Rack::Test
 To run a session against a rack application instead of a live site, simply supply the rack application when creating 
