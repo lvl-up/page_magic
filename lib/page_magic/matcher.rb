@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require_relative '../active_support/core_ext/object/to_query'
+require_relative 'matcher/comparator'
+require_relative 'matcher/fuzzy'
+require_relative 'matcher/literal'
+require_relative 'matcher/map'
+require_relative 'matcher/null'
 module PageMagic
   # models mapping used to relate pages to uris
   class Matcher
@@ -10,24 +15,24 @@ module PageMagic
     # @param [Hash] parameters mapping of parameter name to literal or regex to match with
     # @param [Object] fragment String or Regular expression to match with
     # @raise [MatcherInvalidException] if at least one component is not specified
-    def initialize(path = nil, parameters: nil, fragment: nil)
+    def initialize(path = nil, parameters: {}, fragment: nil)
       raise MatcherInvalidException unless path || parameters || fragment
 
-      @path = path
-      @parameters = parameters
-      @fragment = fragment
+      @path = Comparator.for(path)
+      @parameters = Comparator.for(parameters)
+      @fragment = Comparator.for(fragment)
     end
 
     # @return [Boolean] true if no component contains a Regexp
     def can_compute_uri?
-      !fuzzy?(fragment) && !fuzzy?(path) && !fuzzy?(parameters)
+      !fragment.fuzzy? && !path.fuzzy? && !parameters.fuzzy?
     end
 
     # @return [String] uri represented by this mapping
     def compute_uri
       path.to_s.dup.tap do |uri|
-        uri << "?#{parameters.to_query}" if parameters
-        uri << "##{fragment}" if fragment
+        uri << "?#{parameters.comparator.to_query}" unless parameters.empty?
+        uri << "##{fragment}" if fragment.present?
       end
     end
 
@@ -40,17 +45,20 @@ module PageMagic
     # @return [Boolean] returns true if the uri is matched against this matcher
     def match?(uri)
       uri = URI(uri)
-      path_valid?(uri.path) && query_string_valid?(uri.query) && fragment_valid?(uri.fragment)
+      path.match?(uri.path) && parameters.match?(parameters_hash(uri.query)) && fragment.match?(uri.fragment)
     end
 
     # compare this matcher against another
     # @param [Matcher] other
     # @return [Fixnum] -1 = smaller, 0 = equal to, 1 = greater than
     def <=>(other)
-      results = %i[path parameters fragment].collect do |component|
-        compare(send(component), other.send(component))
-      end
-      results.find { |result| !result.zero? } || 0
+      path_comparison = path <=> other.path
+      return path_comparison unless path_comparison == 0
+
+      parameter_comparison = parameters <=> other.parameters
+      return parameter_comparison unless parameter_comparison == 0
+
+      fragment <=> other.fragment
     end
 
     # check equality
@@ -66,65 +74,8 @@ module PageMagic
 
     private
 
-    def compare(this, other)
-      return presence_comparison(this, other) unless this && other
-
-      fuzzy_comparison(this, other)
-    end
-
-    def compatible?(string, comparitor)
-      return true if comparitor.nil?
-
-      if fuzzy?(comparitor)
-        string =~ comparitor ? true : false
-      else
-        string == comparitor
-      end
-    end
-
-    def fragment_valid?(string)
-      compatible?(string, fragment)
-    end
-
-    def fuzzy?(component)
-      return false unless component
-
-      if component.is_a?(Hash)
-        component.values.any? { |o| fuzzy?(o) }
-      else
-        component.is_a?(Regexp)
-      end
-    end
-
-    def fuzzy_comparison(this, other)
-      if fuzzy?(this)
-        fuzzy?(other) ? 0 : 1
-      else
-        fuzzy?(other) ? -1 : 0
-      end
-    end
-
     def parameters_hash(string)
       CGI.parse(string.to_s.downcase).collect { |key, value| [key.downcase, value.first] }.to_h
-    end
-
-    def path_valid?(string)
-      compatible?(string, path)
-    end
-
-    def presence_comparison(this, other)
-      return 0 if this.nil? && other.nil?
-      return 1 if this.nil? && other
-
-      -1
-    end
-
-    def query_string_valid?(string)
-      return true unless parameters
-
-      parameters.none? do |key, value|
-        !compatible?(parameters_hash(string)[key.downcase.to_s], value)
-      end
     end
   end
 end

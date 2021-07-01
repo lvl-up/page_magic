@@ -1,114 +1,83 @@
 # frozen_string_literal: true
 
 RSpec.describe PageMagic::Matcher do
-  describe '#initialize' do
-    context 'no componentes specified' do
-      it 'raises an exeception' do
-        expect { described_class.new }.to raise_exception(PageMagic::MatcherInvalidException)
-      end
-    end
-  end
-
   describe '#can_compute_uri?' do
-    context 'regex in path' do
+    context 'when there is a regex in the path' do
       it 'returns false' do
         expect(described_class.new(//).can_compute_uri?).to eq(false)
       end
     end
 
-    context 'regex in parameters' do
+    context 'when there is a regex in `parameters`' do
       it 'returns false' do
         expect(described_class.new(parameters: { param: // }).can_compute_uri?).to eq(false)
       end
     end
 
-    context 'regexp in fragment' do
+    context 'when there is a regexp in `fragment`' do
       it 'returns false' do
         expect(described_class.new(fragment: //).can_compute_uri?).to eq(false)
       end
     end
 
-    context 'regexp not present' do
+    context 'when matching element is a regexp' do
       it 'returns true' do
         expect(described_class.new('/').can_compute_uri?).to eq(true)
       end
     end
   end
 
-  describe 'compare' do
-    subject { described_class.new('/') }
-
-    context 'param 1 not nil' do
-      context 'param 2 not nil' do
-        context 'literal to fuzzy' do
-          it 'returns -1' do
-            expect(subject.instance_eval { compare('/', //) }).to eq(-1)
-          end
-        end
-
-        context 'literal to literal' do
-          it 'returns 0' do
-            expect(subject.instance_eval { compare('/', '/') }).to eq(0)
-          end
-        end
-
-        context 'fuzzy to fuzzy' do
-          it 'returns 0' do
-            expect(subject.instance_eval { compare(//, //) }).to eq(0)
-          end
-        end
-
-        context 'fuzzy to literal' do
-          it 'returns 1' do
-            expect(subject.instance_eval { compare(//, '/') }).to eq(1)
-          end
-        end
-      end
-
-      context 'param2 is nil' do
-        it 'returns -1' do
-          expect(subject.instance_eval { compare('/', nil) }).to eq(-1)
-        end
+  describe '<=>' do
+    context 'when other does not have a `path`' do
+      it 'is greater' do
+        expect(described_class.new('/') <=> described_class.new(parameters: {})).to be 1
       end
     end
 
-    context 'param1 is nil' do
-      context 'param2 not nil' do
-        it 'returns 1' do
-          expect(subject.instance_eval { compare(nil, '/') }).to eq(1)
+    context 'other has a `path`' do
+      it 'compares them' do
+        expect(described_class.new('/', parameters: { param: 1 }) <=> described_class.new('/')).to be 1
+      end
+
+      context 'other has does not have a fragment' do
+        it 'is lesser' do
+          expect(described_class.new('/', parameters: { param: 1 },
+                                          fragment: '') <=> described_class.new('/', parameters: { param: 1 })).to be 1
         end
       end
 
-      context 'param2 nil' do
-        it 'returns 0' do
-          expect(subject.instance_eval { compare(nil, nil) }).to eq(0)
+      context 'other has a fragment' do
+        it 'is compares them' do
+          expect(described_class.new('/', parameters: { param: 1 },
+                                          fragment: '') <=> described_class.new('/', parameters: { param: 1 },
+                                                                                     fragment: //)).to be 1
         end
       end
     end
   end
 
   describe 'compute_uri' do
-    context 'path present' do
+    context 'when path present' do
       it 'returns a uri' do
         expect(described_class.new('/').compute_uri).to eq('/')
       end
     end
 
-    context 'params present' do
-      context '1 param' do
+    context 'when matching on parameters' do
+      context 'when matching on 1 parameter' do
         it 'returns a uri' do
           expect(described_class.new(parameters: { a: 1 }).compute_uri).to eq('?a=1')
         end
       end
 
-      context 'more than 1 param' do
+      context 'when matching on more than 1 parameter' do
         it 'returns a uri' do
           expect(described_class.new(parameters: { a: 1, b: 2 }).compute_uri).to eq('?a=1&b=2')
         end
       end
     end
 
-    context 'fragment present' do
+    context 'when matching on a fragment' do
       it 'returns a uri' do
         expect(described_class.new(fragment: 'fragment').compute_uri).to eq('#fragment')
       end
@@ -119,8 +88,8 @@ RSpec.describe PageMagic::Matcher do
     let(:matching_url) { 'http://www.example.com/path?foo=bar#fragment' }
     let(:incompatible_url) { 'http://www.example.com/mismatch?miss=match#mismatch' }
 
-    context 'path requirement exists' do
-      context 'path is literal' do
+    context 'when matching on path' do
+      context 'when using a literal' do
         subject do
           described_class.new('/path')
         end
@@ -134,7 +103,7 @@ RSpec.describe PageMagic::Matcher do
         end
       end
 
-      context 'path is regexp' do
+      context 'when using a regexp' do
         subject do
           described_class.new(/\d/)
         end
@@ -149,7 +118,7 @@ RSpec.describe PageMagic::Matcher do
       end
     end
 
-    context 'query string requirement exists' do
+    context 'when matching on the query string' do
       context 'parameter requirement is a literal' do
         subject do
           described_class.new(parameters: { foo: 'bar' })
@@ -164,7 +133,7 @@ RSpec.describe PageMagic::Matcher do
         end
       end
 
-      context 'parameter requirement is a regexp' do
+      context 'when matching on parameters' do
         subject do
           described_class.new(parameters: { foo: /bar/ })
         end
@@ -179,8 +148,8 @@ RSpec.describe PageMagic::Matcher do
       end
     end
 
-    context 'fragment requirement exists' do
-      context 'fragment requirement is a literal' do
+    context 'when matching on the fragment' do
+      context 'when the fragment requirement is a literal' do
         subject do
           described_class.new(fragment: 'fragment')
         end
@@ -194,7 +163,7 @@ RSpec.describe PageMagic::Matcher do
         end
       end
 
-      context 'fragment requirement is a regexp' do
+      context 'when the fragment requirement is a regexp' do
         subject do
           described_class.new(fragment: /fragment/)
         end
@@ -205,144 +174,6 @@ RSpec.describe PageMagic::Matcher do
 
         it 'returns false when regexp is not a match' do
           expect(subject.match?(incompatible_url)).to eq(false)
-        end
-      end
-    end
-  end
-
-  describe '<=>' do
-    let(:literal_path_matcher) { '/' }
-    let(:fuzzy_path_matcher) { // }
-    let(:literal_parameter_matchers) { { param: 'value' } }
-    let(:fuzzy_parameter_matchers) { { param: // } }
-
-    let(:literal_fragment_matcher) { 'fragment' }
-    let(:fuzzy_fragment_matcher) { // }
-
-    context 'path' do
-      context 'path is of same class as path on other' do
-        subject(:b) { described_class.new('/b') }
-
-        let(:a) { described_class.new('/a') }
-
-        it 'returns self and other as equivalent' do
-          expect(a <=> b).to eq(0)
-        end
-      end
-
-      context 'path on other is fuzzy' do
-        subject(:b) { described_class.new(fuzzy_path_matcher) }
-
-        let(:a) { described_class.new(literal_path_matcher) }
-
-        it 'returns other as lesser' do
-          expect(a <=> b).to eq(-1)
-        end
-      end
-    end
-
-    context 'parameters' do
-      context 'parameters on self and other contain literal values' do
-        subject(:b) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers)
-        end
-
-        let(:a) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers)
-        end
-
-        it 'returns self and other as equivalent' do
-          expect(a <=> b).to eq(0)
-        end
-      end
-
-      context 'parameters on self literal values and other has fuzzy values' do
-        subject(:b) do
-          described_class.new(literal_path_matcher,
-                              parameters: fuzzy_parameter_matchers)
-        end
-
-        let(:a) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers)
-        end
-
-        it 'returns other as lesser' do
-          expect(a <=> b).to eq(-1)
-        end
-      end
-
-      context 'parameters on self fuzzy values and other has literal values' do
-        subject(:b) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers)
-        end
-
-        let(:a) do
-          described_class.new(literal_path_matcher,
-                              parameters: fuzzy_parameter_matchers)
-        end
-
-        it 'returns other as greater' do
-          expect(a <=> b).to eq(1)
-        end
-      end
-    end
-
-    context 'fragment' do
-      context 'fragment is of same class as path on other' do
-        subject(:b) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers,
-                              fragment: literal_fragment_matcher)
-        end
-
-        let(:a) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers,
-                              fragment: literal_fragment_matcher)
-        end
-
-        it 'returns self and other as equivalent' do
-          expect(a <=> b).to eq(0)
-        end
-      end
-
-      context 'fragment is literal on self and fuzzy on other' do
-        subject(:b) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers,
-                              fragment: fuzzy_fragment_matcher)
-        end
-
-        let(:a) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers,
-                              fragment: literal_fragment_matcher)
-        end
-
-        it 'returns other as lesser' do
-          expect(a <=> b).to eq(-1)
-        end
-      end
-
-      context 'fragment is fuzzy on self and literal on other' do
-        subject(:b) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers,
-                              fragment: literal_fragment_matcher)
-        end
-
-        let(:a) do
-          described_class.new(literal_path_matcher,
-                              parameters: literal_parameter_matchers,
-                              fragment: fuzzy_fragment_matcher)
-        end
-
-        it 'returns other as lesser' do
-          expect(a <=> b).to eq(1)
         end
       end
     end
