@@ -58,7 +58,7 @@ RSpec.describe PageMagic::Session do
     context 'when the mapping includes a literal' do
       it 'creates a matcher to contain the specification' do
         session.define_page_mappings path: :page
-        expect(session.transitions).to eq(PageMagic::Matcher.new(:path) => :page)
+        expect(session.transitions.to_h).to include(PageMagic::Matcher.new(:path) => :page)
       end
     end
 

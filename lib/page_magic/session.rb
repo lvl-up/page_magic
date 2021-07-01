@@ -90,11 +90,11 @@ module PageMagic
     # @raise [InvalidURLException] if neither a page or url are supplied
     # @raise [InvalidURLException] if the mapped path for a page is a Regexp
     def visit(page = nil, url: nil)
-      target_url = url || transitions.url_for(page, base_url: base_url)
+      url ||= transitions.url_for(page, base_url: base_url)
 
-      raise InvalidURLException, URL_MISSING_MSG unless target_url
+      raise InvalidURLException, URL_MISSING_MSG unless url
 
-      raw_session.visit(target_url)
+      raw_session.visit(url)
       @current_page = initialize_page(page) if page
       self
     end

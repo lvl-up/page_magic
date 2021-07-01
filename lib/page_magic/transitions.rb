@@ -27,7 +27,7 @@ module PageMagic
     # @raise InvalidURLException - Raised if it is not possible to generate the url for the mapped page
     #  i.e. if the mapping is a regular expression.
     def url_for(page, base_url:)
-      mapping = key(page)
+      return unless mapping = key(page)
       raise InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
 
       PageMagic::Utils::URL.concat(base_url, mapping.compute_uri)
