@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'utils/url'
-require_relative 'matcher'
+require_relative 'mapping'
 
 module PageMagic
   # class Transitions - used for registering the page classes that should be used against particular paths
@@ -9,13 +9,13 @@ module PageMagic
     REGEXP_MAPPING_MSG = 'URL could not be derived because mapping contains Regexps'
 
     # Create a new transitions object.
-    # @param [Hash{String,PageMagic::Matcher => PageMagic}] transitions a map of paths to pages
+    # @param [Hash{String,PageMagic::Mapping => PageMagic}] transitions a map of paths to pages
     # @example
     #  Transitions.new('/path1' => Page1, Matcher.new('/another_*') => AnotherPageClass )
     def initialize(transitions)
       super
       transitions.each do |key, value|
-        key = key.is_a?(Matcher) ? key : Matcher.new(key)
+        key = key.is_a?(Mapping) ? key : Mapping.new(key)
         self[key] = value
       end
     end
@@ -27,7 +27,7 @@ module PageMagic
     # @raise InvalidURLException - Raised if it is not possible to generate the url for the mapped page
     #  i.e. if the mapping is a regular expression.
     def url_for(page, base_url:)
-      return unless mapping = key(page)
+      return unless (mapping = key(page))
       raise InvalidURLException, REGEXP_MAPPING_MSG unless mapping.can_compute_uri?
 
       PageMagic::Utils::URL.concat(base_url, mapping.compute_uri)

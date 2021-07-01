@@ -1,4 +1,4 @@
-RSpec.describe PageMagic::Matcher::Fuzzy do
+RSpec.describe PageMagic::Comparator::Fuzzy do
   describe '#fuzzy?' do
     context 'when one value is fuzzy' do
       it 'returns true' do
@@ -25,7 +25,7 @@ RSpec.describe PageMagic::Matcher::Fuzzy do
   describe '#<=>' do
     context 'when other is `Null`' do
       it 'is lesser' do
-        expect(described_class.new(//) <=> PageMagic::Matcher::Null.new).to be(-1)
+        expect(described_class.new(//) <=> PageMagic::Comparator::Null.new).to be(-1)
       end
     end
 
@@ -37,7 +37,7 @@ RSpec.describe PageMagic::Matcher::Fuzzy do
 
     context 'when other is `Literal`' do
       it 'is greater' do
-        expect(described_class.new(//) <=> PageMagic::Matcher::Literal.new('/')).to be 1
+        expect(described_class.new(//) <=> PageMagic::Comparator::Literal.new('/')).to be 1
       end
     end
   end

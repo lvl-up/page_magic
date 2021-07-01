@@ -19,9 +19,9 @@ module PageMagic
 
   # @!method matcher
   # define match critera for loading a page object class
-  # @see Matcher#initialize
-  # @return [Matcher]
-  def_delegator Matcher, :new, :matcher
+  # @see Mapping#initialize
+  # @return [Mapping]
+  def_delegator Mapping, :new, :matcher
 
   class << self
     # @return [Drivers] registered drivers
@@ -42,7 +42,7 @@ module PageMagic
     #   PageMagic.mapping '/', parameters: {project: 'page_magic'}, fragment: 'display'
     # @see Matchers#initialize
     def mapping(path = nil, parameters: nil, fragment: nil)
-      Matcher.new(path, parameters: parameters, fragment: fragment)
+      Mapping.new(path, parameters: parameters, fragment: fragment)
     end
 
     # Visit this page based on the class level registered url

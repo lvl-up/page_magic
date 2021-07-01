@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module PageMagic
-  class Matcher
+  class Comparator
+    # class Literal - used for modeling and comparing thing directly. E.g. strings
     class Literal < Comparator
       def initialize(comparator)
         super(comparator, false)

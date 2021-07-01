@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe PageMagic::Matcher do
+RSpec.describe PageMagic::Mapping do
   describe '#can_compute_uri?' do
     context 'when there is a regex in the path' do
       it 'returns false' do

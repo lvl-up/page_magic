@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module PageMagic
-  class Matcher
+  class Comparator
+    # class Fuzzy - used for modeling and comparing components that are 'fuzzy' i.e. respond to `=~` e.g. a Regexp
     class Fuzzy < Comparator
       def initialize(comparator)
         super(comparator, true)
