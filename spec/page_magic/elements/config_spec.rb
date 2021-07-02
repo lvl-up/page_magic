@@ -59,6 +59,24 @@ RSpec.describe PageMagic::Elements::Config do
           expect(options.selector).to eq(PageMagic::Element::Selector.find(:id).build(:field, 'child'))
         end
 
+        context 'when is empty hash' do
+          it 'raises an error' do
+            options = described_class.build([{}], :field)
+            expect { options.selector }.to raise_exception(PageMagic::InvalidConfigurationException,
+                                                           described_class::INVALID_SELECTOR_MSG)
+          end
+        end
+
+        context 'when defined on both class and as parameter' do
+          it 'uses the supplied selector' do
+            options = described_class.build([{ css: 'supplied_selector' }], :field)
+            options.definition_class = Class.new(PageMagic::Element) do
+              selector css: 'class_selector'
+            end
+            expect(options.selector).to eq(PageMagic::Element::Selector.find(:css).build(:field, 'supplied_selector'))
+          end
+        end
+
         context 'when page_element class supplied' do
           it 'uses the selector on the class' do
             expected_selector = { css: 'class' }
@@ -91,6 +109,29 @@ RSpec.describe PageMagic::Elements::Config do
           end
         end
       end
+
+      context 'when no selector on class or page_element' do
+        context 'when dynamically assigned element definition block' do
+          it 'uses it' do
+            options = described_class.build([], :field)
+
+            options.definition_class = Class.new(PageMagic::Element) do
+              selector({ css: 'class' })
+            end
+
+            expect(options.selector).to eq(PageMagic::Element::Selector.find(:css).build(:field, 'class'))
+          end
+        end
+
+        context 'when not dynamically assigned' do
+          it 'raises and exception' do
+            options = described_class.build([], :field)
+            options.definition_class = Class.new(PageMagic::Element)
+            expect { options.selector }.to raise_exception(PageMagic::InvalidConfigurationException,
+                                                           described_class::INVALID_SELECTOR_MSG)
+          end
+        end
+      end
     end
 
     it 'sets prefetched options' do
@@ -117,44 +158,6 @@ RSpec.describe PageMagic::Elements::Config do
         element: :object,
         element_class: Class.new(PageMagic::Element)
       }
-    end
-
-    describe 'selector' do
-      context 'when nil' do
-        context 'and prefetched `element` is nil' do
-          it 'raise an error' do
-            subject = described_class.new(options.except(:selector, :element))
-            expect { subject.validate! }.to raise_exception(PageMagic::InvalidConfigurationException,
-                                                            described_class::INVALID_SELECTOR_MSG)
-          end
-        end
-
-        context 'when `element` is not nil' do
-          it 'does not raise an error' do
-            subject = described_class.new(options.except(:selector))
-            expect { subject.validate! }.not_to raise_exception
-          end
-        end
-      end
-
-      context 'when is empty hash' do
-        it 'raises an error' do
-          subject = described_class.new(options.update(selector: {}).except(:element))
-          expect { subject.validate! }.to raise_exception(PageMagic::InvalidConfigurationException,
-                                                          described_class::INVALID_SELECTOR_MSG)
-        end
-      end
-
-      context 'when defined on both class and as parameter' do
-        it 'uses the supplied selector' do
-          element_class = Class.new(PageMagic::Element) do
-            selector css: 'selector'
-          end
-
-          subject = described_class.new(options.update(element_class: element_class))
-          expect { subject.validate! }.not_to raise_exception
-        end
-      end
     end
 
     context 'when type nil' do
