@@ -73,7 +73,9 @@ module PageMagic
       # Selector built using supplied configuration
       # @return [PageMagic::Element::Selector::Model]
       def selector
-        selector = self[:selector]
+        selector = self[:selector] || definition_class.selector
+        raise PageMagic::InvalidConfigurationException, INVALID_SELECTOR_MSG unless validate_selector?(selector)
+
         Element::Selector.find(selector.keys.first).build(type, selector.values.first, options: options)
       end
 
@@ -81,7 +83,6 @@ module PageMagic
       # @raise [PageMagic::InvalidConfigurationException]
       # @return [PageMagic::Elements::Config]
       def validate!
-        raise PageMagic::InvalidConfigurationException, INVALID_SELECTOR_MSG unless element || valid_selector?
         raise PageMagic::InvalidConfigurationException, 'element type required' unless type
         raise PageMagic::InvalidConfigurationException, INVALID_ELEMENT_CLASS_MSG unless valid_element_class?
 
@@ -90,8 +91,7 @@ module PageMagic
 
       private
 
-      def valid_selector?
-        selector = self[:selector]
+      def validate_selector?(selector)
         selector.is_a?(Hash) && !selector.empty?
       end
 
