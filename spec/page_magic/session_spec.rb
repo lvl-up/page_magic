@@ -40,20 +40,6 @@ RSpec.describe PageMagic::Session do
     end
   end
 
-  describe '#current_path' do
-    it "returns the browser's current path" do
-      browser.visit('/url')
-      expect(session.current_path).to eq(browser.current_path)
-    end
-  end
-
-  describe '#current_url' do
-    it "returns the browser's current url" do
-      browser.visit('/url')
-      expect(session.current_url).to eq(session.current_url)
-    end
-  end
-
   describe '#define_page_mappings' do
     context 'when the mapping includes a literal' do
       it 'creates a matcher to contain the specification' do
@@ -71,22 +57,6 @@ RSpec.describe PageMagic::Session do
     end
   end
 
-  describe '#execute_script' do
-    it 'calls the execute script method on the capybara session' do
-      allow(browser).to receive(:execute_script).with(:script).and_return(:result)
-      expect(session.execute_script(:script)).to be(:result)
-    end
-
-    context 'when the Capybara session does not support #execute_script' do
-      let(:browser) { Capybara::Driver::Base.new }
-
-      it 'raises an error' do
-        expected_message = described_class::UNSUPPORTED_OPERATION_MSG
-        expect { session.execute_script(:script) }.to raise_error(PageMagic::NotSupportedException, expected_message)
-      end
-    end
-  end
-
   describe '#method_missing' do
     before do
       page.class_eval do
@@ -99,6 +69,13 @@ RSpec.describe PageMagic::Session do
     it 'delegates to current page' do
       session = described_class.new(browser).visit(page, url: 'http://base.url')
       expect(session.my_method).to be(:called)
+    end
+
+    context 'when method not on current page' do
+      it 'delegates to the capybara session' do
+        session = described_class.new(browser).visit(page, url: 'http://base.url')
+        expect(session).to have_text('ok')
+      end
     end
   end
 
@@ -121,6 +98,13 @@ RSpec.describe PageMagic::Session do
         session = described_class.new(browser)
         session.visit(page, url: '/')
         expect(session.respond_to?(:my_method)).to eq(true)
+      end
+    end
+
+    context 'when method not on self or the current page' do
+      it 'checks the capybara session' do
+        session = described_class.new(browser)
+        expect(session).to respond_to(:has_text?)
       end
     end
   end
