@@ -8,9 +8,9 @@ gem 'capybara', '>=3.0'
 group :test do
   gem 'poltergeist'
   gem 'rspec', require: 'rspec/core/rake_task'
+  gem 'selenium-webdriver'
   gem 'simplecov', require: false
   gem 'sinatra'
-  gem 'watir'
 end
 
 group :development do

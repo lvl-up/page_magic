@@ -144,9 +144,6 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
-    watir (6.19.1)
-      regexp_parser (>= 1.2, < 3)
-      selenium-webdriver (>= 3.142.7)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -169,9 +166,9 @@ DEPENDENCIES
   rubocop
   rubocop-rspec
   ruby-debug-ide
+  selenium-webdriver
   simplecov
   sinatra
-  watir
   yard (~> 0.8)
 
 BUNDLED WITH
