@@ -32,16 +32,6 @@ module PageMagic
       @current_page
     end
 
-    # @return [String] path in the browser
-    def current_path
-      raw_session.current_path
-    end
-
-    # @return [String] full url in the browser
-    def current_url
-      raw_session.current_url
-    end
-
     # Map paths to Page classes. The session will auto load page objects from these mapping when
     # the {Session#current_path}
     # is matched.
@@ -54,26 +44,22 @@ module PageMagic
       @transitions = Transitions.new(transitions)
     end
 
-    #  execute javascript on the browser
-    #  @param [String] script the script to be executed
-    #  @return [Object] object returned by the capybara execute_script method
-    # @raise [NotSupportedException] if the capybara driver in use does not support execute script
-    def execute_script(script)
-      raw_session.execute_script(script)
-    rescue Capybara::NotSupportedByDriverError
-      raise NotSupportedException, UNSUPPORTED_OPERATION_MSG
-    end
-
     # proxies unknown method calls to the currently loaded page object
     # @return [Object] returned object from the page object method call
     def method_missing(name, *args, &block)
+      return raw_session.send(name, *args, &block) if raw_session.respond_to?(name)
+
       current_page.send(name, *args, &block)
+    end
+
+    def on?(page_class)
+      current_page.is_a?(page_class)
     end
 
     # @param args see {::Object#respond_to?}
     # @return [Boolean] true if self or the current page object responds to the give method name
     def respond_to_missing?(*args)
-      super || current_page.respond_to?(*args)
+      super || current_page.respond_to?(*args) || raw_session.respond_to?(*args)
     end
 
     # Direct the browser to the given page or url. {Session#current_page} will be set be an instance of the given/mapped

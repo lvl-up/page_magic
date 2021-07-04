@@ -3,7 +3,6 @@
 require_relative '../active_support/core_ext/object/to_query'
 require_relative 'comparator'
 
-
 module PageMagic
   # models mapping used to relate pages to uris
   class Mapping
