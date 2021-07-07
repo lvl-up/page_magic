@@ -79,6 +79,14 @@ RSpec.describe PageMagic::Session do
     end
   end
 
+  describe '#is_a?' do
+    context 'when other is a `Capybara::Session`' do
+      it 'returns true' do
+        expect(described_class.new(browser).is_a?(Capybara::Session)).to eq(true)
+      end
+    end
+  end
+
   describe '#respond_to?' do
     it 'checks self' do
       session = described_class.new(browser)
@@ -138,10 +146,17 @@ RSpec.describe PageMagic::Session do
       end
     end
 
+    context 'when a page and `:url` supplied' do
+      it 'uses the url' do
+        session.visit(page, url: 'http://other.url/')
+        expect(session.current_url).to eq('http://other.url/')
+      end
+    end
+
     context 'when `url` is supplied' do
       it 'visits that url' do
         expected_url = 'http://base.url/page'
-        session.visit(url: expected_url)
+        session.visit(expected_url)
         expect(browser.current_url).to eq(expected_url)
       end
     end
