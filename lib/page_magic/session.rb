@@ -18,6 +18,8 @@ module PageMagic
     # Create a new session instance
     # @param [Object] capybara_session an instance of a capybara session
     # @param [String] base_url url to start the session at.
+    #
+
     def initialize(capybara_session, base_url = nil)
       @raw_session = capybara_session
       @base_url = base_url
@@ -42,6 +44,12 @@ module PageMagic
     # @option transitions [Regexp] path as a regexp for dynamic matching.
     def define_page_mappings(transitions)
       @transitions = Transitions.new(transitions)
+    end
+
+    def is_a?(klass)
+      return true if klass == Capybara::Session
+
+      super
     end
 
     # proxies unknown method calls to the currently loaded page object
@@ -75,13 +83,14 @@ module PageMagic
     # @raise [InvalidURLException] if a page is supplied and there isn't a mapped path for it
     # @raise [InvalidURLException] if neither a page or url are supplied
     # @raise [InvalidURLException] if the mapped path for a page is a Regexp
-    def visit(page = nil, url: nil)
-      url ||= transitions.url_for(page, base_url: base_url)
+    # @return [PageMagic::Session] - returns self
+    def visit(page_or_url = nil, url: nil)
+      url ||= page_or_url.is_a?(String) ? page_or_url : transitions.url_for(page_or_url, base_url: base_url)
 
       raise InvalidURLException, URL_MISSING_MSG unless url
 
       raw_session.visit(url)
-      @current_page = initialize_page(page) if page
+      @current_page = initialize_page(page_or_url) unless page_or_url.is_a?(String)
       self
     end
 
