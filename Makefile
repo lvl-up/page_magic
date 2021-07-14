@@ -12,6 +12,6 @@ test: ## Run tests
 	docker run -v $(PWD):$(MOUNT_DIR) -w $(MOUNT_DIR) -t $(DOCKER_IMAGE) bundle exec rspec
 
 build: docker ## build gem
-	rake build
+	gem build page_magic.gemspec && mkdir -p pkg && mv *.gem pkg/
 
 all: docker test build ## run all targets before building gem
