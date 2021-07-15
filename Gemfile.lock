@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    page_magic (2.0.9)
+    page_magic (2.0.10)
       activesupport (~> 6)
       capybara (~> 3)
 
