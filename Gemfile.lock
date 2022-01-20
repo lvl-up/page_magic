@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    page_magic (2.0.10)
+    page_magic (2.0.11)
       activesupport (~> 6)
       capybara (~> 3)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.4)
+    activesupport (6.1.4.4)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -30,13 +30,13 @@ GEM
     concurrent-ruby (1.1.9)
     diff-lcs (1.4.4)
     docile (1.3.5)
-    i18n (1.8.10)
+    i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     mini_mime (1.1.0)
-    mini_portile2 (2.5.3)
-    minitest (5.14.4)
-    nokogiri (1.11.7)
-      mini_portile2 (~> 2.5.0)
+    mini_portile2 (2.7.1)
+    minitest (5.15.0)
+    nokogiri (1.13.1)
+      mini_portile2 (~> 2.7.0)
       racc (~> 1.4)
     parallel (1.20.1)
     parser (3.0.1.1)
@@ -46,11 +46,12 @@ GEM
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
     public_suffix (4.0.6)
-    racc (1.5.2)
+    racc (1.6.0)
     rack (2.2.3)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rainbow (3.0.0)
+    rake (13.0.6)
     redcarpet (3.5.1)
     regexp_parser (2.1.1)
     rexml (3.2.5)
@@ -95,13 +96,14 @@ GEM
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.0.0)
+    webrick (1.7.0)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yard (0.9.26)
-    zeitwerk (2.4.2)
+    zeitwerk (2.5.3)
 
 PLATFORMS
   ruby
@@ -109,13 +111,15 @@ PLATFORMS
 DEPENDENCIES
   page_magic!
   poltergeist (~> 1)
+  rake (~> 13)
   redcarpet (~> 3)
   rspec (~> 3)
   rubocop (~> 1)
   rubocop-rspec (~> 2)
   selenium-webdriver (~> 3)
   simplecov (~> 0)
+  webrick (~> 1)
   yard (~> 0)
 
 BUNDLED WITH
-   2.1.4
+   2.2.32

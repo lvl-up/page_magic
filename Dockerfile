@@ -1,4 +1,4 @@
-FROM ruby:2.7.2-alpine
+FROM ruby:3.0-alpine
 
 ENV APP_HOME /page_magic
 RUN mkdir $APP_HOME
