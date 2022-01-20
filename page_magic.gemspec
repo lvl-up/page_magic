@@ -20,12 +20,14 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<activesupport>.freeze, ["~> 6"])
   s.add_runtime_dependency(%q<capybara>.freeze, ['~> 3'])
   s.add_development_dependency(%q<poltergeist>.freeze, ['~> 1'])
+  s.add_development_dependency(%q<rake>.freeze, ["~> 13"])
   s.add_development_dependency(%q<redcarpet>.freeze, ["~> 3"])
   s.add_development_dependency(%q<rspec>.freeze, ["~> 3"])
   s.add_development_dependency(%q<rubocop>.freeze, ["~> 1"])
   s.add_development_dependency(%q<rubocop-rspec>.freeze, ["~> 2"])
   s.add_development_dependency(%q<selenium-webdriver>.freeze, ['~> 3'])
   s.add_development_dependency(%q<simplecov>.freeze, ["~> 0"])
+  s.add_development_dependency(%q<webrick>.freeze, ["~> 1"])
   s.add_development_dependency(%q<yard>.freeze, ["~> 0"])
 end
 
