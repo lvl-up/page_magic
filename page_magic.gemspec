@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = Gem::Requirement.new(">= 2.5")
   s.summary = "Framework for modeling and interacting with webpages"
 
-  s.add_runtime_dependency(%q<activesupport>.freeze, ["~> 6"])
+  s.add_runtime_dependency(%q<activesupport>.freeze, [">= 6"])
   s.add_runtime_dependency(%q<capybara>.freeze, ['~> 3'])
   s.add_runtime_dependency(%q<gem-release>.freeze, ['~> 2'])
   s.add_development_dependency(%q<poltergeist>.freeze, ['~> 1'])
