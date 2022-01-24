@@ -2,19 +2,18 @@ PATH
   remote: .
   specs:
     page_magic (2.0.11)
-      activesupport (~> 6)
+      activesupport (>= 6)
       capybara (~> 3)
       gem-release (~> 2)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.4.4)
+    activesupport (7.0.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-      zeitwerk (~> 2.3)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
@@ -104,7 +103,6 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yard (0.9.26)
-    zeitwerk (2.5.3)
 
 PLATFORMS
   ruby
