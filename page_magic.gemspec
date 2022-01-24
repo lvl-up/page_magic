@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require 'date'
+require_relative 'lib/page_magic/version'
 Gem::Specification.new do |s|
   s.name = "page_magic"
-  s.version = File.read("#{__dir__}/VERSION")
+  s.version = PageMagic::VERSION
   s.authors = ["Leon Davis"]
   s.date = Date.today
   s.description = "Framework for modeling and interacting with webpages which wraps capybara"
@@ -19,7 +20,9 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency(%q<activesupport>.freeze, ["~> 6"])
   s.add_runtime_dependency(%q<capybara>.freeze, ['~> 3'])
+  s.add_runtime_dependency(%q<gem-release>.freeze, ['~> 2'])
   s.add_development_dependency(%q<poltergeist>.freeze, ['~> 1'])
+  s.add_development_dependency(%q<rake>.freeze, ["~> 13"])
   s.add_development_dependency(%q<redcarpet>.freeze, ["~> 3"])
   s.add_development_dependency(%q<rspec>.freeze, ["~> 3"])
   s.add_development_dependency(%q<rubocop>.freeze, ["~> 1"])
