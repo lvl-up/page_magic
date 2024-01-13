@@ -30,5 +30,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<selenium-webdriver>.freeze, ['~> 3'])
   s.add_development_dependency(%q<simplecov>.freeze, ["~> 0"])
   s.add_development_dependency(%q<yard>.freeze, ["~> 0"])
+  s.add_development_dependency(%q<debug>.freeze, ["~> 0"])
+  s.add_development_dependency(%q<rackup>.freeze, ["~> 2"])
 end
-

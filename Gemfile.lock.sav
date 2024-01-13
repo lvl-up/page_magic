@@ -1,11 +1,4 @@
 PATH
-  remote: ../readapt
-  specs:
-    readapt (1.4.4)
-      backport (~> 1.2)
-      thor (~> 1.0)
-
-PATH
   remote: .
   specs:
     page_magic (2.0.13)
@@ -28,7 +21,6 @@ GEM
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
-    backport (1.2.0)
     base64 (0.2.0)
     bigdecimal (3.1.5)
     capybara (3.39.2)
@@ -42,7 +34,6 @@ GEM
       xpath (~> 3.2)
     childprocess (3.0.0)
     cliver (0.3.2)
-    coderay (1.1.3)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
     debug (0.2.1)
@@ -56,21 +47,12 @@ GEM
     json (2.7.1)
     language_server-protocol (3.17.0.3)
     matrix (0.4.2)
-    method_source (1.0.0)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.5)
     minitest (5.21.1)
     mutex_m (0.2.0)
-    nokogiri (1.16.0-aarch64-linux)
-      racc (~> 1.4)
-    nokogiri (1.16.0-arm-linux)
-      racc (~> 1.4)
-    nokogiri (1.16.0-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.16.0-x86-linux)
-      racc (~> 1.4)
-    nokogiri (1.16.0-x86_64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.16.0-x86_64-linux)
+    nokogiri (1.16.0)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     parallel (1.24.0)
     parser (3.3.0.3)
@@ -80,17 +62,11 @@ GEM
       capybara (>= 2.1, < 4)
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
-    pry (0.14.2)
-      coderay (~> 1.1)
-      method_source (~> 1.0)
     public_suffix (5.0.4)
     racc (1.7.3)
     rack (3.0.8)
     rack-test (2.1.0)
       rack (>= 1.3)
-    rackup (2.1.0)
-      rack (>= 3)
-      webrick (~> 1.8)
     rainbow (3.1.1)
     rake (13.1.0)
     redcarpet (3.6.0)
@@ -142,11 +118,9 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    thor (1.3.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.5.0)
-    webrick (1.8.1)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -155,22 +129,14 @@ GEM
     yard (0.9.34)
 
 PLATFORMS
-  aarch64-linux
-  arm-linux
-  arm64-darwin
-  x86-linux
-  x86_64-darwin
-  x86_64-linux
+  ruby
 
 DEPENDENCIES
   debug (~> 0)
   gem-release (~> 2)
   page_magic!
   poltergeist (~> 1)
-  pry
-  rackup (~> 2)
   rake (~> 13)
-  readapt!
   redcarpet (~> 3)
   rspec (~> 3)
   rubocop (~> 1)
@@ -180,4 +146,4 @@ DEPENDENCIES
   yard (~> 0)
 
 BUNDLED WITH
-   2.5.4
+   2.1.4

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support/all'
 require_relative '../active_support/core_ext/object/to_query'
 require_relative 'comparator'
 
